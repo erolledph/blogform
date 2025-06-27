@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -29,9 +29,27 @@ export default function CreateContentTab() {
     status: 'draft'
   });
 
+  // Separate state for array input fields to improve typing experience
+  const [keywordsInput, setKeywordsInput] = useState('');
+  const [categoriesInput, setCategoriesInput] = useState('');
+  const [tagsInput, setTagsInput] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+
+  // Memoize SimpleMDE options to prevent re-initialization on every render
+  const simpleMDEOptions = useMemo(() => ({
+    spellChecker: false,
+    placeholder: 'Write your content in Markdown...',
+    toolbar: [
+      'bold', 'italic', 'heading', '|',
+      'quote', 'unordered-list', 'ordered-list', '|',
+      'link', 'image', '|',
+      'preview', 'side-by-side', 'fullscreen', '|',
+      'guide'
+    ]
+  }), []);
 
   useEffect(() => {
     if (isEditing) {
@@ -60,6 +78,11 @@ export default function CreateContentTab() {
           tags: data.tags || [],
           status: data.status || 'draft'
         });
+
+        // Initialize array input fields with joined values
+        setKeywordsInput((data.keywords || []).join(', '));
+        setCategoriesInput((data.categories || []).join(', '));
+        setTagsInput((data.tags || []).join(', '));
       } else {
         toast.error('Content not found');
         navigate('/dashboard/manage');
@@ -83,26 +106,47 @@ export default function CreateContentTab() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Auto-generate slug from title
+    
+    // Handle title and slug updates in a single state update
     if (name === 'title' && !isEditing) {
       setFormData(prev => ({
         ...prev,
+        [name]: value,
         slug: generateSlug(value)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
       }));
     }
   };
 
-  const handleArrayInputChange = (e, field) => {
-    const value = e.target.value;
-    const array = value.split(',').map(item => item.trim()).filter(item => item);
+  const parseArrayInput = (value) => {
+    return value.split(',').map(item => item.trim()).filter(item => item);
+  };
+
+  const handleKeywordsBlur = () => {
+    const keywordsArray = parseArrayInput(keywordsInput);
     setFormData(prev => ({
       ...prev,
-      [field]: array
+      keywords: keywordsArray
+    }));
+  };
+
+  const handleCategoriesBlur = () => {
+    const categoriesArray = parseArrayInput(categoriesInput);
+    setFormData(prev => ({
+      ...prev,
+      categories: categoriesArray
+    }));
+  };
+
+  const handleTagsBlur = () => {
+    const tagsArray = parseArrayInput(tagsInput);
+    setFormData(prev => ({
+      ...prev,
+      tags: tagsArray
     }));
   };
 
@@ -153,18 +197,24 @@ export default function CreateContentTab() {
       return;
     }
 
+    // Ensure array fields are updated with current input values before submitting
+    const finalFormData = {
+      ...formData,
+      keywords: parseArrayInput(keywordsInput),
+      categories: parseArrayInput(categoriesInput),
+      tags: parseArrayInput(tagsInput)
+    };
+
     setLoading(true);
 
     try {
       const token = await getAuthToken();
-      const url = isEditing 
-        ? `/.netlify/functions/admin-content`
-        : `/.netlify/functions/admin-content`;
+      const url = `/.netlify/functions/admin-content`;
       
       const method = isEditing ? 'PUT' : 'POST';
       const body = isEditing 
-        ? { id, ...formData }
-        : formData;
+        ? { id, ...finalFormData }
+        : finalFormData;
 
       const response = await fetch(url, {
         method,
@@ -263,17 +313,7 @@ export default function CreateContentTab() {
                   <SimpleMDE
                     value={formData.content}
                     onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-                    options={{
-                      spellChecker: false,
-                      placeholder: 'Write your content in Markdown...',
-                      toolbar: [
-                        'bold', 'italic', 'heading', '|',
-                        'quote', 'unordered-list', 'ordered-list', '|',
-                        'link', 'image', '|',
-                        'preview', 'side-by-side', 'fullscreen', '|',
-                        'guide'
-                      ]
-                    }}
+                    options={simpleMDEOptions}
                   />
                 </div>
               </div>
@@ -405,8 +445,9 @@ export default function CreateContentTab() {
                   <input
                     type="text"
                     className="input-field"
-                    value={formData.keywords.join(', ')}
-                    onChange={(e) => handleArrayInputChange(e, 'keywords')}
+                    value={keywordsInput}
+                    onChange={(e) => setKeywordsInput(e.target.value)}
+                    onBlur={handleKeywordsBlur}
                     placeholder="keyword1, keyword2, keyword3"
                   />
                 </div>
@@ -425,8 +466,9 @@ export default function CreateContentTab() {
                   <input
                     type="text"
                     className="input-field"
-                    value={formData.categories.join(', ')}
-                    onChange={(e) => handleArrayInputChange(e, 'categories')}
+                    value={categoriesInput}
+                    onChange={(e) => setCategoriesInput(e.target.value)}
+                    onBlur={handleCategoriesBlur}
                     placeholder="Web Development, Technology"
                   />
                 </div>
@@ -438,8 +480,9 @@ export default function CreateContentTab() {
                   <input
                     type="text"
                     className="input-field"
-                    value={formData.tags.join(', ')}
-                    onChange={(e) => handleArrayInputChange(e, 'tags')}
+                    value={tagsInput}
+                    onChange={(e) => setTagsInput(e.target.value)}
+                    onBlur={handleTagsBlur}
                     placeholder="react, javascript, tutorial"
                   />
                 </div>
