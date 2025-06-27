@@ -51,16 +51,20 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Query Firestore for published content
+    console.log('Fetching content from Firestore...');
+    
+    // Query Firestore for published content (without ordering to avoid index requirement)
     const contentRef = db.collection('content');
     const snapshot = await contentRef
       .where('status', '==', 'published')
-      .orderBy('createdAt', 'desc')
       .get();
+
+    console.log(`Found ${snapshot.size} published documents`);
 
     const content = [];
     snapshot.forEach(doc => {
       const data = doc.data();
+      console.log(`Processing document: ${doc.id}`);
       
       // Convert Firestore timestamps to ISO strings
       const processedData = {
@@ -73,6 +77,15 @@ exports.handler = async (event, context) => {
       
       content.push(processedData);
     });
+
+    // Sort by creation date (newest first) manually
+    content.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
+      return dateB - dateA;
+    });
+
+    console.log(`Returning ${content.length} content items`);
 
     return {
       statusCode: 200,
@@ -88,7 +101,8 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({ 
         error: 'Internal server error',
-        message: error.message 
+        message: error.message,
+        details: error.stack
       })
     };
   }
