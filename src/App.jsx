@@ -10,7 +10,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-neutral-50">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard/*" element={
@@ -20,7 +20,19 @@ function App() {
             } />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
-          <Toaster position="top-right" />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: 'hsl(0 0% 100%)',
+                color: 'hsl(222.2 84% 4.9%)',
+                border: '1px solid hsl(214.3 31.8% 91.4%)',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem',
+              },
+            }}
+          />
         </div>
       </Router>
     </AuthProvider>

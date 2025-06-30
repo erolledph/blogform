@@ -5,7 +5,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import SimpleMDE from 'react-simplemde-editor';
-import { Save, Upload, ArrowLeft } from 'lucide-react';
+import { Save, Upload, ArrowLeft, ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import 'easymde/dist/easymde.min.css';
 
@@ -242,42 +242,44 @@ export default function CreateContentTab() {
   if (loading && isEditing) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/dashboard/manage')}
-            className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100"
+            className="btn-ghost p-2"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               {isEditing ? 'Edit Content' : 'Create New Content'}
             </h1>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-2 text-muted-foreground">
               {isEditing ? 'Update your existing content' : 'Write and publish new content'}
             </p>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             <div className="card">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Content Details</h2>
-              
-              <div className="space-y-4">
+              <div className="card-header">
+                <h2 className="card-title">Content Details</h2>
+                <p className="card-description">Enter the main content information</p>
+              </div>
+              <div className="card-content space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Title *
                   </label>
                   <input
@@ -292,7 +294,7 @@ export default function CreateContentTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Slug *
                   </label>
                   <input
@@ -307,7 +309,7 @@ export default function CreateContentTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Content * (Markdown)
                   </label>
                   <SimpleMDE
@@ -324,11 +326,12 @@ export default function CreateContentTab() {
           <div className="space-y-6">
             {/* Publish Settings */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Publish Settings</h3>
-              
-              <div className="space-y-4">
+              <div className="card-header">
+                <h3 className="card-title">Publish Settings</h3>
+              </div>
+              <div className="card-content space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Status
                   </label>
                   <select
@@ -343,7 +346,7 @@ export default function CreateContentTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Author
                   </label>
                   <input
@@ -360,37 +363,42 @@ export default function CreateContentTab() {
 
             {/* Featured Image */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Featured Image</h3>
-              
-              <div className="space-y-4">
+              <div className="card-header">
+                <h3 className="card-title">Featured Image</h3>
+              </div>
+              <div className="card-content space-y-4">
                 {formData.featuredImageUrl && (
                   <div>
                     <img
                       src={formData.featuredImageUrl}
                       alt="Featured"
-                      className="w-full h-32 object-cover rounded-lg"
+                      className="w-full h-32 object-cover rounded-md border border-border"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Upload Image
                   </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="input-field"
-                    disabled={uploading}
-                  />
-                  {uploading && (
-                    <p className="text-sm text-gray-500 mt-1">Uploading...</p>
-                  )}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="input-field"
+                      disabled={uploading}
+                    />
+                    {uploading && (
+                      <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Or Image URL
                   </label>
                   <input
@@ -407,11 +415,12 @@ export default function CreateContentTab() {
 
             {/* SEO Settings */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO Settings</h3>
-              
-              <div className="space-y-4">
+              <div className="card-header">
+                <h3 className="card-title">SEO Settings</h3>
+              </div>
+              <div className="card-content space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     SEO Title
                   </label>
                   <input
@@ -425,13 +434,13 @@ export default function CreateContentTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Meta Description
                   </label>
                   <textarea
                     name="metaDescription"
                     rows={3}
-                    className="input-field"
+                    className="input-field resize-none"
                     value={formData.metaDescription}
                     onChange={handleInputChange}
                     placeholder="Brief description for search engines"
@@ -439,7 +448,7 @@ export default function CreateContentTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Keywords (comma separated)
                   </label>
                   <input
@@ -456,11 +465,12 @@ export default function CreateContentTab() {
 
             {/* Categories & Tags */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Organization</h3>
-              
-              <div className="space-y-4">
+              <div className="card-header">
+                <h3 className="card-title">Organization</h3>
+              </div>
+              <div className="card-content space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Categories (comma separated)
                   </label>
                   <input
@@ -474,7 +484,7 @@ export default function CreateContentTab() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Tags (comma separated)
                   </label>
                   <input
@@ -492,7 +502,7 @@ export default function CreateContentTab() {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end space-x-4 pt-6 border-t border-border">
           <button
             type="button"
             onClick={() => navigate('/dashboard/manage')}
@@ -503,7 +513,7 @@ export default function CreateContentTab() {
           <button
             type="submit"
             disabled={loading || uploading}
-            className="btn-primary flex items-center"
+            className="btn-primary"
           >
             <Save className="h-4 w-4 mr-2" />
             {loading ? 'Saving...' : (isEditing ? 'Update Content' : 'Create Content')}

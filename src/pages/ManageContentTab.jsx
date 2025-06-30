@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Edit, Trash2, ExternalLink, Search, Filter, FileText, Plus } from 'lucide-react';
+import { Edit, Trash2, ExternalLink, Search, Filter, FileText, Plus, ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -97,31 +97,30 @@ export default function ManageContentTab() {
   };
 
   const getStatusBadge = (status) => {
-    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
     switch (status) {
       case 'published':
-        return `${baseClasses} bg-green-100 text-green-800`;
+        return 'badge-success';
       case 'draft':
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        return 'badge-warning';
       default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+        return 'badge-secondary';
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Content</h1>
-          <p className="mt-1 text-sm text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground">Manage Content</h1>
+          <p className="mt-2 text-muted-foreground">
             {filteredContent.length} of {content.length} articles
           </p>
         </div>
@@ -136,31 +135,33 @@ export default function ManageContentTab() {
 
       {/* Filters */}
       <div className="card">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by title, author, or category..."
-                className="input-field pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+        <div className="card-content">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search by title, author, or category..."
+                  className="input-field pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <div className="sm:w-48">
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <select
-                className="input-field pl-10 appearance-none"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-              </select>
+            <div className="sm:w-48">
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <select
+                  className="input-field pl-10 appearance-none"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -168,82 +169,107 @@ export default function ManageContentTab() {
 
       {/* Content List */}
       {filteredContent.length === 0 ? (
-        <div className="card text-center py-12">
-          <FileText className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No content found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            {content.length === 0 
-              ? "Get started by creating your first article."
-              : "Try adjusting your search or filter criteria."
-            }
-          </p>
-          {content.length === 0 && (
-            <div className="mt-6">
-              <Link to="/dashboard/create" className="btn-primary">
-                Create New Content
-              </Link>
-            </div>
-          )}
+        <div className="card">
+          <div className="card-content text-center py-12">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-4 text-lg font-semibold text-foreground">No content found</h3>
+            <p className="mt-2 text-muted-foreground">
+              {content.length === 0 
+                ? "Get started by creating your first article."
+                : "Try adjusting your search or filter criteria."
+              }
+            </p>
+            {content.length === 0 && (
+              <div className="mt-6">
+                <Link to="/dashboard/create" className="btn-primary">
+                  Create New Content
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
-        <div className="card overflow-hidden">
+        <div className="card">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Image
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Author
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Created
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-background divide-y divide-border">
                 {filteredContent.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr key={item.id} className="hover:bg-muted/50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="w-16 h-16 flex-shrink-0">
+                        {item.featuredImageUrl ? (
+                          <img
+                            src={item.featuredImageUrl}
+                            alt={item.title}
+                            className="w-16 h-16 object-cover rounded-md border border-border"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div 
+                          className={`w-16 h-16 bg-muted rounded-md border border-border flex items-center justify-center ${item.featuredImageUrl ? 'hidden' : 'flex'}`}
+                        >
+                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                        <div className="text-sm font-medium text-foreground truncate max-w-xs">
                           {item.title}
                         </div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                        <div className="text-sm text-muted-foreground truncate max-w-xs">
                           /{item.slug}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={getStatusBadge(item.status)}>
+                      <span className={`badge ${getStatusBadge(item.status)}`}>
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {item.author}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {item.createdAt ? format(item.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <Link
                           to={`/dashboard/edit/${item.id}`}
-                          className="text-primary-600 hover:text-primary-900 p-1"
+                          className="text-primary hover:text-primary/80 p-1 rounded hover:bg-accent transition-colors"
                           title="Edit"
                         >
                           <Edit className="h-4 w-4" />
                         </Link>
                         <button
                           onClick={() => handleDelete(item.id, item.title)}
-                          className="text-red-600 hover:text-red-900 p-1"
+                          className="text-destructive hover:text-destructive/80 p-1 rounded hover:bg-destructive/10 transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -252,7 +278,7 @@ export default function ManageContentTab() {
                           href={`https://mythirdpartywebsite.com/${item.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-gray-900 p-1"
+                          className="text-muted-foreground hover:text-foreground p-1 rounded hover:bg-accent transition-colors"
                           title="Visit"
                         >
                           <ExternalLink className="h-4 w-4" />

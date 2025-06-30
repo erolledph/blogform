@@ -107,51 +107,58 @@ if content:
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">API Documentation</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">API Documentation</h1>
+        <p className="mt-2 text-muted-foreground">
           Learn how to fetch and use your content via the public API
         </p>
       </div>
 
       {/* API Endpoint */}
       <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">API Endpoint</h2>
-        <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
-          <code className="text-sm font-mono text-gray-800">{apiEndpoint}</code>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => copyToClipboard(apiEndpoint)}
-              className="p-2 text-gray-600 hover:text-gray-900 rounded"
-              title="Copy URL"
-            >
-              <Copy className="h-4 w-4" />
-            </button>
-            <a
-              href={apiEndpoint}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 text-gray-600 hover:text-gray-900 rounded"
-              title="Open in new tab"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </div>
+        <div className="card-header">
+          <h2 className="card-title">API Endpoint</h2>
         </div>
-        <p className="mt-2 text-sm text-gray-600">
-          This endpoint returns all published content in JSON format. Only content with status "published" is included.
-        </p>
+        <div className="card-content">
+          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
+            <code className="text-sm font-mono text-foreground">{apiEndpoint}</code>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => copyToClipboard(apiEndpoint)}
+                className="btn-ghost btn-sm"
+                title="Copy URL"
+              >
+                <Copy className="h-4 w-4" />
+              </button>
+              <a
+                href={apiEndpoint}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost btn-sm"
+                title="Open in new tab"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            This endpoint returns all published content in JSON format. Only content with status "published" is included.
+          </p>
+        </div>
       </div>
 
       {/* Response Format */}
       <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Response Format</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          The API returns an array of content objects with the following structure:
-        </p>
-        <div className="bg-gray-50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-gray-800">
+        <div className="card-header">
+          <h2 className="card-title">Response Format</h2>
+          <p className="card-description">
+            The API returns an array of content objects with the following structure:
+          </p>
+        </div>
+        <div className="card-content">
+          <div className="bg-muted rounded-lg p-4 overflow-x-auto">
+            <pre className="text-sm text-foreground">
 {`[
   {
     "id": "firestore-generated-id-123",
@@ -171,114 +178,135 @@ if content:
     "updatedAt": "2025-06-27T10:15:00Z"
   }
 ]`}
-          </pre>
+            </pre>
+          </div>
         </div>
       </div>
 
       {/* Code Examples */}
       <div className="space-y-6">
-        <h2 className="text-lg font-semibold text-gray-900">Code Examples</h2>
+        <h2 className="text-2xl font-bold text-foreground">Code Examples</h2>
 
         {/* JavaScript */}
         <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-md font-semibold text-gray-900">JavaScript (Browser)</h3>
-            <button
-              onClick={() => copyToClipboard(codeExamples.javascript)}
-              className="btn-secondary flex items-center text-sm"
-            >
-              <Copy className="h-4 w-4 mr-1" />
-              Copy
-            </button>
+          <div className="card-header">
+            <div className="flex items-center justify-between">
+              <h3 className="card-title">JavaScript (Browser)</h3>
+              <button
+                onClick={() => copyToClipboard(codeExamples.javascript)}
+                className="btn-secondary btn-sm"
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Copy
+              </button>
+            </div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-x-auto">
-            <pre className="text-sm text-gray-800">
-              <code>{codeExamples.javascript}</code>
-            </pre>
+          <div className="card-content">
+            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
+              <pre className="text-sm text-foreground">
+                <code>{codeExamples.javascript}</code>
+              </pre>
+            </div>
           </div>
         </div>
 
         {/* Node.js */}
         <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-md font-semibold text-gray-900">Node.js</h3>
-            <button
-              onClick={() => copyToClipboard(codeExamples.nodejs)}
-              className="btn-secondary flex items-center text-sm"
-            >
-              <Copy className="h-4 w-4 mr-1" />
-              Copy
-            </button>
+          <div className="card-header">
+            <div className="flex items-center justify-between">
+              <h3 className="card-title">Node.js</h3>
+              <button
+                onClick={() => copyToClipboard(codeExamples.nodejs)}
+                className="btn-secondary btn-sm"
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Copy
+              </button>
+            </div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-x-auto">
-            <pre className="text-sm text-gray-800">
-              <code>{codeExamples.nodejs}</code>
-            </pre>
+          <div className="card-content">
+            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
+              <pre className="text-sm text-foreground">
+                <code>{codeExamples.nodejs}</code>
+              </pre>
+            </div>
           </div>
         </div>
 
         {/* cURL */}
         <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-md font-semibold text-gray-900">cURL</h3>
-            <button
-              onClick={() => copyToClipboard(codeExamples.curl)}
-              className="btn-secondary flex items-center text-sm"
-            >
-              <Copy className="h-4 w-4 mr-1" />
-              Copy
-            </button>
+          <div className="card-header">
+            <div className="flex items-center justify-between">
+              <h3 className="card-title">cURL</h3>
+              <button
+                onClick={() => copyToClipboard(codeExamples.curl)}
+                className="btn-secondary btn-sm"
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Copy
+              </button>
+            </div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-x-auto">
-            <pre className="text-sm text-gray-800">
-              <code>{codeExamples.curl}</code>
-            </pre>
+          <div className="card-content">
+            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
+              <pre className="text-sm text-foreground">
+                <code>{codeExamples.curl}</code>
+              </pre>
+            </div>
           </div>
         </div>
 
         {/* Python */}
         <div className="card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-md font-semibold text-gray-900">Python</h3>
-            <button
-              onClick={() => copyToClipboard(codeExamples.python)}
-              className="btn-secondary flex items-center text-sm"
-            >
-              <Copy className="h-4 w-4 mr-1" />
-              Copy
-            </button>
+          <div className="card-header">
+            <div className="flex items-center justify-between">
+              <h3 className="card-title">Python</h3>
+              <button
+                onClick={() => copyToClipboard(codeExamples.python)}
+                className="btn-secondary btn-sm"
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Copy
+              </button>
+            </div>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4 overflow-x-auto">
-            <pre className="text-sm text-gray-800">
-              <code>{codeExamples.python}</code>
-            </pre>
+          <div className="card-content">
+            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
+              <pre className="text-sm text-foreground">
+                <code>{codeExamples.python}</code>
+              </pre>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Usage Notes */}
       <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Usage Notes</h2>
-        <div className="space-y-3 text-sm text-gray-600">
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-            <p>The API only returns content with status "published". Draft content is not included.</p>
-          </div>
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-            <p>Content is returned in descending order by creation date (newest first).</p>
-          </div>
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-            <p>The content field contains Markdown formatted text that you can render in your application.</p>
-          </div>
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-            <p>Dates are returned in ISO 8601 format (UTC timezone).</p>
-          </div>
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-            <p>The API supports CORS, so you can call it directly from browser applications.</p>
+        <div className="card-header">
+          <h2 className="card-title">Usage Notes</h2>
+        </div>
+        <div className="card-content">
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <div className="flex items-start">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <p>The API only returns content with status "published". Draft content is not included.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <p>Content is returned in descending order by creation date (newest first).</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <p>The content field contains Markdown formatted text that you can render in your application.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <p>Dates are returned in ISO 8601 format (UTC timezone).</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <p>The API supports CORS, so you can call it directly from browser applications.</p>
+            </div>
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
           className="fixed inset-0 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         >
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm"></div>
         </div>
       )}
 
@@ -48,29 +48,29 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-white p-2 rounded-md shadow-md"
+          className="bg-background p-2 rounded-md shadow-md border border-border hover:bg-accent transition-colors"
         >
           {sidebarOpen ? (
-            <X className="h-6 w-6 text-gray-600" />
+            <X className="h-5 w-5 text-foreground" />
           ) : (
-            <Menu className="h-6 w-6 text-gray-600" />
+            <Menu className="h-5 w-5 text-foreground" />
           )}
         </button>
       </div>
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+        fixed inset-y-0 left-0 z-50 w-64 bg-background border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-4 bg-primary-600">
-            <h1 className="text-xl font-bold text-white">Admin CMS</h1>
+          <div className="flex items-center justify-center h-16 px-4 border-b border-border">
+            <h1 className="text-xl font-bold text-foreground">Admin CMS</h1>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-4 py-6 space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -79,14 +79,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200
+                    flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-200
                     ${isActive 
-                      ? 'bg-primary-100 text-primary-700 border-r-2 border-primary-600' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-accent text-accent-foreground' 
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     }
                   `}
                 >
-                  <item.icon className="mr-3 h-5 w-5" />
+                  <item.icon className="mr-3 h-4 w-4" />
                   {item.name}
                 </Link>
               );
@@ -94,12 +94,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
           </nav>
 
           {/* Logout button */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-border">
             <button
               onClick={handleLogout}
-              className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors duration-200"
+              className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-destructive rounded-md hover:bg-destructive/10 transition-colors duration-200"
             >
-              <LogOut className="mr-3 h-5 w-5" />
+              <LogOut className="mr-3 h-4 w-4" />
               Logout
             </button>
           </div>
