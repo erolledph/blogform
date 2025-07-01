@@ -51,20 +51,22 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log('Fetching content from Firestore...');
+    console.log('Fetching content from Firestore with ordered query...');
     
-    // Query Firestore for published content (without ordering to avoid index requirement)
+    // Query Firestore for published content with proper ordering
+    // This ensures consistent results by using Firestore's indexing capabilities
     const contentRef = db.collection('content');
     const snapshot = await contentRef
       .where('status', '==', 'published')
+      .orderBy('createdAt', 'desc')
       .get();
 
-    console.log(`Found ${snapshot.size} published documents`);
+    console.log(`Found ${snapshot.size} published documents (ordered by createdAt desc)`);
 
     const content = [];
     snapshot.forEach(doc => {
       const data = doc.data();
-      console.log(`Processing document: ${doc.id}`);
+      console.log(`Processing document: ${doc.id}, created: ${data.createdAt ? data.createdAt.toDate().toISOString() : 'N/A'}`);
       
       // Convert Firestore timestamps to ISO strings
       const processedData = {
@@ -78,14 +80,9 @@ exports.handler = async (event, context) => {
       content.push(processedData);
     });
 
-    // Sort by creation date (newest first) manually
-    content.sort((a, b) => {
-      const dateA = new Date(a.createdAt || 0);
-      const dateB = new Date(b.createdAt || 0);
-      return dateB - dateA;
-    });
-
-    console.log(`Returning ${content.length} content items`);
+    // No need for manual sorting since Firestore query already returns ordered results
+    console.log(`Returning ${content.length} content items in consistent order`);
+    console.log(`Latest content titles: [${content.slice(0, 3).map(item => `'${item.title}'`).join(', ')}]`);
 
     return {
       statusCode: 200,
@@ -95,6 +92,24 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('Error fetching content:', error);
+    
+    // Check if this is a Firestore index error
+    if (error.code === 9 || error.message.includes('index')) {
+      console.error('FIRESTORE INDEX REQUIRED: You need to create a composite index for this query.');
+      console.error('Please check your Firebase console for the index creation link, or create an index for:');
+      console.error('Collection: content');
+      console.error('Fields: status (Ascending), createdAt (Descending)');
+      
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ 
+          error: 'Database index required',
+          message: 'A Firestore composite index is required for this query. Please check the function logs and Firebase console.',
+          details: 'Query requires index for: status (==) + createdAt (desc)'
+        })
+      };
+    }
     
     return {
       statusCode: 500,
