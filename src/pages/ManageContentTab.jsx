@@ -275,7 +275,7 @@ export default function ManageContentTab() {
                           <Trash2 className="h-4 w-4" />
                         </button>
                         <a
-                          href={`https://mythirdpartywebsite.com/${item.slug}`}
+                          href={`https://ailodi.xyz/post/${item.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-foreground p-1 rounded hover:bg-accent transition-colors"
