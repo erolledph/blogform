@@ -16,7 +16,7 @@ export default function DashboardPage() {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background">
-          <div className="dashboard-main-content container mx-auto px-6 py-10 lg:px-10 max-w-7xl">
+          <div className="container mx-auto px-6 py-10 lg:px-10 max-w-7xl">
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard/overview" replace />} />
               <Route path="/overview" element={<OverviewTab />} />
