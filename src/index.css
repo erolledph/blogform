@@ -184,3 +184,16 @@
 .editor-preview blockquote {
   @apply border-l-4 border-border pl-4 italic text-muted-foreground;
 }
+
+/* Hide mobile menu button when SimpleMDE is in fullscreen mode */
+html.editor-fullscreen #mobile-menu-button {
+  display: none !important;
+}
+
+/* Ensure content doesn't get blocked by fixed hamburger menu */
+@media (max-width: 1023px) {
+  .dashboard-main-content {
+    padding-top: 5rem; /* 80px - enough space for the hamburger button */
+    padding-left: 5rem; /* 80px - enough space for the hamburger button */
+  }
+}
