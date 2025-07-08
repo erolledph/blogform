@@ -16,104 +16,117 @@
   body {
     @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
+    line-height: 1.6;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-semibold tracking-tight mb-4;
   }
   
   h1 {
-    @apply text-3xl leading-tight;
+    @apply text-3xl lg:text-4xl leading-tight mb-6;
   }
   
   h2 {
-    @apply text-2xl leading-tight;
+    @apply text-2xl lg:text-3xl leading-tight mb-5;
   }
   
   h3 {
-    @apply text-xl leading-tight;
+    @apply text-xl lg:text-2xl leading-tight mb-4;
+  }
+  
+  p {
+    @apply mb-4 leading-relaxed;
+  }
+  
+  ul, ol {
+    @apply mb-4 pl-6;
+  }
+  
+  li {
+    @apply mb-2;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
   
   .btn-primary {
-    @apply btn bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm h-10 px-4 py-2;
+    @apply btn bg-primary text-primary-foreground shadow-sm h-12 px-6 py-3 text-base font-semibold;
   }
   
   .btn-secondary {
-    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-input shadow-sm h-10 px-4 py-2;
+    @apply btn bg-secondary text-secondary-foreground border border-input shadow-sm h-12 px-6 py-3 text-base;
   }
   
   .btn-ghost {
-    @apply btn hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2;
+    @apply btn h-10 px-4 py-2;
   }
   
   .btn-danger {
-    @apply btn bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm h-10 px-4 py-2;
+    @apply btn bg-destructive text-destructive-foreground shadow-sm h-12 px-6 py-3 text-base font-semibold;
   }
   
   .btn-sm {
-    @apply h-9 rounded-md px-3;
+    @apply h-10 rounded-md px-4 py-2 text-sm;
   }
   
   .btn-lg {
-    @apply h-11 rounded-md px-8;
+    @apply h-14 rounded-md px-8 py-4 text-lg;
   }
   
   .input-field {
-    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
   
   .card {
-    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm mb-8;
   }
   
   .card-header {
-    @apply flex flex-col space-y-1.5 p-6;
+    @apply flex flex-col space-y-2 p-6 lg:p-8;
   }
   
   .card-title {
-    @apply text-2xl font-semibold leading-none tracking-tight;
+    @apply text-xl lg:text-2xl font-semibold leading-none tracking-tight mb-2;
   }
   
   .card-description {
-    @apply text-sm text-muted-foreground;
+    @apply text-base text-muted-foreground leading-relaxed;
   }
   
   .card-content {
-    @apply p-6 pt-0;
+    @apply p-6 lg:p-8;
   }
   
   .card-footer {
-    @apply flex items-center p-6 pt-0;
+    @apply flex items-center p-6 lg:p-8 pt-0;
   }
   
   .badge {
-    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+    @apply inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
   }
   
   .badge-default {
-    @apply badge border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+    @apply badge border-transparent bg-primary text-primary-foreground;
   }
   
   .badge-secondary {
-    @apply badge border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    @apply badge border-transparent bg-secondary text-secondary-foreground;
   }
   
   .badge-success {
-    @apply badge border-transparent bg-green-100 text-green-800 hover:bg-green-100/80;
+    @apply badge border-transparent bg-green-100 text-green-800;
   }
   
   .badge-warning {
-    @apply badge border-transparent bg-yellow-100 text-yellow-800 hover:bg-yellow-100/80;
+    @apply badge border-transparent bg-yellow-100 text-yellow-800;
   }
   
   .badge-destructive {
-    @apply badge border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80;
+    @apply badge border-transparent bg-destructive text-destructive-foreground;
   }
   
   .badge-outline {
@@ -136,11 +149,11 @@
 }
 
 .editor-toolbar button {
-  @apply text-muted-foreground hover:text-foreground hover:bg-accent;
+  @apply text-muted-foreground;
 }
 
 .editor-toolbar button.active {
-  @apply text-foreground bg-accent;
+  @apply text-foreground;
 }
 
 .editor-preview {
@@ -161,7 +174,7 @@
 }
 
 .editor-preview code {
-  @apply bg-muted px-1.5 py-0.5 rounded text-sm;
+  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
 }
 
 .editor-preview pre {

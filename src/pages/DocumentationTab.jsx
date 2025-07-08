@@ -1,14 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Copy, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function DocumentationTab() {
+  const [jsonData, setJsonData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
   };
 
   const apiEndpoint = `${window.location.origin}/api/content.json`;
+
+  const fetchJsonData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(apiEndpoint);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setJsonData(data);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching JSON data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJsonData();
+  }, []);
 
   const codeExamples = {
     javascript: `// Fetch all published content
@@ -107,10 +133,10 @@ if content:
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">API Documentation</h1>
-        <p className="mt-2 text-muted-foreground">
+        <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">API Documentation</h1>
+        <p className="text-lg text-muted-foreground">
           Learn how to fetch and use your content via the public API
         </p>
       </div>
@@ -121,15 +147,15 @@ if content:
           <h2 className="card-title">API Endpoint</h2>
         </div>
         <div className="card-content">
-          <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
-            <code className="text-sm font-mono text-foreground">{apiEndpoint}</code>
-            <div className="flex space-x-2">
+          <div className="bg-muted rounded-lg p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <code className="text-base font-mono text-foreground break-all">{apiEndpoint}</code>
+            <div className="flex space-x-3 flex-shrink-0">
               <button
                 onClick={() => copyToClipboard(apiEndpoint)}
                 className="btn-ghost btn-sm"
                 title="Copy URL"
               >
-                <Copy className="h-4 w-4" />
+                <Copy className="h-5 w-5" />
               </button>
               <a
                 href={apiEndpoint}
@@ -138,13 +164,52 @@ if content:
                 className="btn-ghost btn-sm"
                 title="Open in new tab"
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="h-5 w-5" />
               </a>
             </div>
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">
+          <p className="mt-6 text-base text-muted-foreground">
             This endpoint returns all published content in JSON format. Only content with status "published" is included.
           </p>
+        </div>
+      </div>
+
+      {/* Live JSON View */}
+      <div className="card">
+        <div className="card-header">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="card-title">Live JSON Data</h2>
+              <p className="card-description text-lg">
+                Real-time view of your published content
+              </p>
+            </div>
+            <button
+              onClick={fetchJsonData}
+              disabled={loading}
+              className="btn-secondary"
+            >
+              {loading ? 'Loading...' : 'Refresh Data'}
+            </button>
+          </div>
+        </div>
+        <div className="card-content">
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : error ? (
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+              <p className="text-destructive font-medium mb-2">Error loading data:</p>
+              <p className="text-destructive/80">{error}</p>
+            </div>
+          ) : (
+            <div className="bg-muted rounded-lg p-6 overflow-x-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap">
+                <code>{JSON.stringify(jsonData, null, 2)}</code>
+              </pre>
+            </div>
+          )}
         </div>
       </div>
 
@@ -157,8 +222,8 @@ if content:
           </p>
         </div>
         <div className="card-content">
-          <div className="bg-muted rounded-lg p-4 overflow-x-auto">
-            <pre className="text-sm text-foreground">
+          <div className="bg-muted rounded-lg p-6 overflow-x-auto">
+            <pre className="text-sm text-foreground whitespace-pre-wrap">
 {`[
   {
     "id": "firestore-generated-id-123",
@@ -185,25 +250,25 @@ if content:
 
       {/* Code Examples */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-foreground">Code Examples</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-8">Code Examples</h2>
 
         {/* JavaScript */}
         <div className="card">
           <div className="card-header">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="card-title">JavaScript (Browser)</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.javascript)}
                 className="btn-secondary btn-sm"
               >
-                <Copy className="h-4 w-4 mr-1" />
+                <Copy className="h-5 w-5 mr-2" />
                 Copy
               </button>
             </div>
           </div>
           <div className="card-content">
-            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-foreground">
+            <div className="bg-muted rounded-lg p-6 overflow-x-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap">
                 <code>{codeExamples.javascript}</code>
               </pre>
             </div>
@@ -213,20 +278,20 @@ if content:
         {/* Node.js */}
         <div className="card">
           <div className="card-header">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="card-title">Node.js</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.nodejs)}
                 className="btn-secondary btn-sm"
               >
-                <Copy className="h-4 w-4 mr-1" />
+                <Copy className="h-5 w-5 mr-2" />
                 Copy
               </button>
             </div>
           </div>
           <div className="card-content">
-            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-foreground">
+            <div className="bg-muted rounded-lg p-6 overflow-x-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap">
                 <code>{codeExamples.nodejs}</code>
               </pre>
             </div>
@@ -236,20 +301,20 @@ if content:
         {/* cURL */}
         <div className="card">
           <div className="card-header">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="card-title">cURL</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.curl)}
                 className="btn-secondary btn-sm"
               >
-                <Copy className="h-4 w-4 mr-1" />
+                <Copy className="h-5 w-5 mr-2" />
                 Copy
               </button>
             </div>
           </div>
           <div className="card-content">
-            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-foreground">
+            <div className="bg-muted rounded-lg p-6 overflow-x-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap">
                 <code>{codeExamples.curl}</code>
               </pre>
             </div>
@@ -259,20 +324,20 @@ if content:
         {/* Python */}
         <div className="card">
           <div className="card-header">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="card-title">Python</h3>
               <button
                 onClick={() => copyToClipboard(codeExamples.python)}
                 className="btn-secondary btn-sm"
               >
-                <Copy className="h-4 w-4 mr-1" />
+                <Copy className="h-5 w-5 mr-2" />
                 Copy
               </button>
             </div>
           </div>
           <div className="card-content">
-            <div className="bg-muted rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-foreground">
+            <div className="bg-muted rounded-lg p-6 overflow-x-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap">
                 <code>{codeExamples.python}</code>
               </pre>
             </div>
@@ -286,25 +351,25 @@ if content:
           <h2 className="card-title">Usage Notes</h2>
         </div>
         <div className="card-content">
-          <div className="space-y-4 text-sm text-muted-foreground">
+          <div className="space-y-6 text-base text-muted-foreground">
             <div className="flex items-start">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>The API only returns content with status "published". Draft content is not included.</p>
             </div>
             <div className="flex items-start">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>Content is returned in descending order by creation date (newest first).</p>
             </div>
             <div className="flex items-start">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>The content field contains Markdown formatted text that you can render in your application.</p>
             </div>
             <div className="flex items-start">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>Dates are returned in ISO 8601 format (UTC timezone).</p>
             </div>
             <div className="flex items-start">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>The API supports CORS, so you can call it directly from browser applications.</p>
             </div>
           </div>

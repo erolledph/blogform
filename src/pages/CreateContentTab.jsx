@@ -248,37 +248,37 @@ export default function CreateContentTab() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+    <div className="max-w-5xl mx-auto space-y-10">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div className="flex items-center space-x-6">
           <button
             onClick={() => navigate('/dashboard/manage')}
-            className="btn-ghost p-2"
+            className="btn-ghost p-3"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-6 w-6" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
               {isEditing ? 'Edit Content' : 'Create New Content'}
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               {isEditing ? 'Update your existing content' : 'Write and publish new content'}
             </p>
           </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-10">
         {/* Content Details */}
         <div className="card">
           <div className="card-header">
             <h2 className="card-title">Content Details</h2>
-            <p className="card-description">Enter the main content information</p>
+            <p className="card-description text-lg">Enter the main content information</p>
           </div>
-          <div className="card-content space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="card-content space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Title *
                 </label>
                 <input
@@ -293,7 +293,7 @@ export default function CreateContentTab() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Slug *
                 </label>
                 <input
@@ -309,7 +309,7 @@ export default function CreateContentTab() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-base font-medium text-foreground mb-4">
                 Content * (Markdown)
               </label>
               <SimpleMDE
@@ -325,22 +325,22 @@ export default function CreateContentTab() {
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">Featured Image</h3>
-            <p className="card-description">Add a featured image for your content</p>
+            <p className="card-description text-lg">Add a featured image for your content</p>
           </div>
-          <div className="card-content space-y-6">
+          <div className="card-content space-y-8">
             {formData.featuredImageUrl && (
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-8">
                 <img
                   src={formData.featuredImageUrl}
                   alt="Featured"
-                  className="max-w-md w-full h-48 object-cover rounded-lg border border-border shadow-sm"
+                  className="max-w-lg w-full h-64 object-cover rounded-lg border border-border shadow-sm"
                 />
               </div>
             )}
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Upload Image
                 </label>
                 <div className="relative">
@@ -353,14 +353,14 @@ export default function CreateContentTab() {
                   />
                   {uploading && (
                     <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Or Image URL
                 </label>
                 <input
@@ -380,12 +380,12 @@ export default function CreateContentTab() {
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">Publish Settings</h3>
-            <p className="card-description">Configure publication settings</p>
+            <p className="card-description text-lg">Configure publication settings</p>
           </div>
           <div className="card-content">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Status
                 </label>
                 <select
@@ -400,7 +400,7 @@ export default function CreateContentTab() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Author
                 </label>
                 <input
@@ -420,12 +420,12 @@ export default function CreateContentTab() {
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">SEO Settings</h3>
-            <p className="card-description">Optimize your content for search engines</p>
+            <p className="card-description text-lg">Optimize your content for search engines</p>
           </div>
-          <div className="card-content space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="card-content space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   SEO Title
                 </label>
                 <input
@@ -439,7 +439,7 @@ export default function CreateContentTab() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Keywords (comma separated)
                 </label>
                 <input
@@ -454,12 +454,12 @@ export default function CreateContentTab() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-base font-medium text-foreground mb-4">
                 Meta Description
               </label>
               <textarea
                 name="metaDescription"
-                rows={3}
+                rows={4}
                 className="input-field resize-none"
                 value={formData.metaDescription}
                 onChange={handleInputChange}
@@ -473,12 +473,12 @@ export default function CreateContentTab() {
         <div className="card">
           <div className="card-header">
             <h3 className="card-title">Organization</h3>
-            <p className="card-description">Categorize and tag your content</p>
+            <p className="card-description text-lg">Categorize and tag your content</p>
           </div>
           <div className="card-content">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Categories (comma separated)
                 </label>
                 <input
@@ -492,7 +492,7 @@ export default function CreateContentTab() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-base font-medium text-foreground mb-4">
                   Tags (comma separated)
                 </label>
                 <input
@@ -509,7 +509,7 @@ export default function CreateContentTab() {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-4 pt-6 border-t border-border">
+        <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-6 pt-8 border-t border-border">
           <button
             type="button"
             onClick={() => navigate('/dashboard/manage')}
@@ -522,7 +522,7 @@ export default function CreateContentTab() {
             disabled={loading || uploading}
             className="btn-primary"
           >
-            <Save className="h-4 w-4 mr-2" />
+            <Save className="h-5 w-5 mr-3" />
             {loading ? 'Saving...' : (isEditing ? 'Update Content' : 'Create Content')}
           </button>
         </div>

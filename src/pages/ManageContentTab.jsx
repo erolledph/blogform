@@ -116,44 +116,44 @@ export default function ManageContentTab() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Manage Content</h1>
-          <p className="mt-2 text-muted-foreground">
+          <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Manage Content</h1>
+          <p className="text-lg text-muted-foreground">
             {filteredContent.length} of {content.length} articles
           </p>
         </div>
         <Link
           to="/dashboard/create"
-          className="mt-4 sm:mt-0 btn-primary inline-flex items-center"
+          className="btn-primary inline-flex items-center"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-5 w-5 mr-3" />
           Create New
         </Link>
       </div>
 
       {/* Filters */}
       <div className="card">
-        <div className="card-content">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <div className="card-content p-8">
+          <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search by title, author, or category..."
-                  className="input-field pl-10"
+                  className="input-field pl-12"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </div>
-            <div className="sm:w-48">
+            <div className="lg:w-64">
               <div className="relative">
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <select
-                  className="input-field pl-10 appearance-none"
+                  className="input-field pl-12 appearance-none"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -170,17 +170,17 @@ export default function ManageContentTab() {
       {/* Content List */}
       {filteredContent.length === 0 ? (
         <div className="card">
-          <div className="card-content text-center py-12">
-            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold text-foreground">No content found</h3>
-            <p className="mt-2 text-muted-foreground">
+          <div className="card-content text-center py-16">
+            <FileText className="mx-auto h-16 w-16 text-muted-foreground mb-6" />
+            <h3 className="text-2xl font-semibold text-foreground mb-4">No content found</h3>
+            <p className="text-lg text-muted-foreground mb-8">
               {content.length === 0 
                 ? "Get started by creating your first article."
                 : "Try adjusting your search or filter criteria."
               }
             </p>
             {content.length === 0 && (
-              <div className="mt-6">
+              <div>
                 <Link to="/dashboard/create" className="btn-primary">
                   Create New Content
                 </Link>
@@ -194,36 +194,36 @@ export default function ManageContentTab() {
             <table className="min-w-full divide-y divide-border">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Image
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Author
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Created
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-8 py-4 text-right text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-background divide-y divide-border">
                 {filteredContent.map((item) => (
-                  <tr key={item.id} className="hover:bg-muted/50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="w-16 h-16 flex-shrink-0">
+                  <tr key={item.id}>
+                    <td className="px-8 py-6 whitespace-nowrap">
+                      <div className="w-20 h-20 flex-shrink-0">
                         {item.featuredImageUrl ? (
                           <img
                             src={item.featuredImageUrl}
                             alt={item.title}
-                            className="w-16 h-16 object-cover rounded-md border border-border"
+                            className="w-20 h-20 object-cover rounded-md border border-border"
                             onError={(e) => {
                               e.target.style.display = 'none';
                               e.target.nextSibling.style.display = 'flex';
@@ -231,57 +231,57 @@ export default function ManageContentTab() {
                           />
                         ) : null}
                         <div 
-                          className={`w-16 h-16 bg-muted rounded-md border border-border flex items-center justify-center ${item.featuredImageUrl ? 'hidden' : 'flex'}`}
+                          className={`w-20 h-20 bg-muted rounded-md border border-border flex items-center justify-center ${item.featuredImageUrl ? 'hidden' : 'flex'}`}
                         >
-                          <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                          <ImageIcon className="h-8 w-8 text-muted-foreground" />
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-8 py-6">
                       <div className="flex flex-col">
-                        <div className="text-sm font-medium text-foreground truncate max-w-xs">
+                        <div className="text-base font-medium text-foreground truncate max-w-xs mb-2">
                           {item.title}
                         </div>
-                        <div className="text-sm text-muted-foreground truncate max-w-xs">
+                        <div className="text-base text-muted-foreground truncate max-w-xs">
                           /{item.slug}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-8 py-6 whitespace-nowrap">
                       <span className={`badge ${getStatusBadge(item.status)}`}>
                         {item.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-8 py-6 whitespace-nowrap text-base text-foreground">
                       {item.author}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td className="px-8 py-6 whitespace-nowrap text-base text-muted-foreground">
                       {item.createdAt ? format(item.createdAt.toDate(), 'MMM dd, yyyy') : 'N/A'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
+                    <td className="px-8 py-6 whitespace-nowrap text-right text-base font-medium">
+                      <div className="flex items-center justify-end space-x-4">
                         <Link
                           to={`/dashboard/edit/${item.id}`}
-                          className="text-primary hover:text-primary/80 p-1 rounded hover:bg-accent transition-colors"
+                          className="text-primary p-2 rounded"
                           title="Edit"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-5 w-5" />
                         </Link>
                         <button
                           onClick={() => handleDelete(item.id, item.title)}
-                          className="text-destructive hover:text-destructive/80 p-1 rounded hover:bg-destructive/10 transition-colors"
+                          className="text-destructive p-2 rounded"
                           title="Delete"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-5 w-5" />
                         </button>
                         <a
                           href={`https://ailodi.xyz/post/${item.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-foreground p-1 rounded hover:bg-accent transition-colors"
+                          className="text-muted-foreground p-2 rounded"
                           title="Visit"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-5 w-5" />
                         </a>
                       </div>
                     </td>

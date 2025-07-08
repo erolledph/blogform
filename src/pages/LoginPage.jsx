@@ -34,33 +34,33 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 px-4 py-12">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 px-6 py-12">
+      <div className="max-w-lg w-full">
         {/* Header Section */}
-        <div className="text-center mb-10">
-          <div className="mx-auto h-20 w-20 bg-primary rounded-full flex items-center justify-center shadow-lg mb-8">
-            <Lock className="h-10 w-10 text-primary-foreground" />
+        <div className="text-center mb-12">
+          <div className="mx-auto h-24 w-24 bg-primary rounded-full flex items-center justify-center shadow-lg mb-10">
+            <Lock className="h-12 w-12 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-3">
+          <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
             Admin Login
           </h1>
-          <p className="text-base text-muted-foreground leading-relaxed">
+          <p className="text-lg text-muted-foreground leading-relaxed">
             Sign in to access your content management system
           </p>
         </div>
         
         {/* Login Form Card */}
         <div className="card shadow-xl border-0">
-          <div className="card-content p-8">
-            <form className="space-y-8" onSubmit={handleSubmit}>
-              <div className="space-y-6">
+          <div className="card-content p-8 lg:p-10">
+            <form className="space-y-10" onSubmit={handleSubmit}>
+              <div className="space-y-8">
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-3">
+                  <label htmlFor="email" className="block text-base font-semibold text-foreground mb-4">
                     Email Address
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                       <Mail className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <input
@@ -69,7 +69,7 @@ export default function LoginPage() {
                       type="email"
                       autoComplete="email"
                       required
-                      className="input-field pl-12 h-12 text-base"
+                      className="input-field pl-14 h-14 text-lg"
                       placeholder="Enter your email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -79,11 +79,11 @@ export default function LoginPage() {
                 
                 {/* Password Field */}
                 <div>
-                  <label htmlFor="password" className="block text-sm font-semibold text-foreground mb-3">
+                  <label htmlFor="password" className="block text-base font-semibold text-foreground mb-4">
                     Password
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                       <Lock className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <input
@@ -92,14 +92,14 @@ export default function LoginPage() {
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="current-password"
                       required
-                      className="input-field pl-12 pr-12 h-12 text-base"
+                      className="input-field pl-14 pr-14 h-14 text-lg"
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     <button
                       type="button"
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center hover:text-foreground transition-colors"
+                      className="absolute inset-y-0 right-0 pr-5 flex items-center"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
@@ -113,11 +113,11 @@ export default function LoginPage() {
               </div>
 
               {/* Submit Button */}
-              <div className="pt-4">
+              <div className="pt-6">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="btn-primary w-full h-16 text-lg font-semibold shadow-lg"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
@@ -134,8 +134,8 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-muted-foreground">
+        <div className="text-center mt-10">
+          <p className="text-base text-muted-foreground">
             Secure access to your content management system
           </p>
         </div>

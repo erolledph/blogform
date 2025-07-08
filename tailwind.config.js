@@ -10,6 +10,7 @@ export default {
         border: "hsl(214.3 31.8% 91.4%)",
         input: "hsl(214.3 31.8% 91.4%)",
         ring: "hsl(142 76% 36%)",
+        ring: "hsl(142 76% 36%)",
         background: "hsl(0 0% 100%)",
         foreground: "hsl(222.2 84% 4.9%)",
         primary: {

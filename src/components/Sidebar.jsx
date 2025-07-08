@@ -6,6 +6,7 @@ import {
   FileText, 
   Plus, 
   BookOpen, 
+  Lightbulb,
   LogOut, 
   Menu, 
   X 
@@ -16,6 +17,7 @@ const navigation = [
   { name: 'Overview', href: '/dashboard/overview', icon: LayoutDashboard },
   { name: 'Manage Content', href: '/dashboard/manage', icon: FileText },
   { name: 'Create Content', href: '/dashboard/create', icon: Plus },
+  { name: 'Tips', href: '/dashboard/tips', icon: Lightbulb },
   { name: 'Documentation', href: '/dashboard/documentation', icon: BookOpen },
 ];
 
@@ -48,7 +50,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-background p-2 rounded-md shadow-md border border-border hover:bg-accent transition-colors"
+          className="bg-background p-3 rounded-md shadow-md border border-border"
         >
           {sidebarOpen ? (
             <X className="h-5 w-5 text-foreground" />
@@ -65,12 +67,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
       `}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-4 border-b border-border">
-            <h1 className="text-xl font-bold text-foreground">Admin CMS</h1>
+          <div className="flex items-center justify-center h-20 px-6 border-b border-border">
+            <h1 className="text-2xl font-bold text-foreground">Admin CMS</h1>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1">
+          <nav className="flex-1 px-6 py-8 space-y-2">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
@@ -79,14 +81,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors duration-200
+                    flex items-center px-4 py-3 text-base font-medium rounded-md
                     ${isActive 
                       ? 'bg-accent text-accent-foreground' 
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      : 'text-muted-foreground'
                     }
                   `}
                 >
-                  <item.icon className="mr-3 h-4 w-4" />
+                  <item.icon className="mr-4 h-5 w-5" />
                   {item.name}
                 </Link>
               );
@@ -94,12 +96,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
           </nav>
 
           {/* Logout button */}
-          <div className="p-4 border-t border-border">
+          <div className="p-6 border-t border-border">
             <button
               onClick={handleLogout}
-              className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-destructive rounded-md hover:bg-destructive/10 transition-colors duration-200"
+              className="flex items-center w-full px-4 py-3 text-base font-medium text-destructive rounded-md"
             >
-              <LogOut className="mr-3 h-4 w-4" />
+              <LogOut className="mr-4 h-5 w-5" />
               Logout
             </button>
           </div>
