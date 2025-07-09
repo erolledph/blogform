@@ -3,38 +3,12 @@ import { Copy, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function DocumentationTab() {
-  const [jsonData, setJsonData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
   };
 
   const apiEndpoint = `${window.location.origin}/api/content.json`;
-
-  const fetchJsonData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(apiEndpoint);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setJsonData(data);
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching JSON data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchJsonData();
-  }, []);
 
   const codeExamples = {
     javascript: `// Fetch all published content
@@ -171,45 +145,6 @@ if content:
           <p className="mt-6 text-base text-muted-foreground">
             This endpoint returns all published content in JSON format. Only content with status "published" is included.
           </p>
-        </div>
-      </div>
-
-      {/* Live JSON View */}
-      <div className="card">
-        <div className="card-header">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h2 className="card-title">Live JSON Data</h2>
-              <p className="card-description text-lg">
-                Real-time view of your published content
-              </p>
-            </div>
-            <button
-              onClick={fetchJsonData}
-              disabled={loading}
-              className="btn-secondary"
-            >
-              {loading ? 'Loading...' : 'Refresh Data'}
-            </button>
-          </div>
-        </div>
-        <div className="card-content">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : error ? (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
-              <p className="text-destructive font-medium mb-2">Error loading data:</p>
-              <p className="text-destructive/80">{error}</p>
-            </div>
-          ) : (
-            <div className="bg-muted rounded-lg p-6 overflow-x-auto">
-              <pre className="text-sm text-foreground whitespace-pre-wrap">
-                <code>{JSON.stringify(jsonData, null, 2)}</code>
-              </pre>
-            </div>
-          )}
         </div>
       </div>
 

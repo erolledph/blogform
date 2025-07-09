@@ -10,12 +10,13 @@ export default {
         border: "hsl(214.3 31.8% 91.4%)",
         input: "hsl(214.3 31.8% 91.4%)",
         ring: "hsl(142 76% 36%)",
-        ring: "hsl(142 76% 36%)",
         background: "hsl(0 0% 100%)",
         foreground: "hsl(222.2 84% 4.9%)",
+        
+        /* New design colors from HTML */
         primary: {
           DEFAULT: "hsl(142 76% 36%)", /* Green theme */
-          foreground: "hsl(210 40% 98%)",
+          foreground: "hsl(355 20% 98%)",
           50: '#f0fdf4',
           100: '#dcfce7',
           200: '#bbf7d0',
@@ -29,7 +30,11 @@ export default {
         },
         secondary: {
           DEFAULT: "hsl(240 4.8% 95.9%)",
-          foreground: "hsl(222.2 84% 4.9%)",
+          foreground: "hsl(240 10% 3.9%)",
+        },
+        accent: {
+          DEFAULT: "hsl(240 4.8% 95.9%)",
+          foreground: "hsl(240 10% 3.9%)",
         },
         destructive: {
           DEFAULT: "hsl(0 84.2% 60.2%)",
@@ -37,19 +42,15 @@ export default {
         },
         muted: {
           DEFAULT: "hsl(210 40% 96%)",
-          foreground: "hsl(215.4 16.3% 46.9%)",
-        },
-        accent: {
-          DEFAULT: "hsl(210 40% 96%)",
-          foreground: "hsl(222.2 84% 4.9%)",
+          foreground: "hsl(240 3.8% 46.1%)",
         },
         popover: {
           DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(222.2 84% 4.9%)",
+          foreground: "hsl(240 10% 3.9%)",
         },
         card: {
           DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(222.2 84% 4.9%)",
+          foreground: "hsl(240 10% 3.9%)",
         },
         neutral: {
           50: '#fafafa',

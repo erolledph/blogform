@@ -10,12 +10,39 @@ import DocumentationTab from './DocumentationTab';
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const openSidebar = () => {
+    setSidebarOpen(true);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+    <div className="dashboard-container">
+      {/* Overlay for mobile */}
+      <div 
+        className={`overlay ${sidebarOpen ? 'active' : ''}`}
+        onClick={closeSidebar}
+      ></div>
+
+      <Sidebar 
+        sidebarOpen={sidebarOpen} 
+        setSidebarOpen={setSidebarOpen}
+        closeSidebar={closeSidebar}
+      />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background">
+      <main className="main-content">
+        {/* Mobile Header */}
+        <div className="mobile-header">
+          <button className="mobile-hamburger" onClick={openSidebar}>
+            ☰
+          </button>
+          <div className="mobile-title">Admin Dashboard</div>
+          <div></div>
+        </div>
+
+        <div className="content-section">
           <div className="container mx-auto px-6 py-10 lg:px-10 max-w-7xl">
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard/overview" replace />} />
@@ -27,8 +54,8 @@ export default function DashboardPage() {
               <Route path="/documentation" element={<DocumentationTab />} />
             </Routes>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

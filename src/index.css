@@ -2,19 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* New design base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 @layer base {
   :root {
     --radius: 0.5rem;
-    --primary: 142 76% 36%; /* Green theme */
+    
+    /* Primary brand color */
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 20% 98%;
+    
+    /* Secondary colors */
     --secondary: 240 4.8% 95.9%;
-  }
-  
-  * {
-    @apply border-border;
+    --accent: 240 4.8% 95.9%;
+    
+    /* Background colors */
+    --background: 0 0% 100%;
+    --card: 0 0% 100%;
+    
+    /* Text colors */
+    --foreground: 240 10% 3.9%;
+    --muted-foreground: 240 3.8% 46.1%;
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
   }
@@ -49,6 +68,128 @@
 }
 
 @layer components {
+  /* Dashboard Layout Components */
+  .dashboard-container {
+    @apply flex min-h-screen;
+  }
+
+  .sidebar {
+    @apply w-64 transition-transform duration-300 ease-in-out relative z-50 flex flex-col;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .sidebar-header {
+    @apply p-5 flex items-center justify-between;
+    border-bottom: 1px solid hsla(355, 20%, 98%, 0.1);
+  }
+
+  .logo {
+    @apply text-2xl font-bold;
+  }
+
+  .hamburger {
+    @apply hidden bg-transparent border-none text-2xl cursor-pointer p-2;
+    color: hsl(var(--primary-foreground));
+  }
+
+  .nav-menu {
+    @apply list-none py-5 flex-1;
+  }
+
+  .nav-item {
+    @apply m-0;
+  }
+
+  .nav-link {
+    @apply block py-4 pl-3 pr-4 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent;
+    color: hsl(var(--primary-foreground));
+  }
+
+  .nav-link:hover {
+    background-color: hsla(355, 20%, 98%, 0.1);
+    border-left-color: hsl(var(--primary-foreground));
+  }
+
+  .nav-link.active {
+    background-color: hsla(355, 20%, 98%, 0.2);
+    border-left-color: hsl(var(--primary-foreground));
+    @apply font-semibold;
+  }
+
+  .main-content {
+    @apply flex-1 p-0 overflow-x-auto;
+    background-color: hsl(var(--secondary));
+  }
+
+  .content-section {
+    @apply bg-white min-h-screen;
+  }
+
+  .mobile-header {
+    @apply hidden items-center justify-between p-5 m-0 shadow-md;
+    background: hsl(var(--card));
+  }
+
+  .mobile-hamburger {
+    @apply bg-transparent border-none text-2xl cursor-pointer;
+    color: hsl(var(--foreground));
+  }
+
+  .mobile-title {
+    @apply text-xl font-semibold;
+    color: hsl(var(--foreground));
+  }
+
+  .overlay {
+    @apply hidden fixed inset-0 w-full h-full z-40;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .overlay.active {
+    @apply block;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 1023px) {
+    .sidebar {
+      @apply fixed left-0 top-0 h-screen z-50 transform -translate-x-full;
+    }
+
+    .sidebar.open {
+      @apply transform translate-x-0;
+    }
+
+    .hamburger {
+      @apply block;
+    }
+
+    .main-content {
+      @apply p-0 w-full;
+    }
+
+    .mobile-header {
+      @apply flex;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-header {
+      @apply hidden;
+    }
+  }
+
+  /* Logout button styling */
+  .logout-section {
+    @apply p-6 mt-auto;
+    border-top: 1px solid hsla(355, 20%, 98%, 0.1);
+  }
+
+  .logout-button {
+    @apply block py-4 pl-3 pr-4 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent w-full text-left;
+    color: hsl(var(--primary-foreground));
+  }
+
   .btn {
     @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
