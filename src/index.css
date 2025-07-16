@@ -74,36 +74,120 @@
   }
 
   .sidebar {
-    @apply w-64 transition-transform duration-300 ease-in-out relative z-50 flex flex-col;
+    @apply transition-all duration-300 ease-in-out relative z-50 flex flex-col;
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
+    width: 4rem; /* 64px - collapsed width */
+    min-width: 4rem;
+  }
+
+  .sidebar.expanded {
+    width: 16rem; /* 256px - expanded width */
+  }
+
+  .sidebar:hover {
+    width: 16rem;
   }
 
   .sidebar-header {
-    @apply p-5 flex items-center justify-between;
+    @apply p-4 flex items-center justify-between relative;
     border-bottom: 1px solid hsla(355, 20%, 98%, 0.1);
+    min-height: 4rem;
+  }
+
+  .hamburger-toggle {
+    @apply bg-transparent border-none text-xl cursor-pointer p-2 rounded-md transition-colors duration-200 flex items-center justify-center;
+    color: hsl(var(--primary-foreground));
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+  }
+
+  .hamburger-toggle:hover {
+    background-color: hsla(355, 20%, 98%, 0.1);
   }
 
   .logo {
-    @apply text-2xl font-bold;
+    @apply text-lg font-bold transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+  }
+
+  .sidebar.expanded .logo,
+  .sidebar:hover .logo {
+    opacity: 1;
+    width: auto;
+    margin-left: 0.75rem;
   }
 
   .hamburger {
-    @apply hidden bg-transparent border-none text-2xl cursor-pointer p-2;
+    @apply bg-transparent border-none text-2xl cursor-pointer p-2 transition-colors duration-200;
     color: hsl(var(--primary-foreground));
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  .sidebar.expanded .hamburger,
+  .sidebar:hover .hamburger {
+    opacity: 1;
+    width: auto;
   }
 
   .nav-menu {
-    @apply list-none py-5 flex-1;
+    @apply list-none py-2 flex-1 overflow-hidden;
   }
 
   .nav-item {
     @apply m-0;
+    position: relative;
   }
 
   .nav-link {
-    @apply block py-4 pl-3 pr-4 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent;
+    @apply flex items-center py-3 px-3 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent relative;
     color: hsl(var(--primary-foreground));
+    min-height: 3rem;
+  }
+
+  .nav-link-icon {
+    @apply flex-shrink-0 transition-all duration-300 ease-in-out;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-width: 1.25rem;
+  }
+
+  .nav-link-text {
+    @apply transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+  }
+
+  .sidebar.expanded .nav-link-text,
+  .sidebar:hover .nav-link-text {
+    opacity: 1;
+    width: auto;
+    margin-left: 1rem;
+  }
+
+  /* Tooltip for collapsed state */
+  .nav-tooltip {
+    @apply absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-md whitespace-nowrap z-50 pointer-events-none transition-all duration-200;
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  .nav-tooltip::before {
+    content: '';
+    @apply absolute right-full top-1/2 transform -translate-y-1/2;
+    border: 6px solid transparent;
+    border-right-color: #1f2937;
+  }
+
+  .sidebar:not(.expanded):not(:hover) .nav-item:hover .nav-tooltip {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .nav-link:hover {
@@ -160,12 +244,32 @@
       @apply transform translate-x-0;
     }
 
+    .sidebar.open .logo,
+    .sidebar.open .nav-link-text,
+    .sidebar.open .logout-button-text,
+    .sidebar.open .hamburger {
+      opacity: 1 !important;
+      width: auto !important;
+      margin-left: 1rem !important;
+    }
+
+    .sidebar.open .logo {
+      margin-left: 0.75rem !important;
+    }
+
+    /* Hide tooltips on mobile */
+    .nav-tooltip {
+      @apply hidden;
+    }
+
     .hamburger {
-      @apply block;
+      @apply block opacity-100;
+      width: auto;
     }
 
     .main-content {
       @apply p-0 w-full;
+      margin-left: 0;
     }
 
     .mobile-header {
@@ -177,23 +281,64 @@
     .mobile-header {
       @apply hidden;
     }
+
+    .main-content {
+      margin-left: 4rem; /* Account for collapsed sidebar width */
+      transition: margin-left 300ms ease-in-out;
+    }
+
+    .sidebar.expanded + .main-content {
+      margin-left: 16rem; /* Account for expanded sidebar width */
+    }
+
+    /* Prevent hover expansion when manually expanded */
+    .sidebar.expanded:hover {
+      width: 16rem;
+    }
   }
 
   /* Logout button styling */
   .logout-section {
-    @apply p-6 mt-auto;
+    @apply p-3 mt-auto;
     border-top: 1px solid hsla(355, 20%, 98%, 0.1);
   }
 
   .logout-button {
-    @apply block py-4 pl-3 pr-4 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent w-full text-left;
+    @apply flex items-center py-3 px-3 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent w-full text-left relative;
     color: hsl(var(--primary-foreground));
+    min-height: 3rem;
+  }
+
+  .logout-button-icon {
+    @apply flex-shrink-0 transition-all duration-300 ease-in-out;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-width: 1.25rem;
+  }
+
+  .logout-button-text {
+    @apply transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+  }
+
+  .sidebar.expanded .logout-button-text,
+  .sidebar:hover .logout-button-text {
+    opacity: 1;
+    width: auto;
+    margin-left: 1rem;
+  }
+
+  .logout-button:hover {
+    background-color: hsla(355, 20%, 98%, 0.1);
+    border-left-color: hsl(var(--primary-foreground));
   }
 
   .btn {
     @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
-  
+
   .btn-primary {
     @apply btn bg-primary text-primary-foreground shadow-sm h-12 px-6 py-3 text-base font-semibold;
   }
@@ -330,28 +475,31 @@
 /* When SimpleMDE/EasyMDE is in full-screen mode, it adds 'editor-fullscreen' class to html */
 
 /* Hide all navigation elements */
-.editor-fullscreen .sidebar,
-.editor-fullscreen .mobile-header,
-.editor-fullscreen header,
-.editor-fullscreen .dashboard-container .sidebar,
-.editor-fullscreen .dashboard-container .mobile-header,
-.editor-fullscreen .main-content header {
+html.editor-fullscreen .sidebar,
+html.editor-fullscreen .mobile-header,
+html.editor-fullscreen header,
+html.editor-fullscreen .dashboard-container .sidebar,
+html.editor-fullscreen .dashboard-container .mobile-header,
+html.editor-fullscreen .main-content header {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   z-index: -1 !important;
 }
 
-/* Ensure dashboard container doesn't interfere */
-.editor-fullscreen .dashboard-container {
-  position: static !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  overflow: hidden !important;
+/* Additional aggressive hiding for any remaining navigation elements */
+html.editor-fullscreen nav,
+html.editor-fullscreen .nav-menu,
+html.editor-fullscreen .sidebar-header,
+html.editor-fullscreen .logout-section {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-/* Reset main content area for full-screen */
-.editor-fullscreen .main-content {
+/* Force the main content to take full viewport in fullscreen */
+html.editor-fullscreen .main-content {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -359,14 +507,21 @@
   bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  padding: 0 !important;
   margin: 0 !important;
+  padding: 0 !important;
   z-index: 9998 !important;
-  background: white !important;
+}
+
+/* Ensure dashboard container doesn't interfere */
+html.editor-fullscreen .dashboard-container {
+  position: static !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
 }
 
 /* Reset content section */
-.editor-fullscreen .content-section {
+html.editor-fullscreen .content-section {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -381,7 +536,7 @@
 }
 
 /* Ensure the full-screen editor takes complete control */
-.editor-fullscreen .CodeMirror-fullscreen {
+html.editor-fullscreen .CodeMirror-fullscreen {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -396,7 +551,7 @@
 }
 
 /* Ensure toolbar is visible and positioned correctly */
-.editor-fullscreen .editor-toolbar {
+html.editor-fullscreen .editor-toolbar {
   position: relative !important;
   z-index: 10000 !important;
   width: 100% !important;
@@ -405,29 +560,28 @@
 }
 
 /* Adjust editor content area for full-screen */
-.editor-fullscreen .CodeMirror-scroll {
+html.editor-fullscreen .CodeMirror-scroll {
   height: calc(100vh - 50px) !important;
   width: 100% !important;
 }
 
 /* Hide any overlays or other interfering elements */
-.editor-fullscreen .overlay,
-.editor-fullscreen nav,
-.editor-fullscreen .nav-menu {
+html.editor-fullscreen .overlay,
+html.editor-fullscreen .overlay {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
 }
 
 /* Ensure body doesn't scroll in full-screen mode */
-.editor-fullscreen {
+html.editor-fullscreen {
   overflow: hidden !important;
 }
 
 /* Reset any container constraints */
-.editor-fullscreen .container,
-.editor-fullscreen .max-w-5xl,
-.editor-fullscreen .mx-auto {
+html.editor-fullscreen .container,
+html.editor-fullscreen .max-w-5xl,
+html.editor-fullscreen .mx-auto {
   max-width: none !important;
   width: 100vw !important;
   margin: 0 !important;

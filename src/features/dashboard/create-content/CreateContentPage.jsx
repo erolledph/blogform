@@ -240,248 +240,29 @@ export default function CreateContentPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div className="flex items-center space-x-6">
-          <button
-            onClick={() => navigate('/dashboard/manage')}
-            className="btn-ghost p-3"
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </button>
-          <div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              {isEditing ? 'Edit Content' : 'Create New Content'}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {isEditing ? 'Update your existing content' : 'Write and publish new content'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-10">
-        {/* Content Details */}
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">Content Details</h2>
-            <p className="card-description text-lg">Enter the main content information</p>
-          </div>
-          <div className="card-content space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <InputField
-                label="Title"
-                name="title"
-                required
-                placeholder="Enter content title"
-                value={formData.title}
-                onChange={handleInputChange}
-                error={errors.title}
-              />
-
-              <InputField
-                label="Slug"
-                name="slug"
-                required
-                placeholder="url-friendly-slug"
-                value={formData.slug}
-                onChange={handleInputChange}
-                error={errors.slug}
-              />
-            </div>
-
+      {/* Header with Action Buttons */}
+      <div className="flex flex-col space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex items-center space-x-6">
+            <button
+              onClick={() => navigate('/dashboard/manage')}
+              className="btn-ghost p-3"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
             <div>
-              <label className="block text-base font-medium text-foreground mb-4">
-                Content <span className="text-destructive">*</span>
-              </label>
-              <SimpleMDE
-                value={formData.content}
-                onChange={(value) => {
-                  setFormData(prev => ({ ...prev, content: value }));
-                  if (errors.content) {
-                    setErrors(prev => ({ ...prev, content: '' }));
-                  }
-                }}
-                options={simpleMDEOptions}
-              />
-              {errors.content && (
-                <p className="mt-2 text-sm text-destructive">{errors.content}</p>
-              )}
+              <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                {isEditing ? 'Edit Content' : 'Create New Content'}
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                {isEditing ? 'Update your existing content' : 'Write and publish new content'}
+              </p>
             </div>
           </div>
         </div>
-
-        {/* Featured Image */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Featured Image</h3>
-            <p className="card-description text-lg">Add a featured image for your content</p>
-          </div>
-          <div className="card-content space-y-8">
-            {formData.featuredImageUrl && (
-              <div className="flex justify-center mb-8">
-                <img
-                  src={formData.featuredImageUrl}
-                  alt="Featured"
-                  className="max-w-lg w-full h-64 object-cover rounded-lg border border-border shadow-sm"
-                />
-              </div>
-            )}
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-base font-medium text-foreground mb-4">
-                  Upload Image
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="input-field"
-                    disabled={uploading}
-                  />
-                  {uploading && (
-                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
-                      <LoadingSpinner size="sm" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <InputField
-                label="Or Image URL"
-                name="featuredImageUrl"
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                value={formData.featuredImageUrl}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Publish Settings */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Publish Settings</h3>
-            <p className="card-description text-lg">Configure publication settings</p>
-          </div>
-          <div className="card-content">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-base font-medium text-foreground mb-4">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  className="input-field"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                </select>
-              </div>
-
-              <InputField
-                label="Author"
-                name="author"
-                placeholder="Author name"
-                value={formData.author}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* SEO Settings */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">SEO Settings</h3>
-            <p className="card-description text-lg">Optimize your content for search engines</p>
-          </div>
-          <div className="card-content space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <InputField
-                label="SEO Title"
-                name="seoTitle"
-                placeholder="SEO optimized title"
-                value={formData.seoTitle}
-                onChange={handleInputChange}
-              />
-
-              <div>
-                <label className="block text-base font-medium text-foreground mb-4">
-                  Keywords (comma separated)
-                </label>
-                <input
-                  type="text"
-                  className="input-field"
-                  value={keywordsInput}
-                  onChange={(e) => setKeywordsInput(e.target.value)}
-                  onBlur={handleKeywordsBlur}
-                  placeholder="keyword1, keyword2, keyword3"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-base font-medium text-foreground mb-4">
-                Meta Description
-              </label>
-              <textarea
-                name="metaDescription"
-                rows={4}
-                className="input-field resize-none"
-                value={formData.metaDescription}
-                onChange={handleInputChange}
-                placeholder="Brief description for search engines (150-160 characters recommended)"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Organization */}
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Organization</h3>
-            <p className="card-description text-lg">Categorize and tag your content</p>
-          </div>
-          <div className="card-content">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-base font-medium text-foreground mb-4">
-                  Categories (comma separated)
-                </label>
-                <input
-                  type="text"
-                  className="input-field"
-                  value={categoriesInput}
-                  onChange={(e) => setCategoriesInput(e.target.value)}
-                  onBlur={handleCategoriesBlur}
-                  placeholder="Web Development, Technology"
-                />
-              </div>
-
-              <div>
-                <label className="block text-base font-medium text-foreground mb-4">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  className="input-field"
-                  value={tagsInput}
-                  onChange={(e) => setTagsInput(e.target.value)}
-                  onBlur={handleTagsBlur}
-                  placeholder="react, javascript, tutorial"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-6 pt-8 border-t border-border">
+        
+        {/* Action Buttons at Top */}
+        <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-border">
           <button
             type="button"
             onClick={() => navigate('/dashboard/manage')}
@@ -491,12 +272,245 @@ export default function CreateContentPage() {
           </button>
           <button
             type="submit"
+            form="content-form"
             disabled={loading || uploading}
             className="btn-primary"
           >
             <Save className="h-5 w-5 mr-3" />
             {loading ? 'Saving...' : (isEditing ? 'Update Content' : 'Create Content')}
           </button>
+        </div>
+      </div>
+
+      <form id="content-form" onSubmit={handleSubmit}>
+        {/* Two Column Layout for Wide Screens */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          
+          {/* Left Column - Main Content */}
+          <div className="space-y-8">
+            {/* Content Details */}
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">Content Details</h2>
+                <p className="card-description text-lg">Enter the main content information</p>
+              </div>
+              <div className="card-content space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <InputField
+                    label="Title"
+                    name="title"
+                    required
+                    placeholder="Enter content title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    error={errors.title}
+                  />
+
+                  <InputField
+                    label="Slug"
+                    name="slug"
+                    required
+                    placeholder="url-friendly-slug"
+                    value={formData.slug}
+                    onChange={handleInputChange}
+                    error={errors.slug}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Content <span className="text-destructive">*</span>
+                  </label>
+                  <SimpleMDE
+                    value={formData.content}
+                    onChange={(value) => {
+                      setFormData(prev => ({ ...prev, content: value }));
+                      if (errors.content) {
+                        setErrors(prev => ({ ...prev, content: '' }));
+                      }
+                    }}
+                    options={simpleMDEOptions}
+                  />
+                  {errors.content && (
+                    <p className="mt-2 text-sm text-destructive">{errors.content}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Featured Image */}
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Featured Image</h3>
+                <p className="card-description text-lg">Add a featured image for your content</p>
+              </div>
+              <div className="card-content space-y-8">
+                {formData.featuredImageUrl && (
+                  <div className="flex justify-center mb-8">
+                    <img
+                      src={formData.featuredImageUrl}
+                      alt="Featured"
+                      className="max-w-lg w-full h-64 object-cover rounded-lg border border-border shadow-sm"
+                    />
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <label className="block text-base font-medium text-foreground mb-4">
+                      Upload Image
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="input-field"
+                        disabled={uploading}
+                      />
+                      {uploading && (
+                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
+                          <LoadingSpinner size="sm" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <InputField
+                    label="Or Image URL"
+                    name="featuredImageUrl"
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={formData.featuredImageUrl}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Settings */}
+          <div className="space-y-8">
+            {/* Publish Settings */}
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Publish Settings</h3>
+                <p className="card-description text-lg">Configure publication settings</p>
+              </div>
+              <div className="card-content">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <label className="block text-base font-medium text-foreground mb-4">
+                      Status
+                    </label>
+                    <select
+                      name="status"
+                      className="input-field"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                    </select>
+                  </div>
+
+                  <InputField
+                    label="Author"
+                    name="author"
+                    placeholder="Author name"
+                    value={formData.author}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* SEO Settings */}
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">SEO Settings</h3>
+                <p className="card-description text-lg">Optimize your content for search engines</p>
+              </div>
+              <div className="card-content space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <InputField
+                    label="SEO Title"
+                    name="seoTitle"
+                    placeholder="SEO optimized title"
+                    value={formData.seoTitle}
+                    onChange={handleInputChange}
+                  />
+
+                  <div>
+                    <label className="block text-base font-medium text-foreground mb-4">
+                      Keywords (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      value={keywordsInput}
+                      onChange={(e) => setKeywordsInput(e.target.value)}
+                      onBlur={handleKeywordsBlur}
+                      placeholder="keyword1, keyword2, keyword3"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Meta Description
+                  </label>
+                  <textarea
+                    name="metaDescription"
+                    rows={4}
+                    className="input-field resize-none"
+                    value={formData.metaDescription}
+                    onChange={handleInputChange}
+                    placeholder="Brief description for search engines (150-160 characters recommended)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Organization */}
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Organization</h3>
+                <p className="card-description text-lg">Categorize and tag your content</p>
+              </div>
+              <div className="card-content">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <label className="block text-base font-medium text-foreground mb-4">
+                      Categories (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      value={categoriesInput}
+                      onChange={(e) => setCategoriesInput(e.target.value)}
+                      onBlur={handleCategoriesBlur}
+                      placeholder="Web Development, Technology"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-base font-medium text-foreground mb-4">
+                      Tags (comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      className="input-field"
+                      value={tagsInput}
+                      onChange={(e) => setTagsInput(e.target.value)}
+                      onBlur={handleTagsBlur}
+                      placeholder="react, javascript, tutorial"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </div>
