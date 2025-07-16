@@ -325,3 +325,112 @@
 .editor-preview blockquote {
   @apply border-l-4 border-border pl-4 italic text-muted-foreground;
 }
+/* Full-screen editor fixes */
+/* Full-screen editor fixes */
+/* When SimpleMDE/EasyMDE is in full-screen mode, it adds 'editor-fullscreen' class to html */
+
+/* Hide all navigation elements */
+.editor-fullscreen .sidebar,
+.editor-fullscreen .mobile-header,
+.editor-fullscreen header,
+.editor-fullscreen .dashboard-container .sidebar,
+.editor-fullscreen .dashboard-container .mobile-header,
+.editor-fullscreen .main-content header {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  z-index: -1 !important;
+}
+
+/* Ensure dashboard container doesn't interfere */
+.editor-fullscreen .dashboard-container {
+  position: static !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Reset main content area for full-screen */
+.editor-fullscreen .main-content {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 9998 !important;
+  background: white !important;
+}
+
+/* Reset content section */
+.editor-fullscreen .content-section {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 100vh !important;
+  background: white !important;
+}
+
+/* Ensure the full-screen editor takes complete control */
+.editor-fullscreen .CodeMirror-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  background: white !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Ensure toolbar is visible and positioned correctly */
+.editor-fullscreen .editor-toolbar {
+  position: relative !important;
+  z-index: 10000 !important;
+  width: 100% !important;
+  background: #f5f5f5 !important;
+  border-bottom: 1px solid #ddd !important;
+}
+
+/* Adjust editor content area for full-screen */
+.editor-fullscreen .CodeMirror-scroll {
+  height: calc(100vh - 50px) !important;
+  width: 100% !important;
+}
+
+/* Hide any overlays or other interfering elements */
+.editor-fullscreen .overlay,
+.editor-fullscreen nav,
+.editor-fullscreen .nav-menu {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Ensure body doesn't scroll in full-screen mode */
+.editor-fullscreen {
+  overflow: hidden !important;
+}
+
+/* Reset any container constraints */
+.editor-fullscreen .container,
+.editor-fullscreen .max-w-5xl,
+.editor-fullscreen .mx-auto {
+  max-width: none !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* When SimpleMDE/EasyMDE is in full-screen mode, it adds 'editor-fullscreen' class to html */
