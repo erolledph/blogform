@@ -48,34 +48,10 @@ export const debounce = (func, wait) => {
       func(...args);
     };
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
   };
-};
+}
 
-// Custom domain helpers
-export const getCustomDomain = () => {
-  try {
-    return localStorage.getItem('customDomain') || '';
-  } catch (error) {
-    console.error('Error getting custom domain:', error);
-    return '';
-  }
-};
-
-export const setCustomDomain = (domain) => {
-  try {
-    if (domain) {
-      localStorage.setItem('customDomain', domain);
-    } else {
-      localStorage.removeItem('customDomain');
-    }
-  } catch (error) {
-    console.error('Error setting custom domain:', error);
-  }
-};
-
-export const getContentUrl = (slug) => {
-  const customDomain = getCustomDomain();
+export const getContentUrl = (slug, customDomain = '') => {
   
   if (customDomain) {
     // Add https:// if no protocol is present

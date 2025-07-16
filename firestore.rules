@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow public read access to app settings (like custom domain)
+    match /appSettings/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Existing rules for other collections
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

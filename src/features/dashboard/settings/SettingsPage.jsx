@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useDomain } from '@/contexts/DomainContext';
 import InputField from '@/components/shared/InputField';
 import { User, Globe, Save, Check } from 'lucide-react';
-import { getCustomDomain, setCustomDomain } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
   const { currentUser } = useAuth();
+  const { publicCustomDomain, updateCustomDomain } = useDomain();
   const [customDomain, setCustomDomainState] = useState('');
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    // Load saved custom domain on component mount
-    const savedDomain = getCustomDomain();
-    if (savedDomain) {
-      setCustomDomainState(savedDomain);
-    }
-  }, []);
+    // Load custom domain from context
+    setCustomDomainState(publicCustomDomain);
+  }, [publicCustomDomain]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -31,8 +29,8 @@ export default function SettingsPage() {
         return;
       }
 
-      // Save to localStorage
-      setCustomDomain(customDomain);
+      // Save to Firestore via context
+      await updateCustomDomain(customDomain);
       
       setSaved(true);
       toast.success('Settings saved successfully!');

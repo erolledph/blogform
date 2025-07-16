@@ -173,6 +173,7 @@ if content:
     "categories": ["Web Development", "Cloud"],
     "tags": ["nextjs", "firebase", "cloudflare", "blogging", "seo"],
     "status": "published",
+    "contentUrl": "https://your-custom-domain.com/post/the-clever-idea-nextjs-firebase-cloudflare",
     "publishDate": "2025-06-27T10:00:00Z",
     "createdAt": "2025-06-27T09:30:00Z",
     "updatedAt": "2025-06-27T10:15:00Z"
@@ -306,6 +307,10 @@ if content:
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>The API supports CORS, so you can call it directly from browser applications.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
+              <p>Each content item includes a `contentUrl` field with the full URL using your configured custom domain.</p>
             </div>
           </div>
         </div>
