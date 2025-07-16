@@ -1,5 +1,6 @@
 import React from 'react';
-import { Search, Bell, User, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, Bell, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Header({ onMenuClick }) {
@@ -41,13 +42,12 @@ export default function Header({ onMenuClick }) {
             <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full"></span>
           </button>
 
-          {/* Settings */}
-          <button className="p-2 rounded-md hover:bg-muted">
-            <Settings className="h-5 w-5 text-muted-foreground" />
-          </button>
-
           {/* User menu */}
-          <div className="flex items-center space-x-3">
+          <Link 
+            to="/dashboard/settings"
+            className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted transition-colors"
+            title="Settings"
+          >
             <div className="hidden sm:block text-right">
               <div className="text-sm font-medium text-foreground">
                 {currentUser?.email || 'Admin User'}
@@ -57,7 +57,7 @@ export default function Header({ onMenuClick }) {
             <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
               <User className="h-5 w-5 text-primary-foreground" />
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </header>

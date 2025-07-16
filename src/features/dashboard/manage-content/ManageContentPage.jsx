@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useContent } from '@/hooks/useContent';
@@ -6,9 +6,9 @@ import { analyticsService } from '@/services/analyticsService';
 import DataTable from '@/components/shared/DataTable';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import Modal from '@/components/shared/Modal';
-import { Edit, Trash2, ExternalLink, Plus, ImageIcon, BarChart3 } from 'lucide-react';
+import { Edit, Trash2, ExternalLink, Plus, ImageIcon, BarChart3, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
-import { getStatusBadgeClass } from '@/utils/helpers';
+import { getStatusBadgeClass, getContentUrl } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 
 export default function ManageContentPage() {
@@ -142,7 +142,7 @@ export default function ManageContentPage() {
             <Trash2 className="h-4 w-4" />
           </button>
           <a
-            href={`https://ailodi.xyz/post/${row.slug}`}
+            href={getContentUrl(row.slug)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground p-2 rounded hover:bg-muted"

@@ -9,6 +9,7 @@ import {
   Lightbulb,
   Database,
   BarChart3,
+  Settings,
   LogOut, 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Firebase Info', href: '/dashboard/firebase-info', icon: Database },
   { name: 'Tips', href: '/dashboard/tips', icon: Lightbulb },
   { name: 'Documentation', href: '/dashboard/documentation', icon: BookOpen },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {

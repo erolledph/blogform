@@ -51,3 +51,41 @@ export const debounce = (func, wait) => {
     timeout = setTimeout(later, wait);
   };
 };
+
+// Custom domain helpers
+export const getCustomDomain = () => {
+  try {
+    return localStorage.getItem('customDomain') || '';
+  } catch (error) {
+    console.error('Error getting custom domain:', error);
+    return '';
+  }
+};
+
+export const setCustomDomain = (domain) => {
+  try {
+    if (domain) {
+      localStorage.setItem('customDomain', domain);
+    } else {
+      localStorage.removeItem('customDomain');
+    }
+  } catch (error) {
+    console.error('Error setting custom domain:', error);
+  }
+};
+
+export const getContentUrl = (slug) => {
+  const customDomain = getCustomDomain();
+  
+  if (customDomain) {
+    // Add https:// if no protocol is present
+    let domain = customDomain;
+    if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
+      domain = `https://${domain}`;
+    }
+    return `${domain}/post/${slug}`;
+  }
+  
+  // Default domain
+  return `https://ailodi.xyz/post/${slug}`;
+};

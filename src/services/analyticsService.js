@@ -60,25 +60,31 @@ export const analyticsService = {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
-      // Get page views
+      // Get page views - use only contentId filter to avoid composite index
       const viewsQuery = query(
         collection(db, 'pageViews'),
-        where('contentId', '==', contentId),
-        where('timestamp', '>=', startDate),
-        orderBy('timestamp', 'desc')
+        where('contentId', '==', contentId)
       );
       const viewsSnapshot = await getDocs(viewsQuery);
-      const views = viewsSnapshot.docs.map(doc => doc.data());
+      const allViews = viewsSnapshot.docs.map(doc => doc.data());
+      
+      // Filter by date client-side and sort
+      const views = allViews
+        .filter(view => view.timestamp && view.timestamp.toDate() >= startDate)
+        .sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
-      // Get interactions
+      // Get interactions - use only contentId filter to avoid composite index
       const interactionsQuery = query(
         collection(db, 'interactions'),
-        where('contentId', '==', contentId),
-        where('timestamp', '>=', startDate),
-        orderBy('timestamp', 'desc')
+        where('contentId', '==', contentId)
       );
       const interactionsSnapshot = await getDocs(interactionsQuery);
-      const interactions = interactionsSnapshot.docs.map(doc => doc.data());
+      const allInteractions = interactionsSnapshot.docs.map(doc => doc.data());
+      
+      // Filter by date client-side and sort
+      const interactions = allInteractions
+        .filter(interaction => interaction.timestamp && interaction.timestamp.toDate() >= startDate)
+        .sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
       // Get content details
       const contentDoc = await getDoc(doc(db, 'content', contentId));
@@ -127,17 +133,21 @@ export const analyticsService = {
       const interactions = interactionsSnapshot.docs.map(doc => doc.data());
 
       // Get top content
-      const topContentQuery = query(
+      // Get top content - split query to avoid composite index requirement
+      const contentQuery = query(
         collection(db, 'content'),
-        where('status', '==', 'published'),
-        orderBy('viewCount', 'desc'),
-        limit(10)
+        where('status', '==', 'published')
       );
-      const topContentSnapshot = await getDocs(topContentQuery);
-      const topContent = topContentSnapshot.docs.map(doc => ({
+      const contentSnapshot = await getDocs(contentQuery);
+      const allContent = contentSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      
+      // Sort by viewCount client-side and take top 10
+      const topContent = allContent
+        .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+        .slice(0, 10);
 
       return {
         totalViews: views.length,
