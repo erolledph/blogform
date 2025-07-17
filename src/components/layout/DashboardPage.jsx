@@ -40,10 +40,11 @@ export default function DashboardPage() {
       />
       
       <main className="main-content">
+        {/* Header is now sticky and positioned at the top */}
         <Header onMenuClick={openSidebar} />
 
         <div className="content-section">
-          <div className="container mx-auto px-6 py-10 lg:px-10 max-w-7xl">
+          <div className="container mx-auto px-6 pt-6 pb-10 lg:px-10 max-w-7xl">
             <Suspense fallback={<LoadingSpinner size="lg" className="h-64" />}>
               <Routes>
                 <Route path="/" element={<Navigate to="/dashboard/overview" replace />} />

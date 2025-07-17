@@ -50,7 +50,7 @@ export default function CreateContentPage() {
       'bold', 'italic', 'heading', '|',
       'quote', 'unordered-list', 'ordered-list', '|',
       'link', 'image', '|',
-      'preview', 'side-by-side', 'fullscreen', '|',
+      'preview', '|',
       'guide'
     ]
   }), []);
@@ -284,7 +284,7 @@ export default function CreateContentPage() {
 
       <form id="content-form" onSubmit={handleSubmit}>
         {/* Two Column Layout for Wide Screens */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <div className="space-y-10">
           
           {/* Left Column - Main Content */}
           <div className="space-y-8">

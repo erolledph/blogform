@@ -74,11 +74,10 @@
   }
 
   .sidebar {
-    @apply transition-all duration-300 ease-in-out relative z-50 flex flex-col;
+    @apply transition-all duration-300 ease-in-out fixed top-0 left-0 h-screen z-50 flex flex-col;
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     width: 4rem; /* 64px - collapsed width */
-    min-width: 4rem;
   }
 
   .sidebar.expanded {
@@ -204,10 +203,12 @@
   .main-content {
     @apply flex-1 p-0 overflow-x-auto;
     background-color: hsl(var(--secondary));
+    padding-top: 0;
   }
 
   .content-section {
     @apply bg-white min-h-screen;
+    padding-top: 0;
   }
 
   .mobile-header {
@@ -285,6 +286,7 @@
     .main-content {
       margin-left: 4rem; /* Account for collapsed sidebar width */
       transition: margin-left 300ms ease-in-out;
+      padding-top: 0;
     }
 
     .sidebar.expanded + .main-content {
@@ -476,11 +478,15 @@
 
 /* Hide all navigation elements */
 html.editor-fullscreen .sidebar,
-html.editor-fullscreen .mobile-header,
-html.editor-fullscreen header,
-html.editor-fullscreen .dashboard-container .sidebar,
-html.editor-fullscreen .dashboard-container .mobile-header,
-html.editor-fullscreen .main-content header {
+html.editor-fullscreen .mobile-header {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  z-index: -1 !important;
+}
+
+/* Specifically hide the main application header, but not the editor's toolbar */
+html.editor-fullscreen .main-content > header {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;

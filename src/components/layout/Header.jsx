@@ -1,19 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Bell, User } from 'lucide-react';
+import { Bell, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Header({ onMenuClick }) {
   const { currentUser } = useAuth();
 
   return (
-    <header className="bg-white border-b border-border px-6 py-4">
+    <header className="bg-white border-b border-border px-6 py-4 sticky top-0 z-30 backdrop-blur-sm bg-white/95">
       <div className="flex items-center justify-between">
-        {/* Left side - Mobile menu button and search */}
-        <div className="flex items-center space-x-4 flex-1">
+        {/* Left side - Mobile menu button */}
+        <div className="flex items-center">
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 rounded-md hover:bg-muted"
+            className="lg:hidden p-2 rounded-md hover:bg-muted transition-colors duration-200"
             aria-label="Open menu"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,23 +21,19 @@ export default function Header({ onMenuClick }) {
             </svg>
           </button>
           
-          {/* Search bar */}
-          <div className="hidden md:block flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-10 pr-4 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-              />
-            </div>
-          </div>
+          {/* Page title for mobile */}
+          <h1 className="lg:hidden ml-4 text-lg font-semibold text-foreground">
+            Admin Dashboard
+          </h1>
         </div>
 
-        {/* Right side - Notifications and user menu */}
-        <div className="flex items-center space-x-4">
+        {/* Right side - User menu and notifications */}
+        <div className="flex items-center space-x-3">
           {/* Notifications */}
-          <button className="p-2 rounded-md hover:bg-muted relative">
+          <button 
+            className="p-2 rounded-md hover:bg-muted transition-colors duration-200 relative"
+            title="Notifications"
+          >
             <Bell className="h-5 w-5 text-muted-foreground" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full"></span>
           </button>
@@ -45,17 +41,17 @@ export default function Header({ onMenuClick }) {
           {/* User menu */}
           <Link 
             to="/dashboard/settings"
-            className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted transition-colors"
-            title="Settings"
+            className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted transition-colors duration-200"
+            title="User Settings"
           >
             <div className="hidden sm:block text-right">
               <div className="text-sm font-medium text-foreground">
-                {currentUser?.email || 'Admin User'}
+                {currentUser?.email?.split('@')[0] || 'Admin'}
               </div>
               <div className="text-xs text-muted-foreground">Administrator</div>
             </div>
             <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
-              <User className="h-5 w-5 text-primary-foreground" />
+              <User className="h-4 w-4 text-primary-foreground" />
             </div>
           </Link>
         </div>
