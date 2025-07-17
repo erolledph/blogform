@@ -1,7 +1,10 @@
 import React from 'react';
-import { Database, Cloud, Zap, CreditCard, AlertTriangle, CheckCircle, XCircle, Info } from 'lucide-react';
+import { useFirebaseUsage } from '@/hooks/useAnalytics';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { Database, Cloud, Zap, CreditCard, AlertTriangle, CheckCircle, XCircle, Info, RefreshCw, TrendingUp, HardDrive, Activity } from 'lucide-react';
 
 export default function FirebaseInfoPage() {
+  const { usage, loading: usageLoading, error: usageError, refetch } = useFirebaseUsage();
   const currentPlan = 'Spark (Free)'; // This could be dynamic based on your Firebase project
 
   const sparkLimits = [
@@ -45,6 +48,14 @@ export default function FirebaseInfoPage() {
     }
   };
 
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="space-y-10">
       <div>
@@ -85,6 +96,533 @@ export default function FirebaseInfoPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Current Firebase Usage */}
+      <div className="card border-blue-200 bg-blue-50">
+        <div className="card-header">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <TrendingUp className="h-8 w-8 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="card-title text-blue-900">Live Firebase Usage Monitor</h2>
+                <p className="card-description text-lg text-blue-700">
+                  Real-time usage statistics and resource consumption
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={refetch}
+              disabled={usageLoading}
+              className="btn-secondary btn-sm bg-white hover:bg-blue-50 border-blue-200"
+              title="Refresh usage data"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${usageLoading ? 'animate-spin' : ''}`} />
+              {usageLoading ? 'Loading...' : 'Refresh'}
+            </button>
+          </div>
+        </div>
+        <div className="card-content">
+          {usageLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <LoadingSpinner size="lg" />
+              <span className="ml-4 text-lg text-blue-700">Fetching Firebase usage data...</span>
+            </div>
+          ) : usageError ? (
+            <div className="text-center py-8">
+              <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-red-500" />
+              <h3 className="text-lg font-semibold text-red-800 mb-2">Unable to Load Usage Data</h3>
+              <p className="text-red-700 mb-4">{usageError}</p>
+              <button onClick={refetch} className="btn-secondary bg-white hover:bg-red-50 border-red-200">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Try Again
+              </button>
+            </div>
+          ) : usage ? (
+            <div className="space-y-8">
+              {/* Quick Stats Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-white p-6 rounded-lg border border-blue-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <Database className="h-8 w-8 text-blue-600" />
+                    <span className="text-2xl font-bold text-blue-900">{usage.documentCounts.content}</span>
+                  </div>
+                  <h3 className="text-sm font-medium text-blue-700 mb-1">Content Items</h3>
+                  <p className="text-xs text-blue-600">Blog posts & pages</p>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg border border-green-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <Activity className="h-8 w-8 text-green-600" />
+                    <span className="text-2xl font-bold text-green-900">{usage.documentCounts.pageViews}</span>
+                  </div>
+                  <h3 className="text-sm font-medium text-green-700 mb-1">Page Views</h3>
+                  <p className="text-xs text-green-600">
+                    Analytics records
+                    {usage.errors?.includes('pageViews') && (
+                      <span className="block text-amber-600">⚠ Limited</span>
+                    )}
+                  </p>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg border border-purple-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <Zap className="h-8 w-8 text-purple-600" />
+                    <span className="text-2xl font-bold text-purple-900">{usage.documentCounts.interactions}</span>
+                  </div>
+                  <h3 className="text-sm font-medium text-purple-700 mb-1">Interactions</h3>
+                  <p className="text-xs text-purple-600">
+                    User actions
+                    {usage.errors?.includes('interactions') && (
+                      <span className="block text-amber-600">⚠ Limited</span>
+                    )}
+                  </p>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg border border-orange-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <HardDrive className="h-8 w-8 text-orange-600" />
+                    <span className="text-lg font-bold text-orange-900">
+                      {usage.storageUsage.error ? 'N/A' : formatBytes(usage.storageUsage.contentSize || 0)}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-medium text-orange-700 mb-1">Storage Used</h3>
+                  <p className="text-xs text-orange-600">Estimated size</p>
+                </div>
+              </div>
+
+              {/* Error/Warning Notice */}
+              {(usage.error || usage.errors) && (
+                <div className="p-6 bg-amber-50 border border-amber-300 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-800 mb-2">Data Access Limitations</h3>
+                      <p className="text-base text-amber-700 mb-2">
+                        {usage.error || 'Some Firebase collections could not be accessed due to security rules or permissions.'}
+                      </p>
+                      {usage.note && (
+                        <p className="text-sm text-amber-600 mb-3">{usage.note}</p>
+                      )}
+                      <div className="bg-amber-100 p-3 rounded border border-amber-200">
+                        <p className="text-sm text-amber-800">
+                          <strong>Why this happens:</strong> Firebase security rules prevent client-side access to exact billing data. 
+                          For precise usage statistics, check your Firebase Console directly.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Detailed Storage Breakdown */}
+              <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+                  <HardDrive className="h-6 w-6 text-blue-600 mr-3" />
+                  Storage Usage Details
+                </h3>
+                {usage.storageUsage.error ? (
+                  <div className="text-center py-6">
+                    <AlertTriangle className="h-8 w-8 mx-auto mb-3 text-amber-500" />
+                    <p className="text-amber-700 mb-2">{usage.storageUsage.error}</p>
+                    <p className="text-sm text-muted-foreground">{usage.storageUsage.note}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-base font-medium text-foreground">Estimated Content Size</span>
+                      <span className="text-xl font-bold text-blue-600">
+                        {formatBytes(usage.storageUsage.contentSize || 0)}
+                      </span>
+                    </div>
+                    
+                    {/* Progress bar for storage usage */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Usage vs Spark Plan Limit (5 GB)</span>
+                        <span className="text-muted-foreground">
+                          {((usage.storageUsage.contentSize || 0) / (5 * 1024 * 1024 * 1024) * 100).toFixed(2)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500" 
+                          style={{ 
+                            width: `${Math.min((usage.storageUsage.contentSize || 0) / (5 * 1024 * 1024 * 1024) * 100, 100)}%` 
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                      <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="text-lg font-bold text-blue-900">Images</div>
+                        <div className="text-sm text-blue-600">Primary usage</div>
+                      </div>
+                      <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div className="text-lg font-bold text-green-900">Documents</div>
+                        <div className="text-sm text-green-600">Minimal impact</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="text-lg font-bold text-gray-900">Metadata</div>
+                        <div className="text-sm text-gray-600">Negligible</div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mt-4 p-3 bg-gray-50 rounded border">
+                      {usage.storageUsage.note}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Operations Usage */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white p-6 rounded-lg border border-green-200">
+                  <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+                    <Database className="h-5 w-5 text-green-600 mr-2" />
+                    Read Operations
+                  </h4>
+                  {usage.estimatedReads.error ? (
+                    <div className="text-center py-4">
+                      <XCircle className="h-8 w-8 mx-auto mb-2 text-red-500" />
+                      <p className="text-sm text-red-600">{usage.estimatedReads.error}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-base text-foreground">Estimated Reads</span>
+                        <span className="text-xl font-bold text-green-600">
+                          ~{usage.estimatedReads.approximateReads || 0}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Daily Limit (Spark)</span>
+                          <span className="text-muted-foreground">50,000</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                            style={{ 
+                              width: `${Math.min((usage.estimatedReads.approximateReads || 0) / 50000 * 100, 100)}%` 
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 p-2 bg-green-50 rounded">
+                        {usage.estimatedReads.note}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-white p-6 rounded-lg border border-orange-200">
+                  <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+                    <Database className="h-5 w-5 text-orange-600 mr-2" />
+                    Write Operations
+                  </h4>
+                  {usage.estimatedWrites.error ? (
+                    <div className="text-center py-4">
+                      <XCircle className="h-8 w-8 mx-auto mb-2 text-red-500" />
+                      <p className="text-sm text-red-600">{usage.estimatedWrites.error}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-base text-foreground">Estimated Writes</span>
+                        <span className="text-xl font-bold text-orange-600">
+                          ~{usage.estimatedWrites.approximateWrites || 0}
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Daily Limit (Spark)</span>
+                          <span className="text-muted-foreground">20,000</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-orange-500 h-2 rounded-full transition-all duration-500" 
+                            style={{ 
+                              width: `${Math.min((usage.estimatedWrites.approximateWrites || 0) / 20000 * 100, 100)}%` 
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 p-2 bg-orange-50 rounded">
+                        {usage.estimatedWrites.note}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Last Updated */}
+              <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+                  <Info className="h-4 w-4" />
+                  <span>
+                    Last updated: {usage.lastUpdated ? new Date(usage.lastUpdated).toLocaleString() : 'Unknown'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Database className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Usage Data Available</h3>
+              <p className="text-gray-600 mb-4">Unable to fetch Firebase usage statistics</p>
+              <button onClick={refetch} className="btn-secondary bg-white hover:bg-gray-50 border-gray-200">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Try Again
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Detailed Firebase Usage (Original Section - Enhanced) */}
+      <div className="card">
+        <div className="card-header">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <Database className="h-8 w-8 text-orange-600" />
+              </div>
+              <div>
+                <h2 className="card-title">Detailed Firebase Usage Analysis</h2>
+                <p className="card-description text-lg">
+                  In-depth breakdown of Firebase resource consumption and limits
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="card-content">
+          {usageLoading ? (
+            <LoadingSpinner size="md" className="h-32" />
+          ) : usageError ? (
+            <div className="text-center py-8">
+              <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-destructive opacity-50" />
+              <p className="text-destructive">Error loading usage data: {usageError}</p>
+              <button onClick={refetch} className="btn-secondary mt-4">
+                Try Again
+              </button>
+            </div>
+          ) : usage ? (
+            <div className="space-y-8">
+              {/* Error/Warning Notice */}
+              {(usage.error || usage.errors) && (
+                <div className="p-6 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-800 mb-2">Limited Data Available</h3>
+                      <p className="text-base text-amber-700 mb-2">
+                        {usage.error || 'Some Firebase collections could not be accessed due to permissions.'}
+                      </p>
+                      {usage.note && (
+                        <p className="text-sm text-amber-600">{usage.note}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Document Counts */}
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Document Counts</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-2xl font-bold text-blue-900">{usage.documentCounts.content}</div>
+                      <Database className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="text-sm text-blue-600 mb-1">Content Documents</div>
+                    <div className="text-xs text-blue-500">Blog posts, pages, etc.</div>
+                  </div>
+                  <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-2xl font-bold text-green-900">{usage.documentCounts.pageViews}</div>
+                      <Database className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div className="text-sm text-green-600 mb-1">Page View Records</div>
+                    <div className="text-xs text-green-500">
+                      Analytics tracking data
+                      {usage.errors?.includes('pageViews') && (
+                        <span className="block text-amber-600 mt-1">⚠ Limited access</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-6 bg-purple-50 border border-purple-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-2xl font-bold text-purple-900">{usage.documentCounts.interactions}</div>
+                      <Database className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div className="text-sm text-purple-600 mb-1">Interaction Records</div>
+                    <div className="text-xs text-purple-500">
+                      Clicks, shares, likes
+                      {usage.errors?.includes('interactions') && (
+                        <span className="block text-amber-600 mt-1">⚠ Limited access</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Storage Usage */}
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Storage Usage</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-6 bg-muted/30 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <Cloud className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground mb-2">Estimated Content Size</h4>
+                        {usage.storageUsage.error ? (
+                          <p className="text-base text-foreground mb-2">
+                            {usage.storageUsage.error}
+                          </p>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-2xl font-bold text-foreground">
+                              {formatBytes(usage.storageUsage.contentSize || 0)}
+                            </p>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full" 
+                                style={{ 
+                                  width: `${Math.min((usage.storageUsage.contentSize || 0) / (5 * 1024 * 1024 * 1024) * 100, 100)}%` 
+                                }}
+                              ></div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              of 5 GB Spark plan limit
+                            </p>
+                          </div>
+                        )}
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {usage.storageUsage.note}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-muted/30 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <Info className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Storage Breakdown</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Images:</span>
+                            <span className="text-foreground">Primary usage</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Documents:</span>
+                            <span className="text-foreground">Minimal</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Metadata:</span>
+                            <span className="text-foreground">Negligible</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-3">
+                          Most storage is used by uploaded images in Firebase Storage
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Operations */}
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Operations (Estimated)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-6 bg-muted/30 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <Database className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground mb-2">Read Operations</h4>
+                        {usage.estimatedReads.error ? (
+                          <p className="text-sm text-muted-foreground">{usage.estimatedReads.error}</p>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-xl font-bold text-foreground">
+                              ~{usage.estimatedReads.approximateReads || 0}
+                            </p>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-green-600 h-2 rounded-full" 
+                                style={{ 
+                                  width: `${Math.min((usage.estimatedReads.approximateReads || 0) / 50000 * 100, 100)}%` 
+                                }}
+                              ></div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              of 50,000 daily limit
+                            </p>
+                          </div>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {usage.estimatedReads.note}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-muted/30 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <Database className="h-6 w-6 text-orange-600 flex-shrink-0 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground mb-2">Write Operations</h4>
+                        {usage.estimatedWrites.error ? (
+                          <p className="text-sm text-muted-foreground">{usage.estimatedWrites.error}</p>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-xl font-bold text-foreground">
+                              ~{usage.estimatedWrites.approximateWrites || 0}
+                            </p>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-orange-600 h-2 rounded-full" 
+                                style={{ 
+                                  width: `${Math.min((usage.estimatedWrites.approximateWrites || 0) / 20000 * 100, 100)}%` 
+                                }}
+                              ></div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              of 20,000 daily limit
+                            </p>
+                          </div>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {usage.estimatedWrites.note}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Last Updated */}
+              <div className="text-center text-sm text-muted-foreground">
+                Last updated: {usage.lastUpdated ? new Date(usage.lastUpdated).toLocaleString() : 'Unknown'}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Unable to load Firebase usage data</p>
+              <button onClick={refetch} className="btn-secondary mt-4">
+                Try Again
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

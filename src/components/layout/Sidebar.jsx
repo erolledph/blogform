@@ -10,6 +10,7 @@ import {
   Database,
   BarChart3,
   Settings,
+  Folder,
   LogOut,
   Menu,
 } from 'lucide-react';
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Manage Content', href: '/dashboard/manage', icon: FileText },
   { name: 'Create Content', href: '/dashboard/create', icon: Plus },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+  { name: 'File Storage', href: '/dashboard/storage', icon: Folder },
   { name: 'Firebase Info', href: '/dashboard/firebase-info', icon: Database },
   { name: 'Tips', href: '/dashboard/tips', icon: Lightbulb },
   { name: 'Documentation', href: '/dashboard/documentation', icon: BookOpen },
