@@ -43,7 +43,11 @@ export default function OverviewPage() {
   ];
 
   if (loading) {
-    return <LoadingSpinner size="lg" className="h-64" />;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   if (error) {
@@ -55,25 +59,25 @@ export default function OverviewPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Dashboard Overview</h1>
-        <p className="text-lg text-muted-foreground">
+    <div className="section-spacing">
+      <div className="page-header">
+        <h1 className="page-title">Dashboard Overview</h1>
+        <p className="page-description">
           Welcome to your content management system
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid-responsive-4">
         {statCards.map((stat, index) => (
           <div key={index} className={`card border ${stat.borderColor} ${stat.bgColor}`}>
-            <div className="card-content p-8">
+            <div className="card-content p-6 sm:p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-base font-medium text-muted-foreground mb-3">{stat.title}</p>
-                  <p className="text-4xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm sm:text-base font-medium text-muted-foreground mb-2 sm:mb-3">{stat.title}</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-foreground">{stat.value}</p>
                 </div>
-                <div className={`p-4 rounded-full ${stat.bgColor} border ${stat.borderColor}`}>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                <div className={`p-3 sm:p-4 rounded-full ${stat.bgColor} border ${stat.borderColor}`}>
+                  <stat.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${stat.color}`} />
                 </div>
               </div>
             </div>
@@ -84,33 +88,33 @@ export default function OverviewPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Quick Actions</h2>
-          <p className="card-description text-lg">Get started with these common tasks</p>
+          <p className="card-description">Get started with these common tasks</p>
         </div>
         <div className="card-content">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid-responsive-3">
             <Link
               to="/dashboard/create"
-              className="group p-8 border border-border rounded-lg hover:border-primary/50 transition-colors"
+              className="group p-6 sm:p-8 border border-border rounded-lg hover:border-primary/50 transition-all duration-200 hover:shadow-md"
             >
-              <Plus className="h-10 w-10 text-primary mb-4" />
+              <Plus className="h-8 w-8 sm:h-10 sm:w-10 text-primary mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-3">Create New Content</h3>
               <p className="text-base text-muted-foreground">Start writing a new article</p>
             </Link>
             
             <Link
               to="/dashboard/manage"
-              className="group p-8 border border-border rounded-lg hover:border-primary/50 transition-colors"
+              className="group p-6 sm:p-8 border border-border rounded-lg hover:border-primary/50 transition-all duration-200 hover:shadow-md"
             >
-              <FileText className="h-10 w-10 text-primary mb-4" />
+              <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-primary mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-3">Manage Content</h3>
               <p className="text-base text-muted-foreground">Edit or delete existing content</p>
             </Link>
             
             <Link
               to="/dashboard/analytics"
-              className="group p-8 border border-border rounded-lg hover:border-primary/50 transition-colors"
+              className="group p-6 sm:p-8 border border-border rounded-lg hover:border-primary/50 transition-all duration-200 hover:shadow-md"
             >
-              <BarChart3 className="h-10 w-10 text-primary mb-4" />
+              <BarChart3 className="h-8 w-8 sm:h-10 sm:w-10 text-primary mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-3">View Analytics</h3>
               <p className="text-base text-muted-foreground">Track performance and usage</p>
             </Link>
@@ -119,9 +123,9 @@ export default function OverviewPage() {
               href="/api/content.json"
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-8 border border-border rounded-lg hover:border-primary/50 transition-colors"
+              className="group p-6 sm:p-8 border border-border rounded-lg hover:border-primary/50 transition-all duration-200 hover:shadow-md"
             >
-              <Eye className="h-10 w-10 text-primary mb-4" />
+              <Eye className="h-8 w-8 sm:h-10 sm:w-10 text-primary mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-3">View API</h3>
               <p className="text-base text-muted-foreground">Check your public API endpoint</p>
             </a>

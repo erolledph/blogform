@@ -45,8 +45,12 @@ export default function DashboardPage() {
         <Header onMenuClick={openSidebar} />
 
         <div className="content-section">
-          <div className="container mx-auto px-6 pt-6 pb-10 lg:px-10 max-w-7xl">
-            <Suspense fallback={<LoadingSpinner size="lg" className="h-64" />}>
+          <div className="page-container">
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-64">
+                <LoadingSpinner size="lg" />
+              </div>
+            }>
               <Routes>
                 <Route path="/" element={<Navigate to="/dashboard/overview" replace />} />
                 <Route path="/overview" element={<OverviewPage />} />

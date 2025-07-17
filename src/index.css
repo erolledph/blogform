@@ -39,7 +39,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight mb-4;
+    @apply font-semibold tracking-tight;
   }
   
   h1 {
@@ -55,11 +55,11 @@
   }
   
   p {
-    @apply mb-4 leading-relaxed;
+    @apply leading-relaxed;
   }
   
   ul, ol {
-    @apply mb-4 pl-6;
+    @apply pl-6;
   }
   
   li {
@@ -201,9 +201,10 @@
   }
 
   .main-content {
-    @apply flex-1 p-0 overflow-x-auto;
+    @apply flex-1 overflow-x-auto;
     background-color: hsl(var(--secondary));
     padding-top: 0;
+    transition: margin-left 300ms ease-in-out;
   }
 
   .content-section {
@@ -212,17 +213,17 @@
   }
 
   .mobile-header {
-    @apply hidden items-center justify-between p-5 m-0 shadow-md;
+    @apply hidden items-center justify-between p-4 sm:p-5 m-0 shadow-md sticky top-0 z-30 backdrop-blur-sm;
     background: hsl(var(--card));
   }
 
   .mobile-hamburger {
-    @apply bg-transparent border-none text-2xl cursor-pointer;
+    @apply bg-transparent border-none text-2xl cursor-pointer p-2 rounded-md hover:bg-muted transition-colors;
     color: hsl(var(--foreground));
   }
 
   .mobile-title {
-    @apply text-xl font-semibold;
+    @apply text-lg sm:text-xl font-semibold;
     color: hsl(var(--foreground));
   }
 
@@ -276,6 +277,10 @@
     .mobile-header {
       @apply flex;
     }
+
+    .content-section {
+      padding-top: 0;
+    }
   }
 
   @media (min-width: 1024px) {
@@ -285,7 +290,6 @@
 
     .main-content {
       margin-left: 4rem; /* Account for collapsed sidebar width */
-      transition: margin-left 300ms ease-in-out;
       padding-top: 0;
     }
 
@@ -337,24 +341,25 @@
     border-left-color: hsl(var(--primary-foreground));
   }
 
+  /* Enhanced Button Styles */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-all duration-200;
   }
 
   .btn-primary {
-    @apply btn bg-primary text-primary-foreground shadow-sm h-12 px-6 py-3 text-base font-semibold;
+    @apply btn bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 h-12 px-6 py-3 text-base font-semibold;
   }
   
   .btn-secondary {
-    @apply btn bg-secondary text-secondary-foreground border border-input shadow-sm h-12 px-6 py-3 text-base;
+    @apply btn bg-secondary text-secondary-foreground border border-input shadow-sm hover:bg-secondary/80 h-12 px-6 py-3 text-base;
   }
   
   .btn-ghost {
-    @apply btn h-10 px-4 py-2;
+    @apply btn hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2;
   }
   
   .btn-danger {
-    @apply btn bg-destructive text-destructive-foreground shadow-sm h-12 px-6 py-3 text-base font-semibold;
+    @apply btn bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 h-12 px-6 py-3 text-base font-semibold;
   }
   
   .btn-sm {
@@ -365,12 +370,14 @@
     @apply h-14 rounded-md px-8 py-4 text-lg;
   }
   
+  /* Enhanced Input Styles */
   .input-field {
-    @apply flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
   }
   
+  /* Enhanced Card Styles */
   .card {
-    @apply rounded-lg border bg-card text-card-foreground shadow-sm mb-8;
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
   }
   
   .card-header {
@@ -378,7 +385,7 @@
   }
   
   .card-title {
-    @apply text-xl lg:text-2xl font-semibold leading-none tracking-tight mb-2;
+    @apply text-xl lg:text-2xl font-semibold leading-none tracking-tight;
   }
   
   .card-description {
@@ -393,8 +400,9 @@
     @apply flex items-center p-6 lg:p-8 pt-0;
   }
   
+  /* Enhanced Badge Styles */
   .badge {
-    @apply inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+    @apply inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all duration-200;
   }
   
   .badge-default {
@@ -419,6 +427,43 @@
   
   .badge-outline {
     @apply badge text-foreground;
+  }
+
+  /* Page Layout Utilities */
+  .page-container {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 max-w-7xl;
+  }
+
+  .page-header {
+    @apply mb-8 sm:mb-10;
+  }
+
+  .page-title {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4;
+  }
+
+  .page-description {
+    @apply text-base sm:text-lg text-muted-foreground leading-relaxed;
+  }
+
+  .section-spacing {
+    @apply space-y-8 sm:space-y-10;
+  }
+
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8;
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8;
+  }
+
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8;
+  }
+
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6;
   }
 }
 
@@ -472,11 +517,8 @@
 .editor-preview blockquote {
   @apply border-l-4 border-border pl-4 italic text-muted-foreground;
 }
-/* Full-screen editor fixes */
-/* Full-screen editor fixes */
-/* When SimpleMDE/EasyMDE is in full-screen mode, it adds 'editor-fullscreen' class to html */
 
-/* Hide all navigation elements */
+/* Full-screen editor fixes */
 html.editor-fullscreen .sidebar,
 html.editor-fullscreen .mobile-header {
   display: none !important;
@@ -485,7 +527,6 @@ html.editor-fullscreen .mobile-header {
   z-index: -1 !important;
 }
 
-/* Specifically hide the main application header, but not the editor's toolbar */
 html.editor-fullscreen .main-content > header {
   display: none !important;
   visibility: hidden !important;
@@ -493,7 +534,6 @@ html.editor-fullscreen .main-content > header {
   z-index: -1 !important;
 }
 
-/* Additional aggressive hiding for any remaining navigation elements */
 html.editor-fullscreen nav,
 html.editor-fullscreen .nav-menu,
 html.editor-fullscreen .sidebar-header,
@@ -504,7 +544,6 @@ html.editor-fullscreen .logout-section {
   pointer-events: none !important;
 }
 
-/* Force the main content to take full viewport in fullscreen */
 html.editor-fullscreen .main-content {
   position: fixed !important;
   top: 0 !important;
@@ -518,7 +557,6 @@ html.editor-fullscreen .main-content {
   z-index: 9998 !important;
 }
 
-/* Ensure dashboard container doesn't interfere */
 html.editor-fullscreen .dashboard-container {
   position: static !important;
   width: 100vw !important;
@@ -526,7 +564,6 @@ html.editor-fullscreen .dashboard-container {
   overflow: hidden !important;
 }
 
-/* Reset content section */
 html.editor-fullscreen .content-section {
   position: fixed !important;
   top: 0 !important;
@@ -541,7 +578,6 @@ html.editor-fullscreen .content-section {
   background: white !important;
 }
 
-/* Ensure the full-screen editor takes complete control */
 html.editor-fullscreen .CodeMirror-fullscreen {
   position: fixed !important;
   top: 0 !important;
@@ -556,7 +592,6 @@ html.editor-fullscreen .CodeMirror-fullscreen {
   border-radius: 0 !important;
 }
 
-/* Ensure toolbar is visible and positioned correctly */
 html.editor-fullscreen .editor-toolbar {
   position: relative !important;
   z-index: 10000 !important;
@@ -565,13 +600,11 @@ html.editor-fullscreen .editor-toolbar {
   border-bottom: 1px solid #ddd !important;
 }
 
-/* Adjust editor content area for full-screen */
 html.editor-fullscreen .CodeMirror-scroll {
   height: calc(100vh - 50px) !important;
   width: 100% !important;
 }
 
-/* Hide any overlays or other interfering elements */
 html.editor-fullscreen .overlay,
 html.editor-fullscreen .overlay {
   display: none !important;
@@ -579,12 +612,10 @@ html.editor-fullscreen .overlay {
   opacity: 0 !important;
 }
 
-/* Ensure body doesn't scroll in full-screen mode */
 html.editor-fullscreen {
   overflow: hidden !important;
 }
 
-/* Reset any container constraints */
 html.editor-fullscreen .container,
 html.editor-fullscreen .max-w-5xl,
 html.editor-fullscreen .mx-auto {
@@ -593,4 +624,3 @@ html.editor-fullscreen .mx-auto {
   margin: 0 !important;
   padding: 0 !important;
 }
-/* When SimpleMDE/EasyMDE is in full-screen mode, it adds 'editor-fullscreen' class to html */

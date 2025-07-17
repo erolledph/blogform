@@ -7,7 +7,7 @@ import { storage } from '@/firebase';
 import SimpleMDE from 'react-simplemde-editor';
 import InputField from '@/components/shared/InputField';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { Save, ArrowLeft } from 'lucide-react';
+import { Save, ArrowLeft, Upload } from 'lucide-react';
 import { generateSlug, parseArrayInput } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 import 'easymde/dist/easymde.min.css';
@@ -235,26 +235,30 @@ export default function CreateContentPage() {
   };
 
   if (contentLoading && isEditing) {
-    return <LoadingSpinner size="lg" className="h-64" />;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10">
+    <div className="section-spacing">
       {/* Header with Action Buttons */}
-      <div className="flex flex-col space-y-6">
+      <div className="page-header">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             <button
               onClick={() => navigate('/dashboard/manage')}
-              className="btn-ghost p-3"
+              className="btn-ghost p-2 sm:p-3"
             >
-              <ArrowLeft className="h-6 w-6" />
+              <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
             <div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
+              <h1 className="page-title">
                 {isEditing ? 'Edit Content' : 'Create New Content'}
               </h1>
-              <p className="text-lg text-muted-foreground">
+              <p className="page-description">
                 {isEditing ? 'Update your existing content' : 'Write and publish new content'}
               </p>
             </div>
@@ -262,7 +266,7 @@ export default function CreateContentPage() {
         </div>
         
         {/* Action Buttons at Top */}
-        <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-border">
+        <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4 pt-6 border-t border-border">
           <button
             type="button"
             onClick={() => navigate('/dashboard/manage')}
@@ -284,18 +288,18 @@ export default function CreateContentPage() {
 
       <form id="content-form" onSubmit={handleSubmit}>
         {/* Two Column Layout for Wide Screens */}
-        <div className="space-y-10">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-10">
           
-          {/* Left Column - Main Content */}
-          <div className="space-y-8">
+          {/* Left Column - Main Content (2/3 width on xl screens) */}
+          <div className="xl:col-span-2 space-y-8">
             {/* Content Details */}
             <div className="card">
               <div className="card-header">
                 <h2 className="card-title">Content Details</h2>
-                <p className="card-description text-lg">Enter the main content information</p>
+                <p className="card-description">Enter the main content information</p>
               </div>
-              <div className="card-content space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="card-content space-y-6">
+                <div className="grid-responsive-2">
                   <InputField
                     label="Title"
                     name="title"
@@ -342,20 +346,20 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Featured Image</h3>
-                <p className="card-description text-lg">Add a featured image for your content</p>
+                <p className="card-description">Add a featured image for your content</p>
               </div>
-              <div className="card-content space-y-8">
+              <div className="card-content space-y-6">
                 {formData.featuredImageUrl && (
-                  <div className="flex justify-center mb-8">
+                  <div className="flex justify-center">
                     <img
                       src={formData.featuredImageUrl}
                       alt="Featured"
-                      className="max-w-lg w-full h-64 object-cover rounded-lg border border-border shadow-sm"
+                      className="max-w-full w-full max-h-64 object-cover rounded-lg border border-border shadow-sm"
                     />
                   </div>
                 )}
                 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid-responsive-2">
                   <div>
                     <label className="block text-base font-medium text-foreground mb-4">
                       Upload Image
@@ -389,39 +393,37 @@ export default function CreateContentPage() {
             </div>
           </div>
 
-          {/* Right Column - Settings */}
+          {/* Right Column - Settings (1/3 width on xl screens) */}
           <div className="space-y-8">
             {/* Publish Settings */}
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Publish Settings</h3>
-                <p className="card-description text-lg">Configure publication settings</p>
+                <p className="card-description">Configure publication settings</p>
               </div>
-              <div className="card-content">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Status
-                    </label>
-                    <select
-                      name="status"
-                      className="input-field"
-                      value={formData.status}
-                      onChange={handleInputChange}
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
-                    </select>
-                  </div>
-
-                  <InputField
-                    label="Author"
-                    name="author"
-                    placeholder="Author name"
-                    value={formData.author}
+              <div className="card-content space-y-6">
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    className="input-field"
+                    value={formData.status}
                     onChange={handleInputChange}
-                  />
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                  </select>
                 </div>
+
+                <InputField
+                  label="Author"
+                  name="author"
+                  placeholder="Author name"
+                  value={formData.author}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
 
@@ -429,31 +431,29 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">SEO Settings</h3>
-                <p className="card-description text-lg">Optimize your content for search engines</p>
+                <p className="card-description">Optimize your content for search engines</p>
               </div>
-              <div className="card-content space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <InputField
-                    label="SEO Title"
-                    name="seoTitle"
-                    placeholder="SEO optimized title"
-                    value={formData.seoTitle}
-                    onChange={handleInputChange}
-                  />
+              <div className="card-content space-y-6">
+                <InputField
+                  label="SEO Title"
+                  name="seoTitle"
+                  placeholder="SEO optimized title"
+                  value={formData.seoTitle}
+                  onChange={handleInputChange}
+                />
 
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Keywords (comma separated)
-                    </label>
-                    <input
-                      type="text"
-                      className="input-field"
-                      value={keywordsInput}
-                      onChange={(e) => setKeywordsInput(e.target.value)}
-                      onBlur={handleKeywordsBlur}
-                      placeholder="keyword1, keyword2, keyword3"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Keywords (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={keywordsInput}
+                    onChange={(e) => setKeywordsInput(e.target.value)}
+                    onBlur={handleKeywordsBlur}
+                    placeholder="keyword1, keyword2, keyword3"
+                  />
                 </div>
 
                 <div>
@@ -476,37 +476,35 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Organization</h3>
-                <p className="card-description text-lg">Categorize and tag your content</p>
+                <p className="card-description">Categorize and tag your content</p>
               </div>
-              <div className="card-content">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Categories (comma separated)
-                    </label>
-                    <input
-                      type="text"
-                      className="input-field"
-                      value={categoriesInput}
-                      onChange={(e) => setCategoriesInput(e.target.value)}
-                      onBlur={handleCategoriesBlur}
-                      placeholder="Web Development, Technology"
-                    />
-                  </div>
+              <div className="card-content space-y-6">
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Categories (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={categoriesInput}
+                    onChange={(e) => setCategoriesInput(e.target.value)}
+                    onBlur={handleCategoriesBlur}
+                    placeholder="Web Development, Technology"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Tags (comma separated)
-                    </label>
-                    <input
-                      type="text"
-                      className="input-field"
-                      value={tagsInput}
-                      onChange={(e) => setTagsInput(e.target.value)}
-                      onBlur={handleTagsBlur}
-                      placeholder="react, javascript, tutorial"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Tags (comma separated)
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={tagsInput}
+                    onChange={(e) => setTagsInput(e.target.value)}
+                    onBlur={handleTagsBlur}
+                    placeholder="react, javascript, tutorial"
+                  />
                 </div>
               </div>
             </div>

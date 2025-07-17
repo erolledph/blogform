@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import InputField from '@/components/shared/InputField';
 import toast from 'react-hot-toast';
-import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail } from 'lucide-react';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { login } = useAuth();
@@ -72,84 +71,63 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 px-6 py-12">
-      <div className="max-w-lg w-full">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="mx-auto h-24 w-24 bg-primary rounded-full flex items-center justify-center shadow-lg mb-10">
-            <Lock className="h-12 w-12 text-primary-foreground" />
+        <div className="text-center">
+          <div className="mx-auto h-20 w-20 sm:h-24 sm:w-24 bg-primary rounded-full flex items-center justify-center shadow-lg mb-8">
+            <Lock className="h-10 w-10 sm:h-12 sm:w-12 text-primary-foreground" />
           </div>
-          <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             Admin Login
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
             Sign in to access your content management system
           </p>
         </div>
         
         {/* Login Form Card */}
         <div className="card shadow-xl border-0">
-          <div className="card-content p-8 lg:p-10">
-            <form className="space-y-10" onSubmit={handleSubmit}>
-              <div className="space-y-8">
+          <div className="card-content p-6 sm:p-8 lg:p-10">
+            <form className="space-y-8" onSubmit={handleSubmit}>
+              <div className="space-y-6">
                 {/* Email Field */}
-                <div>
-                  <InputField
-                    label="Email Address"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="Enter your email address"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    error={errors.email}
-                  />
-                </div>
+                <InputField
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  placeholder="Enter your email address"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  error={errors.email}
+                  icon={Mail}
+                  className="w-full"
+                />
                 
                 {/* Password Field */}
-                <div>
-                  <label className="block text-base font-medium text-foreground mb-4">
-                    Password <span className="text-destructive">*</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <input
-                      name="password"
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      required
-                      className={`input-field pl-14 pr-14 h-14 text-lg ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      placeholder="Enter your password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-5 flex items-center"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="mt-2 text-sm text-destructive">{errors.password}</p>
-                  )}
-                </div>
+                <InputField
+                  label="Password"
+                  name="password"
+                  autoComplete="current-password"
+                  required
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  error={errors.password}
+                  icon={Lock}
+                  showPasswordToggle={true}
+                  className="w-full"
+                />
               </div>
 
               {/* Submit Button */}
-              <div className="pt-6">
+              <div className="pt-4">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-primary w-full h-16 text-lg font-semibold shadow-lg"
+                  className="btn-primary w-full h-14 sm:h-16 text-base sm:text-lg font-semibold shadow-lg"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
@@ -166,8 +144,8 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-10">
-          <p className="text-base text-muted-foreground">
+        <div className="text-center">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Secure access to your content management system
           </p>
         </div>

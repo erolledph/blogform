@@ -7,7 +7,7 @@ export default function Header({ onMenuClick }) {
   const { currentUser } = useAuth();
 
   return (
-    <header className="bg-white border-b border-border px-6 py-4 sticky top-0 z-30 backdrop-blur-sm bg-white/95">
+    <header className="bg-white border-b border-border px-4 sm:px-6 py-4 sticky top-0 z-30 backdrop-blur-sm bg-white/95">
       <div className="flex items-center justify-between">
         {/* Left side - Mobile menu button */}
         <div className="flex items-center">
@@ -28,7 +28,7 @@ export default function Header({ onMenuClick }) {
         </div>
 
         {/* Right side - User menu and notifications */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           {/* Notifications */}
           <button 
             className="p-2 rounded-md hover:bg-muted transition-colors duration-200 relative"
@@ -41,7 +41,7 @@ export default function Header({ onMenuClick }) {
           {/* User menu */}
           <Link 
             to="/dashboard/settings"
-            className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted transition-colors duration-200"
+            className="flex items-center space-x-2 sm:space-x-3 p-2 rounded-md hover:bg-muted transition-colors duration-200"
             title="User Settings"
           >
             <div className="hidden sm:block text-right">

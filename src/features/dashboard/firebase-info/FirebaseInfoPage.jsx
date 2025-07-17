@@ -5,7 +5,6 @@ import { Database, Cloud, Zap, CreditCard, AlertTriangle, CheckCircle, XCircle, 
 
 export default function FirebaseInfoPage() {
   const { usage, loading: usageLoading, error: usageError, refetch } = useFirebaseUsage();
-  const currentPlan = 'Spark (Free)'; // This could be dynamic based on your Firebase project
 
   const sparkLimits = [
     { feature: 'Cloud Storage', limit: '5 GB total', usage: 'Image uploads, file storage' },
@@ -57,15 +56,15 @@ export default function FirebaseInfoPage() {
   };
 
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Firebase Usage & Plans</h1>
-        <p className="text-lg text-muted-foreground">
-          Understand your current Firebase setup, usage limits, and upgrade options
+    <div className="section-spacing">
+      <div className="page-header">
+        <h1 className="page-title">Firebase Usage & Plans</h1>
+        <p className="page-description">
+          Understand your Firebase setup, usage patterns, and available plan options
         </p>
       </div>
 
-      {/* Current Plan Status */}
+      {/* Firebase Plan Information */}
       <div className="card border-primary/20 bg-primary/5">
         <div className="card-header">
           <div className="flex items-center space-x-4">
@@ -73,25 +72,28 @@ export default function FirebaseInfoPage() {
               <Zap className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h2 className="card-title">Current Plan: {currentPlan}</h2>
+              <h2 className="card-title">Firebase Plans Overview</h2>
               <p className="card-description text-lg">
-                You're currently on Firebase's free tier with generous limits for development
+                Understanding Firebase pricing tiers and your application's usage
               </p>
             </div>
           </div>
         </div>
         <div className="card-content">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <div className="flex items-start space-x-3">
-              <AlertTriangle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-1" />
+              <Info className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="text-lg font-semibold text-yellow-800 mb-2">Important: Image Upload Functionality</h3>
-                <p className="text-base text-yellow-700 mb-3">
-                  Your current setup <strong>DOES use Firebase Storage</strong> for image uploads, not Base64 conversion. 
-                  This means image uploads are subject to Spark plan limits.
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">Plan Detection Limitation</h3>
+                <p className="text-base text-blue-700 mb-3">
+                  Firebase doesn't provide a client-side API to detect your current billing plan. 
+                  The information below shows general Firebase plan limits and your application's usage patterns.
                 </p>
-                <p className="text-base text-yellow-700">
-                  If you exceed the 5GB storage limit or 1GB/day download limit, image uploads may fail and you'll need to upgrade to the Blaze plan.
+                <p className="text-base text-blue-700">
+                  To check your actual plan and billing status, visit the 
+                  <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-800 underline ml-1">
+                    Firebase Console
+                  </a>.
                 </p>
               </div>
             </div>
@@ -239,10 +241,10 @@ export default function FirebaseInfoPage() {
                       </span>
                     </div>
                     
-                    {/* Progress bar for storage usage */}
+                    {/* Progress bar for storage usage against free tier limit */}
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Usage vs Spark Plan Limit (5 GB)</span>
+                        <span className="text-muted-foreground">Usage vs Free Tier Limit (5 GB)</span>
                         <span className="text-muted-foreground">
                           {((usage.storageUsage.contentSize || 0) / (5 * 1024 * 1024 * 1024) * 100).toFixed(2)}%
                         </span>
@@ -301,7 +303,7 @@ export default function FirebaseInfoPage() {
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Daily Limit (Spark)</span>
+                          <span className="text-muted-foreground">Free Tier Daily Limit</span>
                           <span className="text-muted-foreground">50,000</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -340,7 +342,7 @@ export default function FirebaseInfoPage() {
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Daily Limit (Spark)</span>
+                          <span className="text-muted-foreground">Free Tier Daily Limit</span>
                           <span className="text-muted-foreground">20,000</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -381,6 +383,30 @@ export default function FirebaseInfoPage() {
               </button>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Important Notice about Image Uploads */}
+      <div className="card border-amber-200 bg-amber-50">
+        <div className="card-content p-6">
+          <div className="flex items-start space-x-4">
+            <AlertTriangle className="h-6 w-6 text-amber-600 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-semibold text-amber-800 mb-2">Important: Image Upload Functionality</h3>
+              <div className="text-base text-amber-700 space-y-2">
+                <p>
+                  Your application <strong>DOES use Firebase Storage</strong> for image uploads. 
+                  This means image uploads are subject to Firebase plan limits.
+                </p>
+                <p>
+                  <strong>Free Tier Limits:</strong> 5GB storage total, 1GB/day download limit
+                </p>
+                <p>
+                  If you exceed these limits, image uploads may fail and you'll need to upgrade to the Blaze plan for pay-as-you-go pricing.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -500,7 +526,7 @@ export default function FirebaseInfoPage() {
                               ></div>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              of 5 GB Spark plan limit
+                              of 5 GB free tier limit
                             </p>
                           </div>
                         )}
@@ -564,7 +590,7 @@ export default function FirebaseInfoPage() {
                               ></div>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              of 50,000 daily limit
+                              of 50,000 free tier daily limit
                             </p>
                           </div>
                         )}
@@ -596,7 +622,7 @@ export default function FirebaseInfoPage() {
                               ></div>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              of 20,000 daily limit
+                              of 20,000 free tier daily limit
                             </p>
                           </div>
                         )}
@@ -649,14 +675,14 @@ export default function FirebaseInfoPage() {
         </div>
       </div>
 
-      {/* Spark Plan Limits */}
+      {/* Free Tier (Spark Plan) Limits */}
       <div className="card">
         <div className="card-header">
           <div className="flex items-center space-x-4 mb-4">
             <div className="p-3 bg-green-100 rounded-lg">
               <Database className="h-8 w-8 text-green-600" />
             </div>
-            <h2 className="card-title">Spark Plan (Free) Limits</h2>
+            <h2 className="card-title">Free Tier (Spark Plan) Limits</h2>
           </div>
           <p className="card-description text-lg">
             Daily and total limits for Firebase services on the free tier
@@ -671,7 +697,7 @@ export default function FirebaseInfoPage() {
                     Service
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                    Free Limit
+                    Free Tier Limit
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Usage in Your App
@@ -734,7 +760,7 @@ export default function FirebaseInfoPage() {
         <div className="card-content">
           <div className="space-y-6">
             <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">For Current Spark Plan Users</h3>
+              <h3 className="text-lg font-semibold text-blue-800 mb-3">For Free Tier Users</h3>
               <ul className="space-y-2 text-base text-blue-700">
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
