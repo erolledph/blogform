@@ -38,10 +38,36 @@ export default function FirebaseStoragePage() {
       setLoading(true);
       setError(null);
       
-      // List all files in the storage bucket
+      // Recursively list all files in the storage bucket including subfolders
       const storageRef = ref(storage);
+      const allFiles = await listAllFilesRecursive(storageRef);
+      
+      // Sort by creation date (newest first)
+      allFiles.sort((a, b) => b.timeCreated - a.timeCreated);
+      
+      setFiles(allFiles);
+      
+      // Calculate total size
+      const total = allFiles.reduce((sum, file) => sum + file.size, 0);
+      setTotalSize(total);
+      
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      setError(error.message);
+      toast.error('Failed to fetch files from storage');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Recursive function to list all files including those in subfolders
+  const listAllFilesRecursive = async (storageRef) => {
+    const allFiles = [];
+    
+    try {
       const result = await listAll(storageRef);
       
+      // Process files at current level
       const filePromises = result.items.map(async (itemRef) => {
         try {
           const metadata = await getMetadata(itemRef);
@@ -62,25 +88,31 @@ export default function FirebaseStoragePage() {
           return null;
         }
       });
-
-      const filesData = (await Promise.all(filePromises)).filter(Boolean);
       
-      // Sort by creation date (newest first)
-      filesData.sort((a, b) => b.timeCreated - a.timeCreated);
+      const currentLevelFiles = (await Promise.all(filePromises)).filter(Boolean);
+      allFiles.push(...currentLevelFiles);
       
-      setFiles(filesData);
+      // Recursively process subfolders
+      const subfolderPromises = result.prefixes.map(async (prefixRef) => {
+        try {
+          const subfolderFiles = await listAllFilesRecursive(prefixRef);
+          return subfolderFiles;
+        } catch (error) {
+          console.warn(`Error listing files in folder ${prefixRef.fullPath}:`, error);
+          return [];
+        }
+      });
       
-      // Calculate total size
-      const total = filesData.reduce((sum, file) => sum + file.size, 0);
-      setTotalSize(total);
+      const subfolderResults = await Promise.all(subfolderPromises);
+      subfolderResults.forEach(subfolderFiles => {
+        allFiles.push(...subfolderFiles);
+      });
       
     } catch (error) {
-      console.error('Error fetching files:', error);
-      setError(error.message);
-      toast.error('Failed to fetch files from storage');
-    } finally {
-      setLoading(false);
+      console.error(`Error listing files in ${storageRef.fullPath}:`, error);
     }
+    
+    return allFiles;
   };
 
   const handleDelete = async (file) => {
