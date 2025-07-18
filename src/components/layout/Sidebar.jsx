@@ -11,6 +11,7 @@ import {
   Folder,
   Package,
   Plus,
+  Lightbulb,
   LogOut,
   Menu,
 } from 'lucide-react';
@@ -24,19 +25,26 @@ const navigation = [
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'File Storage', href: '/dashboard/storage', icon: Folder },
   { name: 'Firebase Info', href: '/dashboard/firebase-info', icon: Database },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 const createMenuItems = [
   { name: 'Create Content', href: '/dashboard/create', icon: FileText },
   { name: 'Add Product', href: '/dashboard/create-product', icon: Package },
 ];
+
+const settingsMenuItems = [
+  { name: 'Account Settings', href: '/dashboard/account-settings', icon: Settings },
+  { name: 'Tips', href: '/dashboard/tips', icon: Lightbulb },
+  { name: 'Documentation', href: '/dashboard/documentation', icon: BookOpen },
+];
+
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const location = useLocation();
   const { logout } = useAuth();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [createMenuOpen, setCreateMenuOpen] = React.useState(false);
+  const [settingsMenuOpen, setSettingsMenuOpen] = React.useState(false);
 
   const handleLogout = async () => {
     try {
@@ -61,6 +69,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const toggleCreateMenu = () => {
     setCreateMenuOpen(!createMenuOpen);
   };
+
+  const toggleSettingsMenu = () => {
+    setSettingsMenuOpen(!settingsMenuOpen);
+  };
+
   const handleMouseEnter = () => {
     setIsHovered(true);
   };
@@ -167,6 +180,47 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
             </li>
           );
         })}
+
+        {/* Settings Mega Menu */}
+        <li className="nav-item">
+          <button
+            onClick={toggleSettingsMenu}
+            className="nav-link w-full text-left"
+            title={!isExpanded && !isHovered ? 'Settings' : ''}
+            aria-label="Settings"
+          >
+            <Settings className="nav-link-icon" />
+            <span className="nav-link-text">Settings</span>
+            {!isExpanded && !isHovered && (
+              <div className="nav-tooltip">Settings</div>
+            )}
+          </button>
+          
+          {/* Settings Submenu */}
+          {settingsMenuOpen && (
+            <ul className="ml-6 mt-2 space-y-1">
+              {settingsMenuItems.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <li key={item.name}>
+                    <Link
+                      to={item.href}
+                      onClick={handleLinkClick}
+                      className={`nav-link text-sm py-2 ${isActive ? 'active' : ''}`}
+                      title={!isExpanded && !isHovered ? item.name : ''}
+                    >
+                      <item.icon className="nav-link-icon h-4 w-4" />
+                      <span className="nav-link-text">{item.name}</span>
+                      {!isExpanded && !isHovered && (
+                        <div className="nav-tooltip">{item.name}</div>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </li>
       </ul>
 
       {/* Logout button */}

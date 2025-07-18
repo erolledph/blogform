@@ -13,7 +13,9 @@ const CreateProductPage = React.lazy(() => import('@/features/dashboard/create-p
 const AnalyticsPage = React.lazy(() => import('@/features/dashboard/analytics/AnalyticsPage'));
 const FirebaseStoragePage = React.lazy(() => import('@/features/dashboard/storage/FirebaseStoragePage'));
 const FirebaseInfoPage = React.lazy(() => import('@/features/dashboard/firebase-info/FirebaseInfoPage'));
-const SettingsPage = React.lazy(() => import('@/features/dashboard/settings/SettingsPage'));
+const AccountSettingsPage = React.lazy(() => import('@/features/dashboard/settings/AccountSettingsPage'));
+const TipsPage = React.lazy(() => import('@/features/dashboard/tips/TipsPage'));
+const DocumentationPage = React.lazy(() => import('@/features/dashboard/documentation/DocumentationPage'));
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -63,7 +65,9 @@ export default function DashboardPage() {
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/storage" element={<FirebaseStoragePage />} />
                 <Route path="/firebase-info" element={<FirebaseInfoPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/account-settings" element={<AccountSettingsPage />} />
+                <Route path="/tips" element={<TipsPage />} />
+                <Route path="/documentation" element={<DocumentationPage />} />
               </Routes>
             </Suspense>
           </div>
