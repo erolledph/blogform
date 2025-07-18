@@ -7,6 +7,12 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
     
+    // Allow public read access to published products
+    match /products/{docId} {
+      allow read: if resource.data.status == 'published' || request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
     // Existing rules for other collections
     match /{document=**} {
       allow read, write: if request.auth != null;

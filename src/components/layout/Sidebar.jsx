@@ -11,6 +11,10 @@ import {
   BarChart3,
   Settings,
   Folder,
+  Package,
+  ChevronDown,
+  Edit,
+  ShoppingBag,
   LogOut,
   Menu,
 } from 'lucide-react';
@@ -19,7 +23,7 @@ import toast from 'react-hot-toast';
 const navigation = [
   { name: 'Overview', href: '/dashboard/overview', icon: LayoutDashboard },
   { name: 'Manage Content', href: '/dashboard/manage', icon: FileText },
-  { name: 'Create Content', href: '/dashboard/create', icon: Plus },
+  { name: 'Manage Products', href: '/dashboard/manage-products', icon: Package },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'File Storage', href: '/dashboard/storage', icon: Folder },
   { name: 'Firebase Info', href: '/dashboard/firebase-info', icon: Database },
@@ -28,11 +32,16 @@ const navigation = [
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
+const createMenuItems = [
+  { name: 'Blog Post', href: '/dashboard/create', icon: Edit },
+  { name: 'Product', href: '/dashboard/create-product', icon: ShoppingBag },
+];
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const location = useLocation();
   const { logout } = useAuth();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [createMenuOpen, setCreateMenuOpen] = React.useState(false);
 
   const handleLogout = async () => {
     try {
@@ -104,6 +113,48 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
             </li>
           );
         })}
+        
+        {/* Create New Mega Menu */}
+        <li className="nav-item">
+          <button
+            onClick={() => setCreateMenuOpen(!createMenuOpen)}
+            className={`nav-link w-full text-left ${createMenuItems.some(item => location.pathname === item.href) ? 'active' : ''}`}
+            title={!isExpanded && !isHovered ? 'Create New' : ''}
+            aria-label="Create New"
+          >
+            <Plus className="nav-link-icon" />
+            <span className="nav-link-text">Create New</span>
+            <ChevronDown className={`nav-link-icon ml-auto transition-transform duration-200 ${createMenuOpen ? 'rotate-180' : ''}`} />
+            {!isExpanded && !isHovered && (
+              <div className="nav-tooltip">Create New</div>
+            )}
+          </button>
+          
+          {/* Submenu */}
+          {createMenuOpen && (isExpanded || isHovered || sidebarOpen) && (
+            <ul className="ml-8 mt-2 space-y-1">
+              {createMenuItems.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <li key={item.name}>
+                    <Link
+                      to={item.href}
+                      onClick={handleLinkClick}
+                      className={`flex items-center py-2 px-3 text-sm rounded-md transition-colors duration-200 ${
+                        isActive 
+                          ? 'bg-primary-foreground/20 text-primary-foreground font-medium' 
+                          : 'text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                      }`}
+                    >
+                      <item.icon className="h-4 w-4 mr-3 flex-shrink-0" />
+                      <span>{item.name}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </li>
       </ul>
 
       {/* Logout button */}

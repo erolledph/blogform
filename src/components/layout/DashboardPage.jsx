@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 const OverviewPage = React.lazy(() => import('@/features/dashboard/overview/OverviewPage'));
 const ManageContentPage = React.lazy(() => import('@/features/dashboard/manage-content/ManageContentPage'));
 const CreateContentPage = React.lazy(() => import('@/features/dashboard/create-content/CreateContentPage'));
+const ManageProductsPage = React.lazy(() => import('@/features/dashboard/manage-products/ManageProductsPage'));
+const CreateProductPage = React.lazy(() => import('@/features/dashboard/create-product/CreateProductPage'));
 const AnalyticsPage = React.lazy(() => import('@/features/dashboard/analytics/AnalyticsPage'));
 const FirebaseStoragePage = React.lazy(() => import('@/features/dashboard/storage/FirebaseStoragePage'));
 const FirebaseInfoPage = React.lazy(() => import('@/features/dashboard/firebase-info/FirebaseInfoPage'));
@@ -57,6 +59,9 @@ export default function DashboardPage() {
                 <Route path="/manage" element={<ManageContentPage />} />
                 <Route path="/create" element={<CreateContentPage />} />
                 <Route path="/edit/:id" element={<CreateContentPage />} />
+                <Route path="/manage-products" element={<ManageProductsPage />} />
+                <Route path="/create-product" element={<CreateProductPage />} />
+                <Route path="/edit-product/:id" element={<CreateProductPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/storage" element={<FirebaseStoragePage />} />
                 <Route path="/firebase-info" element={<FirebaseInfoPage />} />
