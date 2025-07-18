@@ -24,37 +24,9 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Helper function to get custom domain from Firestore
-async function getCustomDomain() {
-  try {
-    const docRef = db.collection('appSettings').doc('public');
-    const docSnap = await docRef.get();
-    
-    if (docSnap.exists) {
-      const data = docSnap.data();
-      return data.customDomain || '';
-    }
-    
-    return '';
-  } catch (error) {
-    console.error('Error fetching custom domain:', error);
-    return '';
-  }
-}
-
 // Helper function to generate content URL
-function getContentUrl(slug, customDomain = '') {
-  if (customDomain) {
-    // Add https:// if no protocol is present
-    let domain = customDomain;
-    if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
-      domain = `https://${domain}`;
-    }
-    return `${domain}/post/${slug}`;
-  }
-  
-  // Default domain
-  return `https://ailodi.xyz/post/${slug}`;
+function getContentUrl(slug) {
+  return `https://your-app-domain.com/post/${slug}`;
 }
 
 exports.handler = async (event, context) => {
@@ -87,10 +59,6 @@ exports.handler = async (event, context) => {
   try {
     console.log('Fetching content from Firestore...');
     
-    // Get custom domain setting
-    const customDomain = await getCustomDomain();
-    console.log('Custom domain:', customDomain || 'Using default domain');
-    
     // Query Firestore for published content (without ordering to avoid index requirement)
     const contentRef = db.collection('content');
     const snapshot = await contentRef
@@ -109,7 +77,7 @@ exports.handler = async (event, context) => {
         id: doc.id,
         ...data,
         // Add content URL using custom domain
-        contentUrl: getContentUrl(data.slug, customDomain),
+        contentUrl: getContentUrl(data.slug),
         publishDate: data.publishDate ? data.publishDate.toDate().toISOString() : null,
         createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
         updatedAt: data.updatedAt ? data.updatedAt.toDate().toISOString() : null

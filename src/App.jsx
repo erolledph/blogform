@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/hooks/useAuth';
-import { DomainProvider } from '@/contexts/DomainContext';
 import LoginPage from '@/features/auth/LoginPage';
 import DashboardPage from '@/components/layout/DashboardPage';
 import ProtectedRoute from '@/components/layout/ProtectedRoute';
@@ -12,7 +11,6 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <DomainProvider>
           <Router>
             <div className="min-h-screen bg-neutral-50">
               <Routes>
@@ -39,7 +37,6 @@ function App() {
               />
             </div>
           </Router>
-        </DomainProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

@@ -298,7 +298,7 @@ if products:
     "categories": ["Web Development", "Cloud"],
     "tags": ["nextjs", "firebase", "cloudflare", "blogging", "seo"],
     "status": "published",
-    "contentUrl": "https://your-custom-domain.com/post/the-clever-idea-nextjs-firebase-cloudflare",
+    "contentUrl": "https://your-app-domain.com/post/the-clever-idea-nextjs-firebase-cloudflare",
     "publishDate": "2025-06-27T10:00:00Z",
     "createdAt": "2025-06-27T09:30:00Z",
     "updatedAt": "2025-06-27T10:15:00Z"
@@ -335,7 +335,7 @@ if products:
     "category": "Electronics",
     "tags": ["audio", "wireless", "premium", "headphones"],
     "status": "published",
-    "productUrl": "https://your-custom-domain.com/product/premium-wireless-headphones",
+    "productUrl": "https://your-app-domain.com/product/premium-wireless-headphones",
     "createdAt": "2025-06-27T09:30:00Z",
     "updatedAt": "2025-06-27T10:15:00Z"
   }
@@ -560,11 +560,7 @@ if products:
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <p>Each item includes a URL field (`contentUrl` or `productUrl`) with the full URL using your configured custom domain.</p>
-            </div>
-            <div className="flex items-start">
-              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <p>Products include calculated pricing fields: `originalPrice`, `discountedPrice`, and `savings` based on the `price` and `percentOff` values.</p>
+              <p>Each item includes a URL field (`contentUrl` or `productUrl`) with the full URL for your application.</p>
             </div>
           </div>
         </div>

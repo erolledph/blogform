@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useDomain } from '@/contexts/DomainContext';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import DataTable from '@/components/shared/DataTable';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import Modal from '@/components/shared/Modal';
-import { Edit, Trash2, ExternalLink, Plus, ImageIcon, DollarSign, Package } from 'lucide-react';
+import { Edit, Trash2, Plus, ImageIcon, DollarSign, Package } from 'lucide-react';
 import { format } from 'date-fns';
 import { getStatusBadgeClass } from '@/utils/helpers';
 import toast from 'react-hot-toast';
@@ -17,7 +16,6 @@ export default function ManageProductsPage() {
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, product: null });
   const { getAuthToken } = useAuth();
-  const { publicCustomDomain } = useDomain();
 
   useEffect(() => {
     fetchProducts();
@@ -72,17 +70,6 @@ export default function ManageProductsPage() {
       console.error('Error deleting product:', error);
       toast.error('Failed to delete product');
     }
-  };
-
-  const getProductUrl = (slug) => {
-    if (publicCustomDomain) {
-      let domain = publicCustomDomain;
-      if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
-        domain = `https://${domain}`;
-      }
-      return `${domain}/product/${slug}`;
-    }
-    return `https://ailodi.xyz/product/${slug}`;
   };
 
   const calculateDiscountedPrice = (price, percentOff) => {
@@ -204,15 +191,6 @@ export default function ManageProductsPage() {
           >
             <Trash2 className="h-4 w-4" />
           </button>
-          <a
-            href={getProductUrl(row.slug)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground p-2 rounded-md hover:bg-muted transition-colors duration-200"
-            title="Visit"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </a>
         </div>
       )
     }

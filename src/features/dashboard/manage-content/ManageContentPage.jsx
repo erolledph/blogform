@@ -2,20 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useContent } from '@/hooks/useContent';
-import { useDomain } from '@/contexts/DomainContext';
 import { analyticsService } from '@/services/analyticsService';
 import DataTable from '@/components/shared/DataTable';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import Modal from '@/components/shared/Modal';
-import { Edit, Trash2, ExternalLink, Plus, ImageIcon, BarChart3, AlertTriangle } from 'lucide-react';
+import { Edit, Trash2, Plus, ImageIcon, BarChart3, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
-import { getStatusBadgeClass, getContentUrl } from '@/utils/helpers';
+import { getStatusBadgeClass } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 
 export default function ManageContentPage() {
   const { content, loading, error, refetch } = useContent();
   const { getAuthToken } = useAuth();
-  const { publicCustomDomain } = useDomain();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, content: null });
   const [analyticsModal, setAnalyticsModal] = useState({ isOpen: false, content: null });
 
@@ -152,15 +150,6 @@ export default function ManageContentPage() {
           >
             <Trash2 className="h-4 w-4" />
           </button>
-          <a
-            href={getContentUrl(row.slug, publicCustomDomain)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground p-2 rounded-md hover:bg-muted transition-colors duration-200"
-            title="Visit"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </a>
         </div>
       )
     }

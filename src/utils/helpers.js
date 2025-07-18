@@ -51,21 +51,6 @@ export const debounce = (func, wait) => {
   };
 }
 
-export const getContentUrl = (slug, customDomain = '') => {
-  
-  if (customDomain) {
-    // Add https:// if no protocol is present
-    let domain = customDomain;
-    if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
-      domain = `https://${domain}`;
-    }
-    return `${domain}/post/${slug}`;
-  }
-  
-  // Default domain
-  return `https://ailodi.xyz/post/${slug}`;
-};
-
 export const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return '0 Bytes';
 

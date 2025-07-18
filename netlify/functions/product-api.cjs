@@ -23,37 +23,9 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Helper function to get custom domain from Firestore
-async function getCustomDomain() {
-  try {
-    const docRef = db.collection('appSettings').doc('public');
-    const docSnap = await docRef.get();
-    
-    if (docSnap.exists) {
-      const data = docSnap.data();
-      return data.customDomain || '';
-    }
-    
-    return '';
-  } catch (error) {
-    console.error('Error fetching custom domain:', error);
-    return '';
-  }
-}
-
 // Helper function to generate product URL
-function getProductUrl(slug, customDomain = '') {
-  if (customDomain) {
-    // Add https:// if no protocol is present
-    let domain = customDomain;
-    if (!domain.startsWith('http://') && !domain.startsWith('https://')) {
-      domain = `https://${domain}`;
-    }
-    return `${domain}/product/${slug}`;
-  }
-  
-  // Default domain
-  return `https://ailodi.xyz/product/${slug}`;
+function getProductUrl(slug) {
+  return `https://your-app-domain.com/product/${slug}`;
 }
 
 // Helper function to calculate discounted price
@@ -92,10 +64,6 @@ exports.handler = async (event, context) => {
   try {
     console.log('Fetching products from Firestore...');
     
-    // Get custom domain setting
-    const customDomain = await getCustomDomain();
-    console.log('Custom domain:', customDomain || 'Using default domain');
-    
     // Query Firestore for published products (without ordering to avoid index requirement)
     const productsRef = db.collection('products');
     const snapshot = await productsRef
@@ -123,7 +91,7 @@ exports.handler = async (event, context) => {
         discountedPrice,
         savings: originalPrice - discountedPrice,
         // Add product URL using custom domain
-        productUrl: getProductUrl(data.slug, customDomain),
+        productUrl: getProductUrl(data.slug),
         createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
         updatedAt: data.updatedAt ? data.updatedAt.toDate().toISOString() : null
       };
