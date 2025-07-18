@@ -247,21 +247,13 @@ export default function CreateContentPage() {
       {/* Header with Action Buttons */}
       <div className="page-header">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-center space-x-4 sm:space-x-6">
-            <button
-              onClick={() => navigate('/dashboard/manage')}
-              className="btn-ghost p-2 sm:p-3"
-            >
-              <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
-            <div>
-              <h1 className="page-title">
-                {isEditing ? 'Edit Content' : 'Create New Content'}
-              </h1>
-              <p className="page-description">
-                {isEditing ? 'Update your existing content' : 'Write and publish new content'}
-              </p>
-            </div>
+          <div>
+            <h1 className="page-title">
+              {isEditing ? 'Edit Content' : 'Create New Content'}
+            </h1>
+            <p className="page-description">
+              {isEditing ? 'Update your existing content' : 'Write and publish new content'}
+            </p>
           </div>
         </div>
         

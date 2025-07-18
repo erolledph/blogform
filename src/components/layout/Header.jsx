@@ -20,11 +20,6 @@ export default function Header({ onMenuClick }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          
-          {/* Page title for mobile */}
-          <h1 className="lg:hidden ml-4 text-lg font-semibold text-foreground">
-            Admin Dashboard
-          </h1>
         </div>
 
         {/* Right side - User menu and notifications */}

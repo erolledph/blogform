@@ -263,21 +263,13 @@ export default function CreateProductPage() {
       {/* Header */}
       <div className="page-header">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-center space-x-4 sm:space-x-6">
-            <button
-              onClick={() => navigate('/dashboard/manage-products')}
-              className="btn-ghost p-2 sm:p-3"
-            >
-              <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-            </button>
-            <div>
-              <h1 className="page-title">
-                {isEditing ? 'Edit Product' : 'Create New Product'}
-              </h1>
-              <p className="page-description">
-                {isEditing ? 'Update your existing product' : 'Add a new product to your catalog'}
-              </p>
-            </div>
+          <div>
+            <h1 className="page-title">
+              {isEditing ? 'Edit Product' : 'Create New Product'}
+            </h1>
+            <p className="page-description">
+              {isEditing ? 'Update your existing product' : 'Add a new product to your catalog'}
+            </p>
           </div>
         </div>
         

@@ -13,8 +13,6 @@ const CreateProductPage = React.lazy(() => import('@/features/dashboard/create-p
 const AnalyticsPage = React.lazy(() => import('@/features/dashboard/analytics/AnalyticsPage'));
 const FirebaseStoragePage = React.lazy(() => import('@/features/dashboard/storage/FirebaseStoragePage'));
 const FirebaseInfoPage = React.lazy(() => import('@/features/dashboard/firebase-info/FirebaseInfoPage'));
-const TipsPage = React.lazy(() => import('@/features/dashboard/tips/TipsPage'));
-const DocumentationPage = React.lazy(() => import('@/features/dashboard/documentation/DocumentationPage'));
 const SettingsPage = React.lazy(() => import('@/features/dashboard/settings/SettingsPage'));
 
 export default function DashboardPage() {
@@ -65,8 +63,6 @@ export default function DashboardPage() {
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/storage" element={<FirebaseStoragePage />} />
                 <Route path="/firebase-info" element={<FirebaseInfoPage />} />
-                <Route path="/tips" element={<TipsPage />} />
-                <Route path="/documentation" element={<DocumentationPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </Suspense>

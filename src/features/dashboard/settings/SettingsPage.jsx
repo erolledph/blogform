@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useDomain } from '@/contexts/DomainContext';
 import InputField from '@/components/shared/InputField';
-import { User, Globe, Save, Check } from 'lucide-react';
+import TipsPage from '@/features/dashboard/tips/TipsPage';
+import DocumentationPage from '@/features/dashboard/documentation/DocumentationPage';
+import { User, Globe, Save, Check, Settings, Lightbulb, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function SettingsPage() {
   const { currentUser } = useAuth();
   const { publicCustomDomain, updateCustomDomain } = useDomain();
+  const [activeTab, setActiveTab] = useState('account');
   const [customDomain, setCustomDomainState] = useState('');
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -66,16 +69,48 @@ export default function SettingsPage() {
     return domain;
   };
 
+  const tabs = [
+    { id: 'account', label: 'Account', icon: User },
+    { id: 'tips', label: 'Tips', icon: Lightbulb },
+    { id: 'documentation', label: 'Documentation', icon: BookOpen },
+  ];
+
   return (
     <div className="section-spacing">
       <div className="page-header">
-        <h1 className="page-title">Settings</h1>
+        <h1 className="page-title">Settings & Resources</h1>
         <p className="page-description">
-          Manage your account settings and preferences
+          Manage your account settings, get SEO tips, and access API documentation
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      {/* Tab Navigation */}
+      <div className="card">
+        <div className="card-content p-0">
+          <div className="border-b border-border">
+            <nav className="flex space-x-8 px-6" aria-label="Tabs">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                    activeTab === tab.id
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                  }`}
+                >
+                  <tab.icon className="h-5 w-5" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'account' && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* User Information */}
         <div className="card">
           <div className="card-header">
@@ -170,22 +205,26 @@ export default function SettingsPage() {
             </form>
           </div>
         </div>
-      </div>
 
-      {/* Additional Settings Placeholder */}
-      <div className="card">
-        <div className="card-header">
-          <h2 className="card-title">Additional Settings</h2>
-          <p className="card-description">
-            More settings will be available here in future updates
-          </p>
-        </div>
-        <div className="card-content">
-          <div className="text-center py-8 text-muted-foreground">
-            <p>Additional configuration options will be added here as the application grows.</p>
+        {/* Additional Settings Placeholder */}
+        <div className="card xl:col-span-2">
+          <div className="card-header">
+            <h2 className="card-title">Additional Settings</h2>
+            <p className="card-description">
+              More settings will be available here in future updates
+            </p>
+          </div>
+          <div className="card-content">
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Additional configuration options will be added here as the application grows.</p>
+            </div>
           </div>
         </div>
       </div>
+      )}
+
+      {activeTab === 'tips' && <TipsPage />}
+      {activeTab === 'documentation' && <DocumentationPage />}
     </div>
   );
 }

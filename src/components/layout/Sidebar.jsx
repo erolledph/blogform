@@ -4,17 +4,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { 
   LayoutDashboard, 
   FileText, 
-  Plus, 
   BookOpen, 
-  Lightbulb,
   Database,
   BarChart3,
   Settings,
   Folder,
   Package,
-  ChevronDown,
-  Edit,
-  ShoppingBag,
+  Plus,
   LogOut,
   Menu,
 } from 'lucide-react';
@@ -22,19 +18,18 @@ import toast from 'react-hot-toast';
 
 const navigation = [
   { name: 'Overview', href: '/dashboard/overview', icon: LayoutDashboard },
+  // Create New menu will be inserted here
   { name: 'Manage Content', href: '/dashboard/manage', icon: FileText },
   { name: 'Manage Products', href: '/dashboard/manage-products', icon: Package },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'File Storage', href: '/dashboard/storage', icon: Folder },
   { name: 'Firebase Info', href: '/dashboard/firebase-info', icon: Database },
-  { name: 'Tips', href: '/dashboard/tips', icon: Lightbulb },
-  { name: 'Documentation', href: '/dashboard/documentation', icon: BookOpen },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 const createMenuItems = [
-  { name: 'Blog Post', href: '/dashboard/create', icon: Edit },
-  { name: 'Product', href: '/dashboard/create-product', icon: ShoppingBag },
+  { name: 'Create Content', href: '/dashboard/create', icon: FileText },
+  { name: 'Add Product', href: '/dashboard/create-product', icon: Package },
 ];
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const location = useLocation();
@@ -63,6 +58,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
     setIsExpanded(!isExpanded);
   };
 
+  const toggleCreateMenu = () => {
+    setCreateMenuOpen(!createMenuOpen);
+  };
   const handleMouseEnter = () => {
     setIsHovered(true);
   };
@@ -93,7 +91,63 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
       </div>
       
       <ul className="nav-menu">
-        {navigation.map((item) => {
+        {/* Overview */}
+        <li className="nav-item">
+          <Link
+            to="/dashboard/overview"
+            onClick={handleLinkClick}
+            className={`nav-link ${location.pathname === '/dashboard/overview' ? 'active' : ''}`}
+            title={!isExpanded && !isHovered ? 'Overview' : ''}
+            aria-label="Overview"
+          >
+            <LayoutDashboard className="nav-link-icon" />
+            <span className="nav-link-text">Overview</span>
+            {!isExpanded && !isHovered && (
+              <div className="nav-tooltip">Overview</div>
+            )}
+          </Link>
+        </li>
+        
+        {/* Create New Mega Menu - moved up */}
+        <li className="nav-item">
+          <button
+            onClick={toggleCreateMenu}
+            className="nav-link w-full text-left"
+            title={!isExpanded && !isHovered ? 'Create New' : ''}
+            aria-label="Create New"
+          >
+            <Plus className="nav-link-icon" />
+            <span className="nav-link-text">Create New</span>
+            {!isExpanded && !isHovered && (
+              <div className="nav-tooltip">Create New</div>
+            )}
+          </button>
+          
+          {/* Submenu */}
+          {createMenuOpen && (
+            <ul className="ml-6 mt-2 space-y-1">
+              {createMenuItems.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    to={item.href}
+                    onClick={handleLinkClick}
+                    className="nav-link text-sm py-2"
+                    title={!isExpanded && !isHovered ? item.name : ''}
+                  >
+                    <item.icon className="nav-link-icon h-4 w-4" />
+                    <span className="nav-link-text">{item.name}</span>
+                    {!isExpanded && !isHovered && (
+                      <div className="nav-tooltip">{item.name}</div>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+
+        {/* Rest of navigation items (excluding Overview since it's already rendered above) */}
+        {navigation.slice(1).map((item) => {
           const isActive = location.pathname === item.href;
           return (
             <li key={item.name} className="nav-item">
@@ -113,48 +167,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
             </li>
           );
         })}
-        
-        {/* Create New Mega Menu */}
-        <li className="nav-item">
-          <button
-            onClick={() => setCreateMenuOpen(!createMenuOpen)}
-            className={`nav-link w-full text-left ${createMenuItems.some(item => location.pathname === item.href) ? 'active' : ''}`}
-            title={!isExpanded && !isHovered ? 'Create New' : ''}
-            aria-label="Create New"
-          >
-            <Plus className="nav-link-icon" />
-            <span className="nav-link-text">Create New</span>
-            <ChevronDown className={`nav-link-icon ml-auto transition-transform duration-200 ${createMenuOpen ? 'rotate-180' : ''}`} />
-            {!isExpanded && !isHovered && (
-              <div className="nav-tooltip">Create New</div>
-            )}
-          </button>
-          
-          {/* Submenu */}
-          {createMenuOpen && (isExpanded || isHovered || sidebarOpen) && (
-            <ul className="ml-8 mt-2 space-y-1">
-              {createMenuItems.map((item) => {
-                const isActive = location.pathname === item.href;
-                return (
-                  <li key={item.name}>
-                    <Link
-                      to={item.href}
-                      onClick={handleLinkClick}
-                      className={`flex items-center py-2 px-3 text-sm rounded-md transition-colors duration-200 ${
-                        isActive 
-                          ? 'bg-primary-foreground/20 text-primary-foreground font-medium' 
-                          : 'text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground'
-                      }`}
-                    >
-                      <item.icon className="h-4 w-4 mr-3 flex-shrink-0" />
-                      <span>{item.name}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </li>
       </ul>
 
       {/* Logout button */}
