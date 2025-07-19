@@ -7,7 +7,7 @@ import { db, storage } from '@/firebase';
 import SimpleMDE from 'react-simplemde-editor';
 import InputField from '@/components/shared/InputField';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { Save, ArrowLeft, DollarSign, Percent } from 'lucide-react';
+import { Save, ArrowLeft, DollarSign, Percent, Upload, X, ImageIcon } from 'lucide-react';
 import { generateSlug, parseArrayInput } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 import 'easymde/dist/easymde.min.css';
@@ -24,7 +24,7 @@ export default function CreateProductPage() {
     description: '',
     price: '',
     percentOff: '',
-    imageUrl: '',
+    imageUrls: [], // Changed from imageUrl to imageUrls array
     productUrl: '',
     category: '',
     tags: [],
@@ -71,7 +71,7 @@ export default function CreateProductPage() {
           description: data.description || '',
           price: data.price?.toString() || '',
           percentOff: data.percentOff?.toString() || '',
-          imageUrl: data.imageUrl || '',
+          imageUrls: data.imageUrls || (data.imageUrl ? [data.imageUrl] : []), // Handle migration from single imageUrl
           productUrl: data.productUrl || '',
           category: data.category || '',
           tags: data.tags || [],
@@ -153,41 +153,68 @@ export default function CreateProductPage() {
   };
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
+    // Check if adding these files would exceed the 5 image limit
+    const currentImageCount = formData.imageUrls.length;
+    const totalImages = currentImageCount + files.length;
+    
+    if (totalImages > 5) {
+      toast.error(`You can only upload up to 5 images. You currently have ${currentImageCount} images.`);
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      toast.error('Image size should be less than 5MB');
-      return;
+    // Validate each file
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`${file.name} is not an image file`);
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error(`${file.name} is too large. Maximum size is 5MB.`);
+        return;
+      }
     }
 
     setUploading(true);
 
     try {
-      const timestamp = Date.now();
-      const fileName = `products/${timestamp}-${file.name}`;
-      const storageRef = ref(storage, fileName);
-      
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
+      const uploadPromises = files.map(async (file) => {
+        const timestamp = Date.now();
+        const randomId = Math.random().toString(36).substr(2, 9);
+        const fileName = `products/${timestamp}-${randomId}-${file.name}`;
+        const storageRef = ref(storage, fileName);
+        
+        await uploadBytes(storageRef, file);
+        return await getDownloadURL(storageRef);
+      });
+
+      const newImageUrls = await Promise.all(uploadPromises);
       
       setFormData(prev => ({
         ...prev,
-        imageUrl: downloadURL
+        imageUrls: [...prev.imageUrls, ...newImageUrls]
       }));
       
-      toast.success('Image uploaded successfully');
+      toast.success(`${files.length} image(s) uploaded successfully`);
     } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error('Failed to upload image');
+      console.error('Error uploading images:', error);
+      toast.error('Failed to upload images');
     } finally {
       setUploading(false);
+      // Clear the input so the same files can be selected again if needed
+      e.target.value = '';
     }
+  };
+
+  const removeImage = (indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, index) => index !== indexToRemove)
+    }));
+    toast.success('Image removed');
   };
 
   const calculateDiscountedPrice = () => {
@@ -217,7 +244,7 @@ export default function CreateProductPage() {
 
     try {
       const token = await getAuthToken();
-      const url = `/api/admin/products`;
+      const url = `/.netlify/functions/admin-product`;
       
       const method = isEditing ? 'PUT' : 'POST';
       const body = isEditing 
@@ -347,52 +374,80 @@ export default function CreateProductPage() {
               </div>
             </div>
 
-            {/* Product Image */}
+            {/* Product Images */}
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Product Image</h3>
+                <h3 className="card-title">Product Images</h3>
+                <p className="card-description">Upload up to 5 images for your product</p>
               </div>
               <div className="card-content space-y-6">
-                {formData.imageUrl && (
-                  <div className="flex justify-center">
-                    <img
-                      src={formData.imageUrl}
-                      alt="Product"
-                      className="max-w-full w-full max-h-64 object-cover rounded-lg border border-border shadow-sm"
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-4">
+                    Upload Images ({formData.imageUrls.length}/5)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="input-field"
+                      disabled={uploading || formData.imageUrls.length >= 5}
                     />
+                    {uploading && (
+                      <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
+                        <LoadingSpinner size="sm" />
+                        <span className="ml-2 text-sm">Uploading...</span>
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                <div className="grid-responsive-2">
+                  {formData.imageUrls.length >= 5 && (
+                    <p className="mt-2 text-sm text-amber-600">
+                      Maximum of 5 images reached. Remove an image to upload more.
+                    </p>
+                  )}
+                </div>
+
+                {/* Image Preview Grid */}
+                {formData.imageUrls.length > 0 && (
                   <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Upload Image
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="input-field"
-                        disabled={uploading}
-                      />
-                      {uploading && (
-                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
-                          <LoadingSpinner size="sm" />
+                    <h4 className="text-base font-medium text-foreground mb-4">Uploaded Images</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {formData.imageUrls.map((imageUrl, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={imageUrl}
+                            alt={`Product image ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border border-border shadow-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600"
+                            title="Remove image"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                          <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                            {index + 1}
+                          </div>
                         </div>
-                      )}
+                      ))}
                     </div>
                   </div>
+                )}
 
-                  <InputField
-                    label="Or Image URL"
-                    name="imageUrl"
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    value={formData.imageUrl}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                {/* Empty State */}
+                {formData.imageUrls.length === 0 && (
+                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                    <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-base text-muted-foreground mb-2">No images uploaded yet</p>
+                    <p className="text-sm text-muted-foreground">
+                      Upload up to 5 images to showcase your product
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -433,6 +488,33 @@ export default function CreateProductPage() {
                   icon={Percent}
                 />
 
+                {/* Price Preview */}
+                {formData.price && (
+                  <div className="p-4 bg-muted/30 rounded-lg">
+                    <h4 className="text-sm font-medium text-foreground mb-2">Price Preview</h4>
+                    <div className="space-y-1">
+                      {formData.percentOff && parseFloat(formData.percentOff) > 0 ? (
+                        <>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg font-bold text-green-600">
+                              ${discountedPrice.toFixed(2)}
+                            </span>
+                            <span className="text-sm line-through text-muted-foreground">
+                              ${parseFloat(formData.price).toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="text-sm text-red-600">
+                            {formData.percentOff}% off • Save ${savings.toFixed(2)}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-lg font-bold text-foreground">
+                          ${parseFloat(formData.price).toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

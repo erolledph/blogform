@@ -84,19 +84,27 @@ export default function ManageProductsPage() {
       sortable: false,
       render: (value, row) => (
         <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0">
-          {value ? (
-            <img
-              src={value}
-              alt={row.name}
-              className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md border border-border"
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
-              }}
-            />
+          {row.imageUrls && row.imageUrls.length > 0 ? (
+            <div className="relative">
+              <img
+                src={row.imageUrls[0]}
+                alt={row.name}
+                className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md border border-border"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              {/* Image count indicator */}
+              {row.imageUrls.length > 1 && (
+                <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {row.imageUrls.length}
+                </div>
+              )}
+            </div>
           ) : null}
           <div 
-            className={`w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-md border border-border flex items-center justify-center ${value ? 'hidden' : 'flex'}`}
+            className={`w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-md border border-border flex items-center justify-center ${row.imageUrls && row.imageUrls.length > 0 ? 'hidden' : 'flex'}`}
           >
             <ImageIcon className="h-4 w-4 sm:h-6 sm:w-6 text-muted-foreground" />
           </div>
