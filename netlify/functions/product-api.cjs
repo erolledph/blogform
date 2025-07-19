@@ -23,11 +23,6 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Helper function to generate product URL
-function getProductUrl(slug) {
-  return `https://your-app-domain.com/product/${slug}`;
-}
-
 // Helper function to calculate discounted price
 function calculateDiscountedPrice(price, percentOff) {
   if (!price || !percentOff || percentOff <= 0) return price;
@@ -90,8 +85,8 @@ exports.handler = async (event, context) => {
         originalPrice,
         discountedPrice,
         savings: originalPrice - discountedPrice,
-        // Add product URL using custom domain
-        productUrl: getProductUrl(data.slug),
+        // Use the actual productUrl from Firestore data
+        productUrl: data.productUrl || '',
         createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
         updatedAt: data.updatedAt ? data.updatedAt.toDate().toISOString() : null
       };
