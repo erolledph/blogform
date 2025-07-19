@@ -11,9 +11,6 @@ export default function AccountSettingsPage() {
     <div className="section-spacing">
       <div className="page-header">
         <h1 className="page-title">Account Settings</h1>
-        <p className="page-description">
-          Manage your account settings
-        </p>
       </div>
 
       <div className="max-w-2xl">
@@ -26,7 +23,6 @@ export default function AccountSettingsPage() {
               </div>
               <h2 className="card-title">User Information</h2>
             </div>
-            <p className="card-description">Your account details</p>
           </div>
           <div className="card-content space-y-6">
             <InputField
@@ -55,9 +51,6 @@ export default function AccountSettingsPage() {
         <div className="card">
           <div className="card-header">
             <h2 className="card-title">Additional Settings</h2>
-            <p className="card-description">
-              More settings will be available here in future updates
-            </p>
           </div>
           <div className="card-content">
             <div className="text-center py-8 text-muted-foreground">

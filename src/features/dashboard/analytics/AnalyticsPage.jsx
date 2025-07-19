@@ -44,9 +44,6 @@ export default function AnalyticsPage() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
           <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Analytics & Usage</h1>
-          <p className="text-lg text-muted-foreground">
-            Track your content performance and Firebase usage
-          </p>
         </div>
         <div className="flex items-center space-x-4">
           <select

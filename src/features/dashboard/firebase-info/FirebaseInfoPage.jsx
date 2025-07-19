@@ -59,9 +59,6 @@ export default function FirebaseInfoPage() {
     <div className="section-spacing">
       <div className="page-header">
         <h1 className="page-title">Firebase Usage & Plans</h1>
-        <p className="page-description">
-          Understand your Firebase setup, usage patterns, and available plan options
-        </p>
       </div>
 
       {/* Firebase Plan Information */}
@@ -73,9 +70,6 @@ export default function FirebaseInfoPage() {
             </div>
             <div>
               <h2 className="card-title">Firebase Plans Overview</h2>
-              <p className="card-description text-lg">
-                Understanding Firebase pricing tiers and your application's usage
-              </p>
             </div>
           </div>
         </div>
@@ -111,9 +105,6 @@ export default function FirebaseInfoPage() {
               </div>
               <div>
                 <h2 className="card-title text-blue-900">Live Firebase Usage Monitor</h2>
-                <p className="card-description text-lg text-blue-700">
-                  Real-time usage statistics and resource consumption
-                </p>
               </div>
             </div>
             <button
@@ -656,9 +647,6 @@ export default function FirebaseInfoPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Current Firebase Services Usage</h2>
-          <p className="card-description text-lg">
-            Overview of which Firebase services your application is currently using
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -684,9 +672,6 @@ export default function FirebaseInfoPage() {
             </div>
             <h2 className="card-title">Free Tier (Spark Plan) Limits</h2>
           </div>
-          <p className="card-description text-lg">
-            Daily and total limits for Firebase services on the free tier
-          </p>
         </div>
         <div className="card-content">
           <div className="overflow-x-auto">
@@ -733,9 +718,6 @@ export default function FirebaseInfoPage() {
             </div>
             <h2 className="card-title">Blaze Plan (Pay-as-you-go) Benefits</h2>
           </div>
-          <p className="card-description text-lg">
-            What you get when upgrading to Firebase's paid plan
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -753,9 +735,6 @@ export default function FirebaseInfoPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Recommendations</h2>
-          <p className="card-description text-lg">
-            Best practices for managing Firebase usage in your application
-          </p>
         </div>
         <div className="card-content">
           <div className="space-y-6">
@@ -810,9 +789,6 @@ export default function FirebaseInfoPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Quick Actions</h2>
-          <p className="card-description text-lg">
-            Useful links and actions for managing your Firebase project
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

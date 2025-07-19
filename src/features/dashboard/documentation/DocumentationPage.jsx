@@ -202,9 +202,6 @@ if products:
     <div className="space-y-10">
       <div>
         <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">API Documentation</h1>
-        <p className="text-lg text-muted-foreground">
-          Learn how to fetch and use your content and products via the public APIs
-        </p>
       </div>
 
       {/* Content API Endpoint */}
@@ -234,9 +231,6 @@ if products:
               </a>
             </div>
           </div>
-          <p className="mt-6 text-base text-muted-foreground">
-            This endpoint returns all published blog content in JSON format. Only content with status "published" is included.
-          </p>
         </div>
       </div>
 
@@ -267,9 +261,6 @@ if products:
               </a>
             </div>
           </div>
-          <p className="mt-6 text-base text-muted-foreground">
-            This endpoint returns all published products in JSON format. Only products with status "published" are included.
-          </p>
         </div>
       </div>
 
@@ -277,9 +268,6 @@ if products:
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Content API Response Format</h2>
-          <p className="card-description">
-            The content API returns an array of blog post objects with the following structure:
-          </p>
         </div>
         <div className="card-content">
           <div className="bg-muted rounded-lg p-6 overflow-x-auto">
@@ -313,9 +301,6 @@ if products:
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Products API Response Format</h2>
-          <p className="card-description">
-            The products API returns an array of product objects with the following structure:
-          </p>
         </div>
         <div className="card-content">
           <div className="bg-muted rounded-lg p-6 overflow-x-auto">

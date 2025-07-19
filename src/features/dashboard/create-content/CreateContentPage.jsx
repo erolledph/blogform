@@ -251,9 +251,6 @@ export default function CreateContentPage() {
             <h1 className="page-title">
               {isEditing ? 'Edit Content' : 'Create New Content'}
             </h1>
-            <p className="page-description">
-              {isEditing ? 'Update your existing content' : 'Write and publish new content'}
-            </p>
           </div>
         </div>
         
@@ -288,7 +285,6 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h2 className="card-title">Content Details</h2>
-                <p className="card-description">Enter the main content information</p>
               </div>
               <div className="card-content space-y-6">
                 <div className="grid-responsive-2">
@@ -338,7 +334,6 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Featured Image</h3>
-                <p className="card-description">Add a featured image for your content</p>
               </div>
               <div className="card-content space-y-6">
                 {formData.featuredImageUrl && (
@@ -391,7 +386,6 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Publish Settings</h3>
-                <p className="card-description">Configure publication settings</p>
               </div>
               <div className="card-content space-y-6">
                 <div>
@@ -423,7 +417,6 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">SEO Settings</h3>
-                <p className="card-description">Optimize your content for search engines</p>
               </div>
               <div className="card-content space-y-6">
                 <InputField
@@ -468,7 +461,6 @@ export default function CreateContentPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Organization</h3>
-                <p className="card-description">Categorize and tag your content</p>
               </div>
               <div className="card-content space-y-6">
                 <div>

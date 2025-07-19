@@ -81,9 +81,6 @@ export default function LoginPage() {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             Admin Login
           </h1>
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-            Sign in to access your content management system
-          </p>
         </div>
         
         {/* Login Form Card */}
@@ -145,9 +142,6 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="text-center">
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Secure access to your content management system
-          </p>
         </div>
       </div>
     </div>

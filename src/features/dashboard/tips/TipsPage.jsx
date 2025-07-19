@@ -161,9 +161,6 @@ export default function TipsPage() {
     <div className="space-y-10">
       <div>
         <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">SEO Blogging Tips</h1>
-        <p className="text-lg text-muted-foreground">
-          Master SEO blogging with proven strategies to rank higher, drive organic traffic, and grow your audience
-        </p>
       </div>
 
       {/* Main SEO Tips */}
@@ -202,9 +199,6 @@ export default function TipsPage() {
             </div>
             <h2 className="card-title">Quick SEO Wins</h2>
           </div>
-          <p className="card-description text-lg">
-            Actionable SEO tips you can implement immediately to improve your blog's performance
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -222,9 +216,6 @@ export default function TipsPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">High-Performing Content Types</h2>
-          <p className="card-description text-lg">
-            Different content formats that perform well in search results and drive engagement
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -253,9 +244,6 @@ export default function TipsPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Pre-Publish SEO Checklist</h2>
-          <p className="card-description text-lg">
-            Essential checks to ensure your blog post is optimized before publishing
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -317,9 +305,6 @@ export default function TipsPage() {
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Essential SEO Tools</h2>
-          <p className="card-description text-lg">
-            Free and paid tools to help you research, optimize, and track your SEO performance
-          </p>
         </div>
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

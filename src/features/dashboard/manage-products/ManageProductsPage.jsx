@@ -229,9 +229,6 @@ export default function ManageProductsPage() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
         <div className="page-header mb-0">
           <h1 className="page-title mb-2">Manage Products</h1>
-          <p className="page-description">
-            {products.length} products in your catalog
-          </p>
         </div>
         <Link
           to="/dashboard/create-product"

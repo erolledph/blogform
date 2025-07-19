@@ -269,9 +269,6 @@ export default function CreateProductPage() {
             <h1 className="page-title">
               {isEditing ? 'Edit Product' : 'Create New Product'}
             </h1>
-            <p className="page-description">
-              {isEditing ? 'Update your existing product' : 'Add a new product to your catalog'}
-            </p>
           </div>
         </div>
         
@@ -305,7 +302,6 @@ export default function CreateProductPage() {
             <div className="card">
               <div className="card-header">
                 <h2 className="card-title">Product Details</h2>
-                <p className="card-description">Enter the main product information</p>
               </div>
               <div className="card-content space-y-6">
                 <div className="grid-responsive-2">
@@ -355,7 +351,6 @@ export default function CreateProductPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Product Image</h3>
-                <p className="card-description">Add a main image for your product</p>
               </div>
               <div className="card-content space-y-6">
                 {formData.imageUrl && (
@@ -408,7 +403,6 @@ export default function CreateProductPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Pricing</h3>
-                <p className="card-description">Set your product pricing and discounts</p>
               </div>
               <div className="card-content space-y-6">
                 <InputField
@@ -439,30 +433,6 @@ export default function CreateProductPage() {
                   icon={Percent}
                 />
 
-                {/* Price Preview */}
-                {formData.price && (
-                  <div className="p-4 bg-muted/30 rounded-lg">
-                    <h4 className="text-sm font-medium text-foreground mb-3">Price Preview</h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Original Price:</span>
-                        <span className="text-sm font-medium text-foreground">${parseFloat(formData.price).toFixed(2)}</span>
-                      </div>
-                      {formData.percentOff && parseFloat(formData.percentOff) > 0 && (
-                        <>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">Discount ({formData.percentOff}%):</span>
-                            <span className="text-sm font-medium text-red-600">-${savings.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between border-t border-border pt-2">
-                            <span className="text-sm font-medium text-foreground">Final Price:</span>
-                            <span className="text-lg font-bold text-primary">${discountedPrice.toFixed(2)}</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -470,7 +440,6 @@ export default function CreateProductPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Publish Settings</h3>
-                <p className="card-description">Configure publication settings</p>
               </div>
               <div className="card-content space-y-6">
                 <div>
@@ -502,7 +471,6 @@ export default function CreateProductPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">Organization</h3>
-                <p className="card-description">Tag your product for better organization</p>
               </div>
               <div className="card-content">
                 <div>
@@ -525,7 +493,6 @@ export default function CreateProductPage() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">External Link</h3>
-                <p className="card-description">Add an external purchase link (affiliate link, store URL, etc.)</p>
               </div>
               <div className="card-content">
                 <InputField
@@ -536,9 +503,6 @@ export default function CreateProductPage() {
                   value={formData.productUrl}
                   onChange={handleInputChange}
                 />
-                <p className="text-sm text-muted-foreground mt-2">
-                  This will be used as the "Buy Now" or "View Product" link for customers.
-                </p>
               </div>
             </div>
           </div>
