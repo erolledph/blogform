@@ -181,14 +181,6 @@ export default function ProductPreviewPage() {
                 </h1>
                 
                 {/* Rating */}
-                <div className="flex items-center space-x-2 mb-3 sm:mb-4">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-xs sm:text-sm text-gray-600">(4.8) • 127 reviews</span>
-                </div>
               </div>
 
               {/* Category */}
@@ -227,27 +219,8 @@ export default function ProductPreviewPage() {
                 )}
                 
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Free shipping on orders over $50
+                  {product?.status === 'published' ? 'Available for purchase' : 'Coming soon'}
                 </p>
-              </div>
-
-              {/* Product Features */}
-              <div className="grid grid-cols-3 gap-3 sm:gap-4 py-4 sm:py-6 border-b border-gray-200">
-                <div className="text-center">
-                  <Truck className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mx-auto mb-1 sm:mb-2" />
-                  <div className="text-xs sm:text-sm font-medium text-gray-900">Free Shipping</div>
-                  <div className="text-xs text-gray-600 hidden sm:block">On orders $50+</div>
-                </div>
-                <div className="text-center">
-                  <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 mx-auto mb-1 sm:mb-2" />
-                  <div className="text-xs sm:text-sm font-medium text-gray-900">Secure Payment</div>
-                  <div className="text-xs text-gray-600 hidden sm:block">SSL Protected</div>
-                </div>
-                <div className="text-center">
-                  <RotateCcw className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 mx-auto mb-1 sm:mb-2" />
-                  <div className="text-xs sm:text-sm font-medium text-gray-900">Easy Returns</div>
-                  <div className="text-xs text-gray-600 hidden sm:block">30-day policy</div>
-                </div>
               </div>
 
               {/* Tags */}
@@ -282,9 +255,11 @@ export default function ProductPreviewPage() {
                 )}
                 
                 {product?.productUrl && (
-                  <p className="text-xs sm:text-sm text-gray-500 text-center">
-                    Affiliate link - opens in new tab
-                  </p>
+                  <div className="text-center">
+                    <p className="text-xs sm:text-sm text-gray-500">
+                      External product link
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -357,12 +332,12 @@ export default function ProductPreviewPage() {
           </div>
         </div>
 
-        {/* More Products Section */}
+        {/* Related Products Section */}
         {relatedProducts.length > 0 && (
           <section className="mt-12 sm:mt-20">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">More Products</h2>
-              <p className="text-base sm:text-lg text-gray-600">Discover more amazing products</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Related Products</h2>
+              <p className="text-base sm:text-lg text-gray-600">Other products you might like</p>
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">

@@ -89,14 +89,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="sidebar-header">
-        <button 
-          className="hamburger-toggle"
-          onClick={toggleExpanded}
-          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-          title={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+     
         <div className="logo">Admin CMS</div>
         <button className="hamburger" onClick={closeSidebar}>
           ×
