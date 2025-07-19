@@ -87,16 +87,9 @@ exports.handler = async (event, context) => {
         savings: originalPrice - discountedPrice,
         // Use the actual productUrl from Firestore data
         productUrl: data.productUrl || '',
-        // Handle migration from single imageUrl to imageUrls array
-        imageUrls: data.imageUrls || (data.imageUrl ? [data.imageUrl] : []),
         createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
         updatedAt: data.updatedAt ? data.updatedAt.toDate().toISOString() : null
       };
-      
-      // Remove old imageUrl field from response
-      if (processedData.imageUrl) {
-        delete processedData.imageUrl;
-      }
       
       products.push(processedData);
     });

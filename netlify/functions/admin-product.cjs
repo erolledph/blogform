@@ -87,16 +87,9 @@ exports.handler = async (event, context) => {
           ...data,
           price: parseFloat(data.price) || 0,
           percentOff: parseFloat(data.percentOff) || 0,
-          // Handle migration from single imageUrl to imageUrls array
-          imageUrls: data.imageUrls || (data.imageUrl ? [data.imageUrl] : []),
           createdAt: now,
           updatedAt: now
         };
-
-        // Remove old imageUrl field if it exists
-        if (productData.imageUrl) {
-          delete productData.imageUrl;
-        }
 
         const docRef = await productsRef.add(productData);
         
@@ -141,15 +134,8 @@ exports.handler = async (event, context) => {
           ...updateData,
           price: parseFloat(updateData.price) || 0,
           percentOff: parseFloat(updateData.percentOff) || 0,
-          // Handle migration from single imageUrl to imageUrls array
-          imageUrls: updateData.imageUrls || (updateData.imageUrl ? [updateData.imageUrl] : []),
           updatedAt: now
         };
-
-        // Remove old imageUrl field if it exists
-        if (productData.imageUrl) {
-          delete productData.imageUrl;
-        }
 
         await docRef.update(productData);
         

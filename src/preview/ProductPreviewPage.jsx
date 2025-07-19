@@ -9,7 +9,7 @@ export default function ProductPreviewPage() {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     fetchProduct();
@@ -143,49 +143,13 @@ export default function ProductPreviewPage() {
             
             {/* Product Images */}
             <div className="space-y-4 order-1 lg:order-1">
-              {product?.imageUrls && product.imageUrls.length > 0 ? (
-                <div className="space-y-4">
-                  {/* Main Image */}
-                  <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200">
-                    <img
-                      src={product.imageUrls[selectedImageIndex]}
-                      alt={`${product.name} - Image ${selectedImageIndex + 1}`}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      onClick={() => {
-                        // Optional: Add lightbox functionality here
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Thumbnail Gallery */}
-                  {product.imageUrls.length > 1 && (
-                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                      {product.imageUrls.map((imageUrl, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedImageIndex(index)}
-                          className={`aspect-square overflow-hidden rounded-md border-2 transition-all duration-200 ${
-                            selectedImageIndex === index 
-                              ? 'border-blue-500 ring-2 ring-blue-200' 
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <img
-                            src={imageUrl}
-                            alt={`${product.name} - Thumbnail ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {/* Image Counter */}
-                  {product.imageUrls.length > 1 && (
-                    <div className="text-center text-sm text-gray-500">
-                      {selectedImageIndex + 1} of {product.imageUrls.length}
-                    </div>
-                  )}
+              {product?.imageUrl ? (
+                <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200">
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               ) : (
                 <div className="aspect-square w-full bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
@@ -387,10 +351,10 @@ export default function ProductPreviewPage() {
                     to={`/preview/product/${item.slug}`}
                     className="group block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
                   >
-                    {item.imageUrls && item.imageUrls.length > 0 ? (
+                    {item.imageUrl ? (
                       <div className="aspect-square overflow-hidden">
                         <img
-                          src={item.imageUrls[0]}
+                          src={item.imageUrl}
                           alt={item.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
