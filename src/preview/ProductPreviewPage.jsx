@@ -123,10 +123,10 @@ export default function ProductPreviewPage() {
                   href={product.productUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                  Buy Now
+                  Visit Store
                 </a>
               )}
             </div>
@@ -243,13 +243,13 @@ export default function ProductPreviewPage() {
                     href={product.productUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+                    className="inline-flex items-center px-8 py-4 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-lg"
                   >
-                    <DollarSign className="h-5 w-5 mr-2" />
+                    External Product Link
                     Buy Now - {formatPrice(discountedPrice)}
                   </a>
                   <p className="text-sm text-gray-500 mt-2">
-                    External link - opens in new tab
+                    Affiliate link - opens in new tab
                   </p>
                 </div>
               )}
