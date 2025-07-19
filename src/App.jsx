@@ -6,6 +6,8 @@ import LoginPage from '@/features/auth/LoginPage';
 import DashboardPage from '@/components/layout/DashboardPage';
 import ProtectedRoute from '@/components/layout/ProtectedRoute';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
+import ContentPreviewPage from '@/preview/ContentPreviewPage';
+import ProductPreviewPage from '@/preview/ProductPreviewPage';
 
 function App() {
   return (
@@ -15,6 +17,11 @@ function App() {
             <div className="min-h-screen bg-neutral-50">
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                {/* Public Preview Routes */}
+                <Route path="/preview/content/:slug" element={<ContentPreviewPage />} />
+                <Route path="/preview/product/:slug" element={<ProductPreviewPage />} />
+                
+                {/* Protected Dashboard Routes */}
                 <Route path="/dashboard/*" element={
                   <ProtectedRoute>
                     <DashboardPage />

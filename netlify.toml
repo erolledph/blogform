@@ -5,6 +5,8 @@
 
 [[redirects]]
   from = "/api/content.json"
+  framework = "#static"
+  targetPort = 5173
   to = "/.netlify/functions/content-api"
   status = 200
 
