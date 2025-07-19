@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import DataTable from '@/components/shared/DataTable';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import Modal from '@/components/shared/Modal';
+import ImageUploader from '@/components/shared/ImageUploader';
 import { 
   Folder, 
   FileImage, 
@@ -18,7 +19,9 @@ import {
   Eye,
   ArrowLeft,
   Home,
-  ChevronRight
+  ChevronRight,
+  Upload,
+  Plus
 } from 'lucide-react';
 import { formatBytes } from '@/utils/helpers';
 import toast from 'react-hot-toast';
@@ -31,6 +34,7 @@ export default function FirebaseStoragePage() {
   const [error, setError] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, item: null });
   const [previewModal, setPreviewModal] = useState({ isOpen: false, file: null });
+  const [uploadModal, setUploadModal] = useState({ isOpen: false });
   const [storageStats, setStorageStats] = useState({ totalFiles: 0, totalSize: 0 });
   const { currentUser } = useAuth();
 
@@ -228,6 +232,16 @@ export default function FirebaseStoragePage() {
 
   const handlePreview = (file) => {
     setPreviewModal({ isOpen: true, file });
+  };
+
+  const handleUploadSuccess = (uploadResult) => {
+    console.log('Upload successful:', uploadResult);
+    setUploadModal({ isOpen: false });
+    fetchItems(); // Refresh the current view
+  };
+
+  const handleUploadError = (error) => {
+    console.error('Upload error:', error);
   };
 
   const getItemIcon = (item) => {
@@ -432,6 +446,13 @@ export default function FirebaseStoragePage() {
               Back
             </button>
           )}
+          <button
+            onClick={() => setUploadModal({ isOpen: true })}
+            className="btn-primary inline-flex items-center"
+          >
+            <Upload className="h-5 w-5 mr-3" />
+            Upload Image
+          </button>
           <button
             onClick={fetchItems}
             disabled={loading}
@@ -674,6 +695,24 @@ export default function FirebaseStoragePage() {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Upload Modal */}
+      <Modal
+        isOpen={uploadModal.isOpen}
+        onClose={() => setUploadModal({ isOpen: false })}
+        title="Upload & Compress Image"
+        size="xl"
+      >
+        <ImageUploader
+          currentPath={currentPath}
+          onUploadSuccess={handleUploadSuccess}
+          onUploadError={handleUploadError}
+          maxFileSize={10 * 1024 * 1024} // 10MB
+          quality={80}
+          maxWidth={1920}
+          maxHeight={1080}
+        />
       </Modal>
     </div>
   );

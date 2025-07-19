@@ -48,8 +48,9 @@ export const debounce = (func, wait) => {
       func(...args);
     };
     clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
   };
-}
+};
 
 export const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return '0 Bytes';

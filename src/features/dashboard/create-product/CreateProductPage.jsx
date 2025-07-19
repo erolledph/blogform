@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { doc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/firebase';
+import { db } from '@/firebase';
 import SimpleMDE from 'react-simplemde-editor';
 import InputField from '@/components/shared/InputField';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { Save, ArrowLeft, DollarSign, Percent } from 'lucide-react';
+import ImageGalleryModal from '@/components/shared/ImageGalleryModal';
+import { Save, ArrowLeft, DollarSign, Percent, Image as ImageIcon, Trash2, Plus } from 'lucide-react';
 import { generateSlug, parseArrayInput } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 import 'easymde/dist/easymde.min.css';
@@ -24,7 +24,7 @@ export default function CreateProductPage() {
     description: '',
     price: '',
     percentOff: '',
-    imageUrl: '',
+    imageUrls: [], // Changed to array for multiple images
     productUrl: '',
     category: '',
     tags: [],
@@ -35,8 +35,8 @@ export default function CreateProductPage() {
   const [tagsInput, setTagsInput] = useState('');
 
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [galleryModal, setGalleryModal] = useState({ isOpen: false });
 
   // Memoize SimpleMDE options
   const simpleMDEOptions = useMemo(() => ({
@@ -71,7 +71,7 @@ export default function CreateProductPage() {
           description: data.description || '',
           price: data.price?.toString() || '',
           percentOff: data.percentOff?.toString() || '',
-          imageUrl: data.imageUrl || '',
+          imageUrls: data.imageUrls || data.imageUrl ? [data.imageUrl] : [], // Handle both old and new format
           productUrl: data.productUrl || '',
           category: data.category || '',
           tags: data.tags || [],
@@ -152,42 +152,24 @@ export default function CreateProductPage() {
     }));
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleImageSelect = (images) => {
+    // Handle both single and multiple image selection
+    const imageArray = Array.isArray(images) ? images : [images];
+    const imageUrls = imageArray.map(img => img.downloadURL);
+    
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: [...prev.imageUrls, ...imageUrls].slice(0, 5) // Limit to 5 images
+    }));
+    
+    toast.success(`${imageUrls.length} image${imageUrls.length > 1 ? 's' : ''} selected`);
+  };
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      toast.error('Image size should be less than 5MB');
-      return;
-    }
-
-    setUploading(true);
-
-    try {
-      const timestamp = Date.now();
-      const fileName = `products/${timestamp}-${file.name}`;
-      const storageRef = ref(storage, fileName);
-      
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      
-      setFormData(prev => ({
-        ...prev,
-        imageUrl: downloadURL
-      }));
-      
-      toast.success('Image uploaded successfully');
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error('Failed to upload image');
-    } finally {
-      setUploading(false);
-    }
+  const handleRemoveImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: prev.imageUrls.filter((_, i) => i !== index)
+    }));
   };
 
   const calculateDiscountedPrice = () => {
@@ -284,7 +266,7 @@ export default function CreateProductPage() {
           <button
             type="submit"
             form="product-form"
-            disabled={loading || uploading}
+            disabled={loading}
             className="btn-primary"
           >
             <Save className="h-5 w-5 mr-3" />
@@ -347,51 +329,98 @@ export default function CreateProductPage() {
               </div>
             </div>
 
-            {/* Product Image */}
+            {/* Product Images */}
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Product Image</h3>
+                <h3 className="card-title">Product Images</h3>
+                <p className="card-description">Add up to 5 product images</p>
               </div>
               <div className="card-content space-y-6">
-                {formData.imageUrl && (
-                  <div className="flex justify-center">
-                    <img
-                      src={formData.imageUrl}
-                      alt="Product"
-                      className="max-w-full w-full max-h-64 object-cover rounded-lg border border-border shadow-sm"
-                    />
+                {/* Image Grid */}
+                {formData.imageUrls.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {formData.imageUrls.map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={imageUrl}
+                          alt={`Product ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border border-border shadow-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                          title="Remove image"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                        {index === 0 && (
+                          <div className="absolute bottom-2 left-2 px-2 py-1 bg-primary text-primary-foreground text-xs rounded">
+                            Main
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
                 
-                <div className="grid-responsive-2">
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Upload Image
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="input-field"
-                        disabled={uploading}
-                      />
-                      {uploading && (
-                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
-                          <LoadingSpinner size="sm" />
-                        </div>
-                      )}
-                    </div>
+                {/* Add Images Button */}
+                {formData.imageUrls.length < 5 && (
+                  <div className="flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setGalleryModal({ isOpen: true })}
+                      className="btn-secondary inline-flex items-center"
+                    >
+                      <Plus className="h-5 w-5 mr-3" />
+                      Add Images ({formData.imageUrls.length}/5)
+                    </button>
                   </div>
-
-                  <InputField
-                    label="Or Image URL"
-                    name="imageUrl"
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    value={formData.imageUrl}
-                    onChange={handleInputChange}
-                  />
+                )}
+                
+                {/* Image URL Input as Alternative */}
+                <div className="border-t border-border pt-6">
+                  <h4 className="text-base font-medium text-foreground mb-4">Or add image URL</h4>
+                  <div className="flex gap-3">
+                    <input
+                      type="url"
+                      placeholder="https://example.com/image.jpg"
+                      className="input-field flex-1"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const url = e.target.value.trim();
+                          if (url && formData.imageUrls.length < 5) {
+                            setFormData(prev => ({
+                              ...prev,
+                              imageUrls: [...prev.imageUrls, url]
+                            }));
+                            e.target.value = '';
+                            toast.success('Image URL added');
+                          }
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        const input = e.target.previousElementSibling;
+                        const url = input.value.trim();
+                        if (url && formData.imageUrls.length < 5) {
+                          setFormData(prev => ({
+                            ...prev,
+                            imageUrls: [...prev.imageUrls, url]
+                          }));
+                          input.value = '';
+                          toast.success('Image URL added');
+                        }
+                      }}
+                      className="btn-secondary"
+                      disabled={formData.imageUrls.length >= 5}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -508,6 +537,16 @@ export default function CreateProductPage() {
           </div>
         </div>
       </form>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={galleryModal.isOpen}
+        onClose={() => setGalleryModal({ isOpen: false })}
+        onSelectMultiple={handleImageSelect}
+        multiSelect={true}
+        maxSelections={5 - formData.imageUrls.length}
+        title="Select Product Images"
+      />
     </div>
   );
 }

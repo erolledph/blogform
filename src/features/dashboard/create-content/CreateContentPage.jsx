@@ -2,12 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useContentById } from '@/hooks/useContent';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '@/firebase';
 import SimpleMDE from 'react-simplemde-editor';
 import InputField from '@/components/shared/InputField';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { Save, ArrowLeft, Upload } from 'lucide-react';
+import ImageGalleryModal from '@/components/shared/ImageGalleryModal';
+import { Save, ArrowLeft, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { generateSlug, parseArrayInput } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 import 'easymde/dist/easymde.min.css';
@@ -39,8 +38,8 @@ export default function CreateContentPage() {
   const [tagsInput, setTagsInput] = useState('');
 
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [galleryModal, setGalleryModal] = useState({ isOpen: false });
 
   // Memoize SimpleMDE options to prevent re-initialization on every render
   const simpleMDEOptions = useMemo(() => ({
@@ -147,42 +146,19 @@ export default function CreateContentPage() {
     }));
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleImageSelect = (image) => {
+    setFormData(prev => ({
+      ...prev,
+      featuredImageUrl: image.downloadURL
+    }));
+    toast.success('Featured image selected');
+  };
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file');
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      toast.error('Image size should be less than 5MB');
-      return;
-    }
-
-    setUploading(true);
-
-    try {
-      const timestamp = Date.now();
-      const fileName = `images/${timestamp}-${file.name}`;
-      const storageRef = ref(storage, fileName);
-      
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      
-      setFormData(prev => ({
-        ...prev,
-        featuredImageUrl: downloadURL
-      }));
-      
-      toast.success('Image uploaded successfully');
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error('Failed to upload image');
-    } finally {
-      setUploading(false);
-    }
+  const handleRemoveImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      featuredImageUrl: ''
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -266,7 +242,7 @@ export default function CreateContentPage() {
           <button
             type="submit"
             form="content-form"
-            disabled={loading || uploading}
+            disabled={loading}
             className="btn-primary"
           >
             <Save className="h-5 w-5 mr-3" />
@@ -337,43 +313,43 @@ export default function CreateContentPage() {
               </div>
               <div className="card-content space-y-6">
                 {formData.featuredImageUrl && (
-                  <div className="flex justify-center">
-                    <img
-                      src={formData.featuredImageUrl}
-                      alt="Featured"
-                      className="max-w-full w-full max-h-64 object-cover rounded-lg border border-border shadow-sm"
-                    />
+                  <div className="relative">
+                    <div className="flex justify-center">
+                      <img
+                        src={formData.featuredImageUrl}
+                        alt="Featured"
+                        className="max-w-full w-full max-h-64 object-cover rounded-lg border border-border shadow-sm"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      title="Remove image"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 )}
                 
-                <div className="grid-responsive-2">
-                  <div>
-                    <label className="block text-base font-medium text-foreground mb-4">
-                      Upload Image
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="input-field"
-                        disabled={uploading}
-                      />
-                      {uploading && (
-                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-md">
-                          <LoadingSpinner size="sm" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setGalleryModal({ isOpen: true })}
+                    className="btn-secondary inline-flex items-center"
+                  >
+                    <ImageIcon className="h-5 w-5 mr-3" />
+                    Select from Gallery
+                  </button>
+                  
                   <InputField
-                    label="Or Image URL"
+                    label="Or enter Image URL"
                     name="featuredImageUrl"
                     type="url"
                     placeholder="https://example.com/image.jpg"
                     value={formData.featuredImageUrl}
                     onChange={handleInputChange}
+                    className="flex-1"
                   />
                 </div>
               </div>
@@ -495,6 +471,14 @@ export default function CreateContentPage() {
           </div>
         </div>
       </form>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={galleryModal.isOpen}
+        onClose={() => setGalleryModal({ isOpen: false })}
+        onSelectImage={handleImageSelect}
+        title="Select Featured Image"
+      />
     </div>
   );
 }

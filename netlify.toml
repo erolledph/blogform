@@ -20,15 +20,6 @@
   to = "/.netlify/functions/admin-product"
   status = 200
 
-[[redirects]]
-  from = "/api/admin/products/*"
-  to = "/.netlify/functions/admin-product"
-  status = 200
-
-[[redirects]]
-  from = "/api/admin/*"
-  to = "/.netlify/functions/admin-content/:splat"
-  status = 200
 
 [[redirects]]
   from = "/*"
