@@ -25,6 +25,7 @@ export default function CreateProductPage() {
     price: '',
     percentOff: '',
     imageUrl: '',
+    productUrl: '',
     category: '',
     tags: [],
     status: 'draft'
@@ -71,6 +72,7 @@ export default function CreateProductPage() {
           price: data.price?.toString() || '',
           percentOff: data.percentOff?.toString() || '',
           imageUrl: data.imageUrl || '',
+          productUrl: data.productUrl || '',
           category: data.category || '',
           tags: data.tags || [],
           status: data.status || 'draft'
@@ -516,6 +518,27 @@ export default function CreateProductPage() {
                     placeholder="electronics, gadget, popular"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* External Link */}
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">External Link</h3>
+                <p className="card-description">Add an external purchase link (affiliate link, store URL, etc.)</p>
+              </div>
+              <div className="card-content">
+                <InputField
+                  label="Product URL"
+                  name="productUrl"
+                  type="url"
+                  placeholder="https://example.com/product-page"
+                  value={formData.productUrl}
+                  onChange={handleInputChange}
+                />
+                <p className="text-sm text-muted-foreground mt-2">
+                  This will be used as the "Buy Now" or "View Product" link for customers.
+                </p>
               </div>
             </div>
           </div>

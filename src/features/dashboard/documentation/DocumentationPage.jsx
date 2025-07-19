@@ -332,10 +332,10 @@ if products:
     "discountedPrice": 169.99,
     "savings": 30.00,
     "imageUrl": "https://firebasestorage.googleapis.com/v0/b/...",
+    "productUrl": "https://example.com/buy/premium-wireless-headphones",
     "category": "Electronics",
     "tags": ["audio", "wireless", "premium", "headphones"],
     "status": "published",
-    "productUrl": "https://your-app-domain.com/product/premium-wireless-headphones",
     "createdAt": "2025-06-27T09:30:00Z",
     "updatedAt": "2025-06-27T10:15:00Z"
   }
@@ -560,7 +560,7 @@ if products:
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <p>Each item includes a URL field (`contentUrl` or `productUrl`) with the full URL for your application.</p>
+              <p>Content items include a `contentUrl` field with the full URL for your application. Products include a `productUrl` field for external purchase/affiliate links.</p>
             </div>
           </div>
         </div>

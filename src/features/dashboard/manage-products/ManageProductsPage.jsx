@@ -6,7 +6,7 @@ import { db } from '@/firebase';
 import DataTable from '@/components/shared/DataTable';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import Modal from '@/components/shared/Modal';
-import { Edit, Trash2, Plus, ImageIcon, DollarSign, Package } from 'lucide-react';
+import { Edit, Trash2, Plus, ImageIcon, DollarSign, Package, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { getStatusBadgeClass } from '@/utils/helpers';
 import toast from 'react-hot-toast';
@@ -177,6 +177,17 @@ export default function ManageProductsPage() {
       sortable: false,
       render: (_, row) => (
         <div className="flex items-center space-x-1">
+          {row.productUrl && (
+            <a
+              href={row.productUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 p-2 rounded-md hover:bg-blue-50 transition-colors duration-200"
+              title="View Product"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          )}
           <Link
             to={`/dashboard/edit-product/${row.id}`}
             className="text-primary p-2 rounded-md hover:bg-primary/10 transition-colors duration-200"
