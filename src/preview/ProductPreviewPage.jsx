@@ -9,7 +9,7 @@ export default function ProductPreviewPage() {
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     fetchProduct();
@@ -114,6 +114,18 @@ export default function ProductPreviewPage() {
   const discountedPrice = hasDiscount ? product.discountedPrice : product?.originalPrice;
   const savings = hasDiscount ? product.savings : 0;
   const relatedProducts = getRelatedProducts();
+  
+  // Get product images - prioritize imageUrls array, fallback to single imageUrl
+  const productImages = product?.imageUrls && product.imageUrls.length > 0 
+    ? product.imageUrls 
+    : product?.imageUrl 
+      ? [product.imageUrl] 
+      : [];
+  
+  // Reset selected image index when product changes
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [product?.id]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,19 +153,58 @@ export default function ProductPreviewPage() {
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 p-6 sm:p-8 lg:p-12">
             
-            {/* Product Images */}
+            {/* Product Image Gallery */}
             <div className="space-y-4 order-1 lg:order-1">
-              {product?.imageUrl ? (
-                <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200">
+              {/* Main Image */}
+              {productImages.length > 0 ? (
+                <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
                   <img
-                    src={product.imageUrl}
+                    src={productImages[selectedImageIndex]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-300"
                   />
                 </div>
               ) : (
                 <div className="aspect-square w-full bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
                   <Package className="h-24 w-24 text-gray-400" />
+                </div>
+              )}
+              
+              {/* Thumbnail Gallery */}
+              {productImages.length > 1 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-gray-700">More Images</h4>
+                  <div className={`grid gap-2 ${
+                    productImages.length === 2 ? 'grid-cols-2' :
+                    productImages.length === 3 ? 'grid-cols-3' :
+                    productImages.length === 4 ? 'grid-cols-4' :
+                    'grid-cols-5'
+                  }`}>
+                    {productImages.map((imageUrl, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedImageIndex(index)}
+                        className={`aspect-square overflow-hidden rounded-md border-2 transition-all duration-200 ${
+                          selectedImageIndex === index 
+                            ? 'border-blue-500 ring-2 ring-blue-200' 
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={`${product.name} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Image Counter */}
+                  <div className="text-center">
+                    <span className="text-sm text-gray-500">
+                      {selectedImageIndex + 1} of {productImages.length}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
@@ -351,10 +402,10 @@ export default function ProductPreviewPage() {
                     to={`/preview/product/${item.slug}`}
                     className="group block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300 hover:-translate-y-0.5"
                   >
-                    {item.imageUrl ? (
+                    {(item.imageUrls && item.imageUrls.length > 0) || item.imageUrl ? (
                       <div className="aspect-square overflow-hidden">
                         <img
-                          src={item.imageUrl}
+                          src={(item.imageUrls && item.imageUrls.length > 0) ? item.imageUrls[0] : item.imageUrl}
                           alt={item.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />

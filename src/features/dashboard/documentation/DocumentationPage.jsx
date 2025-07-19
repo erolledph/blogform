@@ -301,6 +301,9 @@ if products:
       <div className="card">
         <div className="card-header">
           <h2 className="card-title">Products API Response Format</h2>
+          <p className="card-description">
+            The API returns an array of product objects with the following structure:
+          </p>
         </div>
         <div className="card-content">
           <div className="bg-muted rounded-lg p-6 overflow-x-auto">
@@ -317,6 +320,12 @@ if products:
     "discountedPrice": 169.99,
     "savings": 30.00,
     "imageUrl": "https://firebasestorage.googleapis.com/v0/b/...",
+    "imageUrls": [
+      "https://firebasestorage.googleapis.com/v0/b/.../main-image.jpg",
+      "https://firebasestorage.googleapis.com/v0/b/.../side-view.jpg",
+      "https://firebasestorage.googleapis.com/v0/b/.../detail-view.jpg",
+      "https://firebasestorage.googleapis.com/v0/b/.../packaging.jpg"
+    ],
     "productUrl": "https://example.com/buy/premium-wireless-headphones",
     "category": "Electronics",
     "tags": ["audio", "wireless", "premium", "headphones"],
@@ -545,7 +554,11 @@ if products:
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <p>Content items include a `contentUrl` field with the full URL for your application. Products include a `productUrl` field for external purchase/affiliate links.</p>
+              <p>Content items include a `contentUrl` field with the full URL for your application. Products include a `productUrl` field for external purchase/affiliate links and an `imageUrls` array containing up to 5 product images.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
+              <p>Product images: The `imageUrls` array contains all product images (up to 5). For backward compatibility, the first image is also available in the `imageUrl` field.</p>
             </div>
           </div>
         </div>

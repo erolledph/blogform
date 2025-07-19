@@ -79,14 +79,15 @@ export default function ManageProductsPage() {
 
   const columns = [
     {
-      key: 'imageUrl',
+      key: 'image',
       title: 'Image',
       sortable: false,
       render: (value, row) => (
         <div className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0">
-          {value ? (
+          <div className="relative">
+          {((row.imageUrls && row.imageUrls.length > 0) || row.imageUrl) ? (
             <img
-              src={value}
+              src={(row.imageUrls && row.imageUrls.length > 0) ? row.imageUrls[0] : row.imageUrl}
               alt={row.name}
               className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md border border-border"
               onError={(e) => {
@@ -96,10 +97,17 @@ export default function ManageProductsPage() {
             />
           ) : null}
           <div 
-            className={`w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-md border border-border flex items-center justify-center ${value ? 'hidden' : 'flex'}`}
+            className={`w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-md border border-border flex items-center justify-center ${((row.imageUrls && row.imageUrls.length > 0) || row.imageUrl) ? 'hidden' : 'flex'}`}
           >
             <ImageIcon className="h-4 w-4 sm:h-6 sm:w-6 text-muted-foreground" />
           </div>
+          {/* Image count indicator for multiple images */}
+          {row.imageUrls && row.imageUrls.length > 1 && (
+            <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+              {row.imageUrls.length}
+            </div>
+          )}
+        </div>
         </div>
       )
     },

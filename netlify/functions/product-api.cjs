@@ -77,10 +77,20 @@ exports.handler = async (event, context) => {
       const percentOff = data.percentOff || 0;
       const discountedPrice = calculateDiscountedPrice(originalPrice, percentOff);
       
+      // Ensure imageUrls is always an array for consistency
+      let imageUrls = data.imageUrls || [];
+      
+      // If imageUrls is empty but imageUrl exists, use imageUrl as the first item
+      if (imageUrls.length === 0 && data.imageUrl) {
+        imageUrls = [data.imageUrl];
+      }
+      
       // Convert Firestore timestamps to ISO strings
       const processedData = {
         id: doc.id,
         ...data,
+        // Ensure imageUrls is always present as an array
+        imageUrls,
         // Add calculated fields
         originalPrice,
         discountedPrice,
