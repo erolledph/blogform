@@ -203,8 +203,8 @@ export default function ContentPreviewPage() {
           )}
 
           {/* Content Body */}
-          <div className="prose prose-base sm:prose-lg prose-gray max-w-none">
-            <ReactMarkdown className="markdown-content">
+          <div className="prose prose-base sm:prose-lg prose-gray max-w-none markdown-content">
+            <ReactMarkdown>
               {content?.content || ''}
             </ReactMarkdown>
           </div>

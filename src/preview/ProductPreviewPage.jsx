@@ -313,8 +313,8 @@ export default function ProductPreviewPage() {
           {product?.description && (
             <div className="border-t border-gray-200 p-6 sm:p-8 lg:p-12">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Product Description</h2>
-              <div className="prose prose-base sm:prose-lg max-w-none">
-                <ReactMarkdown className="markdown-content">
+              <div className="prose prose-base sm:prose-lg max-w-none markdown-content">
+                <ReactMarkdown>
                   {product.description}
                 </ReactMarkdown>
               </div>
