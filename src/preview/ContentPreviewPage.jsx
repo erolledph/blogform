@@ -138,11 +138,11 @@ export default function ContentPreviewPage() {
                 }`}>
                   {content?.status || 'draft'}
                 </span>
-                {content?.categories?.length > 0 && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                    {content.categories[0]}
+                {content?.categories?.map((category, index) => (
+                  <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                    {category}
                   </span>
-                )}
+                ))}
               </div>
               <div className="text-sm text-gray-500 font-mono bg-gray-100 px-3 py-1 rounded-lg border">
                 /{content?.slug}
