@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -12,10 +11,8 @@ import {
   Package,
   Plus,
   Lightbulb,
-  LogOut,
   Menu,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 const navigation = [
   { name: 'Overview', href: '/dashboard/overview', icon: LayoutDashboard },
@@ -40,20 +37,10 @@ const settingsMenuItems = [
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const location = useLocation();
-  const { logout } = useAuth();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [createMenuOpen, setCreateMenuOpen] = React.useState(false);
   const [settingsMenuOpen, setSettingsMenuOpen] = React.useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success('Logged out successfully');
-    } catch (error) {
-      toast.error('Failed to logout');
-    }
-  };
 
   const handleLinkClick = () => {
     // Close sidebar on mobile after navigation
@@ -216,20 +203,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
         </li>
       </ul>
 
-      {/* Logout button */}
+      {/* Version info */}
       <div className="logout-section">
-        <button
-          onClick={handleLogout}
-          className="logout-button"
-          title={!isExpanded && !isHovered ? 'Logout' : ''}
-          aria-label="Logout"
-        >
-          <LogOut className="logout-button-icon" />
-          <span className="logout-button-text">Logout</span>
-          {!isExpanded && !isHovered && (
-            <div className="nav-tooltip">Logout</div>
-          )}
-        </button>
+        <div className="p-3 text-center">
+          <span className="text-xs text-primary-foreground/70">Admin CMS Version: 1.0.0</span>
+        </div>
       </div>
     </nav>
   );
