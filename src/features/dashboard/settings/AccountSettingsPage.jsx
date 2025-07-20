@@ -22,7 +22,36 @@ export default function AccountSettingsPage() {
     { value: 'A$', label: 'Australian Dollar (A$)' },
     { value: '₽', label: 'Russian Ruble (₽)' },
     { value: '₩', label: 'South Korean Won (₩)' },
-    { value: '¢', label: 'Cent (¢)' }
+    { value: '₦', label: 'Nigerian Naira (₦)' },
+    { value: '₱', label: 'Philippine Peso (₱)' },
+    { value: '₡', label: 'Costa Rican Colón (₡)' },
+    { value: '₪', label: 'Israeli New Shekel (₪)' },
+    { value: '₫', label: 'Vietnamese Dong (₫)' },
+    { value: '₴', label: 'Ukrainian Hryvnia (₴)' },
+    { value: '₸', label: 'Kazakhstani Tenge (₸)' },
+    { value: '₼', label: 'Azerbaijani Manat (₼)' },
+    { value: '₾', label: 'Georgian Lari (₾)' },
+    { value: '﷼', label: 'Saudi Riyal (﷼)' },
+    { value: 'kr', label: 'Swedish Krona (kr)' },
+    { value: 'zł', label: 'Polish Złoty (zł)' },
+    { value: 'Kč', label: 'Czech Koruna (Kč)' },
+    { value: 'Ft', label: 'Hungarian Forint (Ft)' },
+    { value: 'lei', label: 'Romanian Leu (lei)' },
+    { value: 'лв', label: 'Bulgarian Lev (лв)' },
+    { value: 'kn', label: 'Croatian Kuna (kn)' },
+    { value: 'din', label: 'Serbian Dinar (din)' },
+    { value: 'CHF', label: 'Swiss Franc (CHF)' },
+    { value: 'NOK', label: 'Norwegian Krone (NOK)' },
+    { value: 'DKK', label: 'Danish Krone (DKK)' },
+    { value: 'SEK', label: 'Swedish Krona (SEK)' },
+    { value: 'R', label: 'South African Rand (R)' },
+    { value: 'R$', label: 'Brazilian Real (R$)' },
+    { value: '$', label: 'Mexican Peso (MX$)' },
+    { value: 'S$', label: 'Singapore Dollar (S$)' },
+    { value: 'HK$', label: 'Hong Kong Dollar (HK$)' },
+    { value: 'NT$', label: 'New Taiwan Dollar (NT$)' },
+    { value: '₿', label: 'Bitcoin (₿)' },
+    { value: 'Ξ', label: 'Ethereum (Ξ)' }
   ];
 
   useEffect(() => {
@@ -56,6 +85,11 @@ export default function AccountSettingsPage() {
 
     try {
       await settingsService.setUserSettings(currentUser.uid, {
+        currency
+      });
+      
+      // Also save currency to public app settings so it's available in the API
+      await settingsService.setPublicAppSettings({
         currency
       });
       

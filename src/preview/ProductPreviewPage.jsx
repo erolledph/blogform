@@ -73,10 +73,41 @@ export default function ProductPreviewPage() {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
+    const currency = product?.currency || '$';
+    
+    // For currency symbols, just prepend/append the symbol
+    if (currency.length <= 3 && !currency.match(/^[A-Z]{3}$/)) {
+      // Handle special cases for currency placement
+      if (['€', '£', '¥', '₹', '₦', '₱', '₡', '₪', '₫', '₴', '₸', '₼', '₾', '﷼', '₿', 'Ξ'].includes(currency)) {
+        return `${currency}${price.toFixed(2)}`;
+      } else if (['kr', 'zł', 'Kč', 'Ft', 'lei', 'лв', 'kn', 'din'].includes(currency)) {
+        return `${price.toFixed(2)} ${currency}`;
+      } else {
+        return `${currency}${price.toFixed(2)}`;
+      }
+    }
+    
+    // For ISO currency codes, try to use Intl.NumberFormat
+    try {
+      const currencyMap = {
+        'CHF': 'CHF',
+        'NOK': 'NOK', 
+        'DKK': 'DKK',
+        'SEK': 'SEK'
+      };
+      
+      if (currencyMap[currency]) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: currencyMap[currency]
+        }).format(price);
+      }
+    } catch (error) {
+      console.warn('Currency formatting error:', error);
+    }
+    
+    // Fallback to simple formatting
+    return `${currency}${price.toFixed(2)}`;
   };
 
   const getRelatedProducts = () => {

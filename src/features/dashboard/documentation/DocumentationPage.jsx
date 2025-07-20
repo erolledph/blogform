@@ -322,6 +322,7 @@ if products:
     "originalPrice": 199.99,
     "discountedPrice": 169.99,
     "savings": 30.00,
+    "currency": "$",
     "imageUrl": "https://firebasestorage.googleapis.com/v0/b/...",
     "imageUrls": [
       "https://firebasestorage.googleapis.com/v0/b/.../main-image.jpg",
@@ -562,6 +563,10 @@ if products:
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>Product images: The `imageUrls` array contains all product images (up to 5). For backward compatibility, the first image is also available in the `imageUrl` field.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
+              <p>Products include a `currency` field that reflects the globally configured currency symbol from the admin settings, ensuring consistent pricing display across all products.</p>
             </div>
           </div>
         </div>

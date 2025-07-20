@@ -23,6 +23,30 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+// Helper function to get public app settings (including currency)
+async function getPublicAppSettings() {
+  try {
+    const docRef = db.collection('appSettings').doc('public');
+    const docSnap = await docRef.get();
+    
+    if (docSnap.exists) {
+      return docSnap.data();
+    }
+    
+    // Return default settings if no public settings exist
+    return {
+      currency: '$', // Default currency
+      updatedAt: new Date()
+    };
+  } catch (error) {
+    console.error('Error fetching public app settings:', error);
+    return {
+      currency: '$', // Default currency on error
+      updatedAt: new Date()
+    };
+  }
+}
+
 // Helper function to calculate discounted price
 function calculateDiscountedPrice(price, percentOff) {
   if (!price || !percentOff || percentOff <= 0) return price;
@@ -57,6 +81,10 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // Get public app settings (including currency)
+    const appSettings = await getPublicAppSettings();
+    const currency = appSettings.currency || '$';
+
     // Query Firestore for published products (without ordering to avoid index requirement)
     const productsRef = db.collection('products');
     const snapshot = await productsRef
@@ -85,6 +113,8 @@ exports.handler = async (event, context) => {
       const processedData = {
         id: doc.id,
         ...data,
+        // Add currency from public app settings
+        currency,
         // Ensure imageUrls is always present as an array
         imageUrls,
         // Add calculated fields

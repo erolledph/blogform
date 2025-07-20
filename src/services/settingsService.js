@@ -36,6 +36,46 @@ export const settingsService = {
     }
   },
 
+  // Get public application settings
+  async getPublicAppSettings() {
+    try {
+      const docRef = doc(db, 'appSettings', 'public');
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        return docSnap.data();
+      }
+      
+      // Return default settings if no public settings exist
+      return {
+        currency: '$', // Default currency
+        updatedAt: new Date()
+      };
+    } catch (error) {
+      console.error('Error fetching public app settings:', error);
+      return {
+        currency: '$', // Default currency on error
+        updatedAt: new Date()
+      };
+    }
+  },
+
+  // Set public application settings
+  async setPublicAppSettings(settings) {
+    try {
+      const docRef = doc(db, 'appSettings', 'public');
+      await setDoc(docRef, {
+        ...settings,
+        updatedAt: new Date()
+      }, { merge: true });
+      
+      return true;
+    } catch (error) {
+      console.error('Error saving public app settings:', error);
+      throw error;
+    }
+  },
+
   // Get user-specific settings (for future use)
   async getUserSettings(userId) {
     try {
