@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Eye, Package, Calendar, Star, ShoppingCart, Truck, Shield, RotateCcw } from 'lucide-react';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -15,6 +15,25 @@ export default function ProductPreviewPage() {
     fetchProduct();
   }, [slug]);
 
+  // Get product images - prioritize imageUrls array, fallback to single imageUrl
+  const productImages = useMemo(() => {
+    if (!product) return [];
+    
+    if (product.imageUrls && product.imageUrls.length > 0) {
+      return product.imageUrls;
+    }
+    
+    if (product.imageUrl) {
+      return [product.imageUrl];
+    }
+    
+    return [];
+  }, [product]);
+
+  // Reset selected image index when product or images change
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [product?.id]);
   const fetchProduct = async () => {
     try {
       setLoading(true);
@@ -114,18 +133,6 @@ export default function ProductPreviewPage() {
   const discountedPrice = hasDiscount ? product.discountedPrice : product?.originalPrice;
   const savings = hasDiscount ? product.savings : 0;
   const relatedProducts = getRelatedProducts();
-  
-  // Get product images - prioritize imageUrls array, fallback to single imageUrl
-  const productImages = product?.imageUrls && product.imageUrls.length > 0 
-    ? product.imageUrls 
-    : product?.imageUrl 
-      ? [product.imageUrl] 
-      : [];
-  
-  // Reset selected image index when product changes
-  useEffect(() => {
-    setSelectedImageIndex(0);
-  }, [product?.id]);
 
   return (
     <div className="min-h-screen bg-gray-50">
