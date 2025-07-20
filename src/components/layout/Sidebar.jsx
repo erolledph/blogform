@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import toast from 'react-hot-toast';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -12,6 +14,9 @@ import {
   Plus,
   Lightbulb,
   Menu,
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 const navigation = [
@@ -37,10 +42,10 @@ const settingsMenuItems = [
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const location = useLocation();
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [isHovered, setIsHovered] = React.useState(false);
-  const [createMenuOpen, setCreateMenuOpen] = React.useState(false);
-  const [settingsMenuOpen, setSettingsMenuOpen] = React.useState(false);
+  const { logout } = useAuth();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [createMenuOpen, setCreateMenuOpen] = useState(false);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
 
   const handleLinkClick = () => {
     // Close sidebar on mobile after navigation
@@ -61,25 +66,30 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
     setSettingsMenuOpen(!settingsMenuOpen);
   };
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+    } catch (error) {
+      toast.error('Failed to logout');
+    }
   };
 
   return (
     <nav 
       className={`sidebar ${sidebarOpen ? 'open' : ''} ${isExpanded ? 'expanded' : ''}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div className="sidebar-header">
-     
+        <button 
+          className="hamburger-toggle"
+          onClick={toggleExpanded}
+          aria-label="Toggle sidebar"
+        >
+          {isExpanded ? <ChevronLeft /> : <Menu />}
+        </button>
         <div className="logo">Admin CMS</div>
-        <button className="hamburger" onClick={closeSidebar}>
-          ×
+        <button className="hamburger" onClick={closeSidebar} aria-label="Close sidebar">
+          <ChevronLeft />
         </button>
       </div>
       
@@ -89,13 +99,13 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
           <Link
             to="/dashboard/overview"
             onClick={handleLinkClick}
-            className={`nav-link ${location.pathname === '/dashboard/overview' ? 'active' : ''}`}
-            title={!isExpanded && !isHovered ? 'Overview' : ''}
+            className={`nav-link ${location.pathname === '/dashboard/overview' || location.pathname === '/dashboard' ? 'active' : ''}`}
+            title={!isExpanded && !sidebarOpen ? 'Overview' : ''}
             aria-label="Overview"
           >
             <LayoutDashboard className="nav-link-icon" />
             <span className="nav-link-text">Overview</span>
-            {!isExpanded && !isHovered && (
+            {!isExpanded && !sidebarOpen && (
               <div className="nav-tooltip">Overview</div>
             )}
           </Link>
@@ -105,33 +115,32 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
         <li className="nav-item">
           <button
             onClick={toggleCreateMenu}
-            className="nav-link w-full text-left"
-            title={!isExpanded && !isHovered ? 'Create New' : ''}
+            className={`nav-link w-full text-left ${createMenuOpen ? 'active' : ''}`}
+            title={!isExpanded && !sidebarOpen ? 'Create New' : ''}
             aria-label="Create New"
           >
             <Plus className="nav-link-icon" />
             <span className="nav-link-text">Create New</span>
-            {!isExpanded && !isHovered && (
+            <span className="nav-link-text ml-auto">
+              <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${createMenuOpen ? 'rotate-90' : ''}`} />
+            </span>
+            {!isExpanded && !sidebarOpen && (
               <div className="nav-tooltip">Create New</div>
             )}
           </button>
           
           {/* Submenu */}
-          {createMenuOpen && (
+          {createMenuOpen && (isExpanded || sidebarOpen) && (
             <ul className="ml-6 mt-2 space-y-1">
               {createMenuItems.map((item) => (
                 <li key={item.name}>
                   <Link
                     to={item.href}
                     onClick={handleLinkClick}
-                    className="nav-link text-sm py-2"
-                    title={!isExpanded && !isHovered ? item.name : ''}
+                    className={`nav-link text-sm py-2 ${location.pathname === item.href ? 'active' : ''}`}
                   >
                     <item.icon className="nav-link-icon h-4 w-4" />
                     <span className="nav-link-text">{item.name}</span>
-                    {!isExpanded && !isHovered && (
-                      <div className="nav-tooltip">{item.name}</div>
-                    )}
                   </Link>
                 </li>
               ))}
@@ -148,12 +157,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
                 to={item.href}
                 onClick={handleLinkClick}
                 className={`nav-link ${isActive ? 'active' : ''}`}
-                title={!isExpanded && !isHovered ? item.name : ''}
+                title={!isExpanded && !sidebarOpen ? item.name : ''}
                 aria-label={item.name}
               >
                 <item.icon className="nav-link-icon" />
                 <span className="nav-link-text">{item.name}</span>
-                {!isExpanded && !isHovered && (
+                {!isExpanded && !sidebarOpen && (
                   <div className="nav-tooltip">{item.name}</div>
                 )}
               </Link>
@@ -165,19 +174,22 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
         <li className="nav-item">
           <button
             onClick={toggleSettingsMenu}
-            className="nav-link w-full text-left"
-            title={!isExpanded && !isHovered ? 'Settings' : ''}
+            className={`nav-link w-full text-left ${settingsMenuOpen ? 'active' : ''}`}
+            title={!isExpanded && !sidebarOpen ? 'Settings' : ''}
             aria-label="Settings"
           >
             <Settings className="nav-link-icon" />
             <span className="nav-link-text">Settings</span>
-            {!isExpanded && !isHovered && (
+            <span className="nav-link-text ml-auto">
+              <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${settingsMenuOpen ? 'rotate-90' : ''}`} />
+            </span>
+            {!isExpanded && !sidebarOpen && (
               <div className="nav-tooltip">Settings</div>
             )}
           </button>
           
           {/* Settings Submenu */}
-          {settingsMenuOpen && (
+          {settingsMenuOpen && (isExpanded || sidebarOpen) && (
             <ul className="ml-6 mt-2 space-y-1">
               {settingsMenuItems.map((item) => {
                 const isActive = location.pathname === item.href;
@@ -187,13 +199,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
                       to={item.href}
                       onClick={handleLinkClick}
                       className={`nav-link text-sm py-2 ${isActive ? 'active' : ''}`}
-                      title={!isExpanded && !isHovered ? item.name : ''}
                     >
                       <item.icon className="nav-link-icon h-4 w-4" />
                       <span className="nav-link-text">{item.name}</span>
-                      {!isExpanded && !isHovered && (
-                        <div className="nav-tooltip">{item.name}</div>
-                      )}
                     </Link>
                   </li>
                 );
@@ -203,11 +211,20 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
         </li>
       </ul>
 
-      {/* Version info */}
+      {/* Logout Section */}
       <div className="logout-section">
-        <div className="p-3 text-center">
-          <span className="text-xs text-primary-foreground/70">Admin CMS Version: 1.0.0</span>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="logout-button"
+          title={!isExpanded && !sidebarOpen ? 'Logout' : ''}
+          aria-label="Logout"
+        >
+          <LogOut className="logout-button-icon" />
+          <span className="logout-button-text">Logout</span>
+          {!isExpanded && !sidebarOpen && (
+            <div className="nav-tooltip">Logout</div>
+          )}
+        </button>
       </div>
     </nav>
   );

@@ -92,9 +92,6 @@
     width: 16rem; /* 256px - expanded width */
   }
 
-  .sidebar:hover {
-    width: 16rem;
-  }
 
   .sidebar-header {
     @apply p-4 flex items-center justify-between relative;
@@ -103,7 +100,7 @@
   }
 
   .hamburger-toggle {
-    @apply bg-transparent border-none text-xl cursor-pointer p-2 rounded-md transition-colors duration-200 flex items-center justify-center;
+    @apply bg-transparent border-none text-lg cursor-pointer p-2 rounded-md transition-colors duration-200 flex items-center justify-center;
     color: hsl(var(--primary-foreground));
     width: 2rem;
     height: 2rem;
@@ -115,29 +112,35 @@
   }
 
   .logo {
-    @apply text-lg font-bold transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
-    opacity: 0;
-    width: 0;
-    margin-left: 0;
+    @apply text-base font-bold transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
+    opacity: 1;
+    width: auto;
+    margin-left: 0.5rem;
+    font-size: 0.75rem; /* Smaller when collapsed */
   }
 
-  .sidebar.expanded .logo,
-  .sidebar:hover .logo {
+  .sidebar.expanded .logo {
     opacity: 1;
     width: auto;
     margin-left: 0.75rem;
+    font-size: 1.125rem; /* Larger when expanded */
   }
 
   .hamburger {
-    @apply bg-transparent border-none text-2xl cursor-pointer p-2 transition-colors duration-200;
+    @apply bg-transparent border-none text-lg cursor-pointer p-2 rounded-md transition-colors duration-200 flex items-center justify-center;
     color: hsl(var(--primary-foreground));
     opacity: 0;
     width: 0;
     overflow: hidden;
+    min-width: 2rem;
+    height: 2rem;
   }
 
-  .sidebar.expanded .hamburger,
-  .sidebar:hover .hamburger {
+  .hamburger:hover {
+    background-color: hsla(355, 20%, 98%, 0.1);
+  }
+
+  .sidebar.expanded .hamburger {
     opacity: 1;
     width: auto;
   }
@@ -189,10 +192,13 @@
     opacity: 0;
     width: 0;
     margin-left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
   }
 
-  .sidebar.expanded .nav-link-text,
-  .sidebar:hover .nav-link-text {
+  .sidebar.expanded .nav-link-text {
     opacity: 1;
     width: auto;
     margin-left: 1rem;
@@ -212,7 +218,7 @@
     border-right-color: #1f2937;
   }
 
-  .sidebar:not(.expanded):not(:hover) .nav-item:hover .nav-tooltip {
+  .sidebar:not(.expanded):not(.open) .nav-item:hover .nav-tooltip {
     opacity: 1;
     transform: translateX(0);
   }
@@ -285,7 +291,7 @@
     .sidebar.open .hamburger {
       opacity: 1 !important;
       width: auto !important;
-      margin-left: 1rem !important;
+      margin-left: 0.75rem !important;
     }
 
     .sidebar.open .logo {
@@ -328,11 +334,6 @@
       padding-top: 0;
       min-height: 100vh;
     }
-
-    .sidebar.expanded + .main-content {
-      margin-left: 16rem; /* Account for expanded sidebar width */
-    }
-
     .nav-menu {
       max-height: calc(100vh - 10rem);
     }
@@ -369,8 +370,7 @@
     margin-left: 0;
   }
 
-  .sidebar.expanded .logout-button-text,
-  .sidebar:hover .logout-button-text {
+  .sidebar.expanded .logout-button-text {
     opacity: 1;
     width: auto;
     margin-left: 1rem;

@@ -235,12 +235,29 @@ export default function AccountSettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Additional Settings</h2>
             <p className="card-description">
-              More settings will be available here in future updates
+              System information and additional configuration options
             </p>
           </div>
           <div className="card-content">
-            <div className="text-center py-8 text-muted-foreground">
-              <p>Additional configuration options will be added here as the application grows.</p>
+            <div className="space-y-6">
+              {/* Version Information */}
+              <div className="p-6 bg-muted/30 rounded-lg border border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-2">System Information</h3>
+                    <p className="text-sm text-muted-foreground">Current application version and build details</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-primary">v1.0.0</div>
+                    <div className="text-sm text-muted-foreground">Admin CMS</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Future Settings Placeholder */}
+              <div className="text-center py-8 text-muted-foreground">
+                <p>Additional configuration options will be added here as the application grows.</p>
+              </div>
             </div>
           </div>
         </div>
