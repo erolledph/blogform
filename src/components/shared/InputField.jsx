@@ -9,6 +9,7 @@ export default function InputField({
   type = 'text',
   showPasswordToggle = false,
   icon: Icon = null,
+  currencySymbol = null,
   ...props
 }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,10 +33,15 @@ export default function InputField({
             <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
+        {currencySymbol && (
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <span className="text-base font-medium text-muted-foreground">{currencySymbol}</span>
+          </div>
+        )}
         <input
           id={inputId}
           type={actualType}
-          className={`input-field ${Icon ? 'pl-12' : ''} ${showPasswordToggle ? 'pr-12' : ''} ${error ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+          className={`input-field ${Icon || currencySymbol ? 'pl-12' : ''} ${showPasswordToggle ? 'pr-12' : ''} ${error ? 'border-destructive focus-visible:ring-destructive' : ''}`}
           {...props}
         />
         {showPasswordToggle && (

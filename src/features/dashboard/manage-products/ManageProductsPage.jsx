@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { settingsService } from '@/services/settingsService';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import DataTable from '@/components/shared/DataTable';
@@ -15,11 +16,25 @@ export default function ManageProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, product: null });
-  const { getAuthToken } = useAuth();
+  const [userCurrency, setUserCurrency] = useState('$');
+  const { getAuthToken, currentUser } = useAuth();
 
   useEffect(() => {
+    fetchUserSettings();
     fetchProducts();
-  }, []);
+  }, [currentUser]);
+
+  const fetchUserSettings = async () => {
+    if (!currentUser?.uid) return;
+    
+    try {
+      const settings = await settingsService.getUserSettings(currentUser.uid);
+      setUserCurrency(settings.currency || '$');
+    } catch (error) {
+      console.error('Error fetching user settings:', error);
+      // Keep default currency on error
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -143,10 +158,10 @@ export default function ManageProductsPage() {
             {percentOff > 0 ? (
               <div className="space-y-1">
                 <div className="text-sm line-through text-muted-foreground">
-                  ${originalPrice.toFixed(2)}
+                  {userCurrency}{originalPrice.toFixed(2)}
                 </div>
                 <div className="text-sm font-bold text-primary">
-                  ${discountedPrice.toFixed(2)}
+                  {userCurrency}{discountedPrice.toFixed(2)}
                 </div>
                 <div className="text-xs text-red-600">
                   {percentOff}% off
@@ -154,7 +169,7 @@ export default function ManageProductsPage() {
               </div>
             ) : (
               <div className="text-sm font-medium text-foreground">
-                ${originalPrice.toFixed(2)}
+                {userCurrency}{originalPrice.toFixed(2)}
               </div>
             )}
           </div>

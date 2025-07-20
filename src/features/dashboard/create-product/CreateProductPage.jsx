@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { settingsService } from '@/services/settingsService';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 import SimpleMDE from 'react-simplemde-editor';
@@ -15,7 +16,7 @@ import 'easymde/dist/easymde.min.css';
 export default function CreateProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getAuthToken } = useAuth();
+  const { getAuthToken, currentUser } = useAuth();
   const isEditing = Boolean(id);
 
   const [formData, setFormData] = useState({
@@ -33,6 +34,7 @@ export default function CreateProductPage() {
 
   // Separate state for array input fields
   const [tagsInput, setTagsInput] = useState('');
+  const [userCurrency, setUserCurrency] = useState('$');
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -52,10 +54,23 @@ export default function CreateProductPage() {
   }), []);
 
   useEffect(() => {
+    fetchUserSettings();
     if (isEditing) {
       fetchProduct();
     }
-  }, [id, isEditing]);
+  }, [id, isEditing, currentUser]);
+
+  const fetchUserSettings = async () => {
+    if (!currentUser?.uid) return;
+    
+    try {
+      const settings = await settingsService.getUserSettings(currentUser.uid);
+      setUserCurrency(settings.currency || '$');
+    } catch (error) {
+      console.error('Error fetching user settings:', error);
+      // Keep default currency on error
+    }
+  };
 
   const fetchProduct = async () => {
     try {
@@ -445,7 +460,7 @@ export default function CreateProductPage() {
                   value={formData.price}
                   onChange={handleInputChange}
                   error={errors.price}
-                  icon={DollarSign}
+                  currencySymbol={userCurrency}
                 />
 
                 <InputField

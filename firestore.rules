@@ -1,4 +1,5 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
     // Allow public read access to app settings (like custom domain)
@@ -6,14 +7,43 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
-    
+
+    // Allow public read access to published content
+    match /content/{document} {
+      allow read: if resource.data.status == 'published';
+      allow read, write, create, delete: if request.auth != null;
+    }
+
     // Allow public read access to published products
     match /products/{docId} {
       allow read: if resource.data.status == 'published' || request.auth != null;
       allow write: if request.auth != null;
     }
     
-    // Existing rules for other collections
+    // Allow users to read and write their own settings
+    match /userSettings/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Rules for 'pageViews' collection
+    // Only authenticated users can read.
+    match /pageViews/{document} {
+      allow read: if request.auth != null;
+      // You might want to add write rules here if authenticated users can create/update page views
+      // allow write: if request.auth != null; 
+    }
+
+    // Rules for 'interactions' collection
+    // Only authenticated users can read.
+    match /interactions/{document} {
+      allow read: if request.auth != null;
+      // You might want to add write rules here if authenticated users can create/update interactions
+      // allow write: if request.auth != null;
+    }
+
+    // Catch-all rule for other collections
+    // This rule allows authenticated users to read and write to any document in any collection
+    // that hasn't been explicitly matched by a more specific rule above.
     match /{document=**} {
       allow read, write: if request.auth != null;
     }

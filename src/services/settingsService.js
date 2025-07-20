@@ -46,10 +46,17 @@ export const settingsService = {
         return docSnap.data();
       }
       
-      return {};
+      // Return default settings if no user settings exist
+      return {
+        currency: '$', // Default currency
+        updatedAt: new Date()
+      };
     } catch (error) {
       console.error('Error fetching user settings:', error);
-      return {};
+      return {
+        currency: '$', // Default currency on error
+        updatedAt: new Date()
+      };
     }
   },
 
