@@ -709,9 +709,9 @@ export default function FirebaseStoragePage() {
           onUploadSuccess={handleUploadSuccess}
           onUploadError={handleUploadError}
           maxFileSize={10 * 1024 * 1024} // 10MB
-          quality={80}
-          maxWidth={1920}
-          maxHeight={1080}
+          initialQuality={80}
+          initialMaxWidth={1920}
+          initialMaxHeight={1080}
         />
       </Modal>
     </div>

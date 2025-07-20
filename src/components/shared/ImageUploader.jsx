@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/firebase';
 import { fromBlob } from 'image-resize-compress';
 import InputField from './InputField';
 import LoadingSpinner from './LoadingSpinner';
-import { Upload, Image as ImageIcon, FileImage, CheckCircle, AlertTriangle } from 'lucide-react';
+import Modal from './Modal';
+import { Upload, Image as ImageIcon, FileImage, CheckCircle, AlertTriangle, Settings, Zap } from 'lucide-react';
 import { formatBytes } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 
@@ -14,16 +15,28 @@ export default function ImageUploader({
   currentPath = '',
   className = '',
   maxFileSize = 10 * 1024 * 1024, // 10MB default
-  quality = 80,
-  maxWidth = 1920,
-  maxHeight = 1080
+  initialQuality = 80,
+  initialMaxWidth = 1920,
+  initialMaxHeight = 1080
 }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [newFileName, setNewFileName] = useState('');
   const [compressing, setCompressing] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [compressionStats, setCompressionStats] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  // User-configurable optimization settings
+  const [imageQuality, setImageQuality] = useState(initialQuality);
+  const [imageMaxWidth, setImageMaxWidth] = useState(initialMaxWidth);
+  const [imageMaxHeight, setImageMaxHeight] = useState(initialMaxHeight);
+  const [outputFormat, setOutputFormat] = useState('webp');
+
+  // Compression stats and confirmation modal
+  const [originalFileSize, setOriginalFileSize] = useState(null);
+  const [compressedFileSize, setCompressedFileSize] = useState(null);
+  const [compressionStats, setCompressionStats] = useState(null);
+  const [confirmUploadModal, setConfirmUploadModal] = useState(false);
+  const [finalCompressedBlob, setFinalCompressedBlob] = useState(null);
 
   const handleFileSelect = async (e) => {
     const file = e.target.files[0];
@@ -42,62 +55,78 @@ export default function ImageUploader({
     }
 
     setSelectedFile(file);
+    setOriginalFileSize(file.size);
     
     // Generate default filename (remove extension and add timestamp)
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
     const timestamp = Date.now();
     setNewFileName(`${nameWithoutExt}-${timestamp}`);
 
-    // Create preview URL
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-
-    // Start compression preview
-    await compressImage(file, true);
+    // Detect image dimensions and create preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Set the detected dimensions as the initial max width/height
+        setImageMaxWidth(img.width);
+        setImageMaxHeight(img.height);
+        
+        // Create preview URL
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+        
+        // Run compression preview with the detected dimensions
+        // Note: runCompressionPreview will be triggered by useEffect when dimensions change
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
-  const compressImage = async (file, previewOnly = false) => {
+  const runCompressionPreview = async (file) => {
     try {
-      if (!previewOnly) {
-        setCompressing(true);
-      }
+      setCompressing(true);
 
-      const originalSize = file.size;
-      
-      // Compress and convert to WebP
+      // Compress image with current settings
       const compressedBlob = await fromBlob(
         file,
-        quality,
-        maxWidth,
-        maxHeight,
-        'webp'
+        imageQuality,
+        imageMaxWidth,
+        imageMaxHeight,
+        outputFormat
       );
 
-      const compressionRatio = ((originalSize - compressedBlob.size) / originalSize * 100).toFixed(1);
+      const compressedSize = compressedBlob.size;
+      const originalSize = file.size;
+      const compressionRatio = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+      const sizeDifference = originalSize - compressedSize;
       
+      setCompressedFileSize(compressedSize);
       setCompressionStats({
         originalSize,
-        compressedSize: compressedBlob.size,
+        compressedSize,
         compressionRatio,
-        format: 'webp'
+        sizeDifference,
+        format: outputFormat,
+        isLarger: compressedSize > originalSize
       });
 
-      if (!previewOnly) {
-        setCompressing(false);
-      }
-
-      return compressedBlob;
     } catch (error) {
-      console.error('Error compressing image:', error);
-      if (!previewOnly) {
-        setCompressing(false);
-        toast.error('Failed to compress image');
-      }
-      throw error;
+      console.error('Error in compression preview:', error);
+      toast.error('Failed to preview compression');
+    } finally {
+      setCompressing(false);
     }
   };
 
-  const handleUpload = async () => {
+  // Re-run compression preview when settings change
+  useEffect(() => {
+    if (selectedFile && imageMaxWidth > 0 && imageMaxHeight > 0) {
+      runCompressionPreview(selectedFile);
+    }
+  }, [selectedFile, imageQuality, imageMaxWidth, imageMaxHeight, outputFormat]);
+
+  const handleInitiateUpload = async () => {
     if (!selectedFile || !newFileName.trim()) {
       toast.error('Please select a file and enter a filename');
       return;
@@ -106,25 +135,52 @@ export default function ImageUploader({
     try {
       setCompressing(true);
       
-      // Compress the image
-      const compressedBlob = await compressImage(selectedFile);
+      // Compress the image with current settings
+      const compressedBlob = await fromBlob(
+        selectedFile,
+        imageQuality,
+        imageMaxWidth,
+        imageMaxHeight,
+        outputFormat
+      );
       
       setCompressing(false);
+
+      // Check if compressed file is larger than original
+      if (compressedBlob.size > selectedFile.size) {
+        setFinalCompressedBlob(compressedBlob);
+        setConfirmUploadModal(true);
+      } else {
+        await executeUpload(compressedBlob);
+      }
+
+    } catch (error) {
+      console.error('Error during compression:', error);
+      toast.error('Failed to compress image');
+      setCompressing(false);
+    }
+  };
+
+  const executeUpload = async (blobToUpload) => {
+    try {
       setUploading(true);
 
       // Create storage path
-      const fileName = `${newFileName.trim()}.webp`;
+      const fileName = `${newFileName.trim()}.${outputFormat}`;
       const fullPath = currentPath ? `${currentPath}/${fileName}` : `images/${fileName}`;
       const storageRef = ref(storage, fullPath);
       
       // Upload compressed image
-      await uploadBytes(storageRef, compressedBlob, {
-        contentType: 'image/webp',
+      await uploadBytes(storageRef, blobToUpload, {
+        contentType: `image/${outputFormat}`,
         customMetadata: {
           originalName: selectedFile.name,
           originalSize: selectedFile.size.toString(),
-          compressedSize: compressedBlob.size.toString(),
-          compressionRatio: compressionStats.compressionRatio
+          compressedSize: blobToUpload.size.toString(),
+          compressionRatio: compressionStats?.compressionRatio || '0',
+          quality: imageQuality.toString(),
+          maxWidth: imageMaxWidth.toString(),
+          maxHeight: imageMaxHeight.toString()
         }
       });
       
@@ -133,14 +189,7 @@ export default function ImageUploader({
       toast.success('Image uploaded successfully!');
       
       // Reset form
-      setSelectedFile(null);
-      setNewFileName('');
-      setCompressionStats(null);
-      setPreviewUrl(null);
-      
-      // Clear file input
-      const fileInput = document.getElementById('image-upload-input');
-      if (fileInput) fileInput.value = '';
+      resetForm();
 
       // Callback for parent component
       if (onUploadSuccess) {
@@ -148,9 +197,9 @@ export default function ImageUploader({
           fileName,
           fullPath,
           downloadURL,
-          size: compressedBlob.size,
+          size: blobToUpload.size,
           originalSize: selectedFile.size,
-          compressionRatio: compressionStats.compressionRatio
+          compressionRatio: compressionStats?.compressionRatio || '0'
         });
       }
 
@@ -162,16 +211,29 @@ export default function ImageUploader({
         onUploadError(error);
       }
     } finally {
-      setCompressing(false);
       setUploading(false);
     }
+  };
+
+  const handleConfirmUpload = async () => {
+    setConfirmUploadModal(false);
+    await executeUpload(finalCompressedBlob);
+  };
+
+  const handleCancelUpload = () => {
+    setConfirmUploadModal(false);
+    setFinalCompressedBlob(null);
   };
 
   const resetForm = () => {
     setSelectedFile(null);
     setNewFileName('');
+    setOriginalFileSize(null);
+    setCompressedFileSize(null);
     setCompressionStats(null);
     setPreviewUrl(null);
+    setConfirmUploadModal(false);
+    setFinalCompressedBlob(null);
     
     const fileInput = document.getElementById('image-upload-input');
     if (fileInput) fileInput.value = '';
@@ -179,14 +241,20 @@ export default function ImageUploader({
 
   const isProcessing = compressing || uploading;
 
+  const getUploadButtonText = () => {
+    if (compressing) return 'Compressing...';
+    if (uploading) return 'Uploading to Firebase...';
+    return 'Upload Optimized Image';
+  };
+
   return (
     <div className={`space-y-6 ${className}`}>
       {/* File Selection */}
       <div className="card">
         <div className="card-header">
-          <h3 className="card-title">Upload & Compress Image</h3>
+          <h3 className="card-title">Upload & Optimize Image</h3>
           <p className="card-description">
-            Select an image to compress and convert to WebP format
+            Select an image and customize optimization settings
           </p>
         </div>
         <div className="card-content space-y-6">
@@ -238,7 +306,10 @@ export default function ImageUploader({
 
               {/* Compression Stats */}
               <div>
-                <h4 className="text-base font-medium text-foreground mb-3">Compression Preview</h4>
+                <h4 className="text-base font-medium text-foreground mb-3">
+                  Compression Preview
+                  {compressing && <LoadingSpinner size="sm" className="inline-block ml-2" />}
+                </h4>
                 <div className="space-y-4">
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-center space-x-3 mb-3">
@@ -246,25 +317,44 @@ export default function ImageUploader({
                       <span className="text-sm font-medium text-blue-800">Original</span>
                     </div>
                     <div className="space-y-1 text-sm text-blue-700">
-                      <div>Size: {formatBytes(selectedFile.size)}</div>
-                      <div>Format: {selectedFile.type}</div>
+                      <div>Size: {formatBytes(originalFileSize || 0)}</div>
+                      <div>Format: {selectedFile?.type}</div>
                     </div>
                   </div>
 
                   {compressionStats && (
-                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className={`p-4 border rounded-lg ${
+                      compressionStats.isLarger 
+                        ? 'bg-red-50 border-red-200' 
+                        : 'bg-green-50 border-green-200'
+                    }`}>
                       <div className="flex items-center space-x-3 mb-3">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                        <span className="text-sm font-medium text-green-800">Compressed</span>
+                        {compressionStats.isLarger ? (
+                          <AlertTriangle className="h-5 w-5 text-red-600" />
+                        ) : (
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        )}
+                        <span className={`text-sm font-medium ${
+                          compressionStats.isLarger ? 'text-red-800' : 'text-green-800'
+                        }`}>
+                          Optimized
+                        </span>
                       </div>
-                      <div className="space-y-1 text-sm text-green-700">
+                      <div className={`space-y-1 text-sm ${
+                        compressionStats.isLarger ? 'text-red-700' : 'text-green-700'
+                      }`}>
                         <div>Size: {formatBytes(compressionStats.compressedSize)}</div>
-                        <div>Format: WebP</div>
+                        <div>Format: {outputFormat.toUpperCase()}</div>
                         <div className="font-medium">
-                          Saved: {compressionStats.compressionRatio}% 
-                          ({formatBytes(compressionStats.originalSize - compressionStats.compressedSize)})
+                          {compressionStats.isLarger ? 'Increased' : 'Saved'}: {Math.abs(parseFloat(compressionStats.compressionRatio))}% 
+                          ({compressionStats.isLarger ? '+' : ''}{formatBytes(compressionStats.sizeDifference * -1)})
                         </div>
                       </div>
+                      {compressionStats.isLarger && (
+                        <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded text-xs text-red-800">
+                          ⚠ The optimized file is larger than the original. You'll be prompted before upload.
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -283,29 +373,86 @@ export default function ImageUploader({
               className="max-w-md"
             />
           )}
+        </div>
+      </div>
+
+      {/* Optimization Settings */}
+      <div className="card">
+        <div className="card-header">
+          <div className="flex items-center space-x-3">
+            <Settings className="h-6 w-6 text-primary" />
+            <h3 className="card-title">Optimization Settings</h3>
+          </div>
+          <p className="card-description">
+            Customize compression parameters for optimal results
+          </p>
+        </div>
+        <div className="card-content space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <InputField
+              label="Quality (%)"
+              type="number"
+              min="1"
+              max="100"
+              value={imageQuality}
+              onChange={(e) => setImageQuality(parseInt(e.target.value) || 80)}
+              disabled={isProcessing}
+            />
+            
+            <InputField
+              label="Max Width (px)"
+              type="number"
+              min="100"
+              max="4000"
+              value={imageMaxWidth}
+              onChange={(e) => setImageMaxWidth(parseInt(e.target.value) || 1920)}
+              disabled={isProcessing}
+            />
+            
+            <InputField
+              label="Max Height (px)"
+              type="number"
+              min="100"
+              max="4000"
+              value={imageMaxHeight}
+              onChange={(e) => setImageMaxHeight(parseInt(e.target.value) || 1080)}
+              disabled={isProcessing}
+            />
+            
+            <div>
+              <label className="block text-base font-medium text-foreground mb-4">
+                Output Format
+              </label>
+              <select
+                value={outputFormat}
+                onChange={(e) => setOutputFormat(e.target.value)}
+                disabled={isProcessing}
+                className="input-field"
+              >
+                <option value="webp">WebP (Recommended)</option>
+                <option value="jpeg">JPEG</option>
+                <option value="png">PNG</option>
+              </select>
+            </div>
+          </div>
 
           {/* Upload Button */}
           {selectedFile && (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 pt-4 border-t border-border">
               <button
-                onClick={handleUpload}
+                onClick={handleInitiateUpload}
                 disabled={isProcessing || !newFileName.trim()}
                 className="btn-primary"
               >
-                {compressing ? (
+                {isProcessing ? (
                   <>
                     <LoadingSpinner size="sm" className="mr-3" />
-                    Compressing...
-                  </>
-                ) : uploading ? (
-                  <>
-                    <LoadingSpinner size="sm" className="mr-3" />
-                    Uploading...
+                    {getUploadButtonText()}
                   </>
                 ) : (
                   <>
                     <Upload className="h-5 w-5 mr-3" />
-                    Upload Compressed Image
+                    {getUploadButtonText()}
                   </>
                 )}
               </button>
@@ -322,47 +469,113 @@ export default function ImageUploader({
         </div>
       </div>
 
-      {/* Compression Settings */}
+      {/* Format Information */}
       <div className="card">
         <div className="card-header">
-          <h3 className="card-title">Compression Settings</h3>
-          <p className="card-description">
-            Current settings for image optimization
-          </p>
+          <div className="flex items-center space-x-3">
+            <Zap className="h-6 w-6 text-blue-600" />
+            <h3 className="card-title">Format Information</h3>
+          </div>
         </div>
         <div className="card-content">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 bg-muted/30 rounded-lg">
-              <div className="text-sm font-medium text-foreground mb-1">Quality</div>
-              <div className="text-lg font-bold text-primary">{quality}%</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <h4 className="font-semibold text-green-800 mb-2">WebP (Default)</h4>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• Best compression ratio</li>
+                <li>• Modern browser support</li>
+                <li>• Ideal for web use</li>
+              </ul>
             </div>
-            <div className="p-4 bg-muted/30 rounded-lg">
-              <div className="text-sm font-medium text-foreground mb-1">Max Width</div>
-              <div className="text-lg font-bold text-primary">{maxWidth}px</div>
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="font-semibold text-blue-800 mb-2">JPEG</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Universal compatibility</li>
+                <li>• Good for photos</li>
+                <li>• Lossy compression</li>
+              </ul>
             </div>
-            <div className="p-4 bg-muted/30 rounded-lg">
-              <div className="text-sm font-medium text-foreground mb-1">Max Height</div>
-              <div className="text-lg font-bold text-primary">{maxHeight}px</div>
-            </div>
-            <div className="p-4 bg-muted/30 rounded-lg">
-              <div className="text-sm font-medium text-foreground mb-1">Format</div>
-              <div className="text-lg font-bold text-primary">WebP</div>
-            </div>
-          </div>
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <AlertTriangle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm text-blue-800 font-medium mb-1">Optimization Info</p>
-                <p className="text-sm text-blue-700">
-                  Images are automatically compressed to WebP format with {quality}% quality. 
-                  Large images are resized to fit within {maxWidth}x{maxHeight}px while maintaining aspect ratio.
-                </p>
-              </div>
+            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+              <h4 className="font-semibold text-purple-800 mb-2">PNG</h4>
+              <ul className="text-sm text-purple-700 space-y-1">
+                <li>• Lossless compression</li>
+                <li>• Supports transparency</li>
+                <li>• Larger file sizes</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal for Larger Files */}
+      <Modal
+        isOpen={confirmUploadModal}
+        onClose={handleCancelUpload}
+        title="Confirm Upload"
+        size="md"
+      >
+        <div className="space-y-6">
+          <div className="flex items-start space-x-4">
+            <AlertTriangle className="h-8 w-8 text-amber-500 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                Optimized File is Larger
+              </h3>
+              <p className="text-base text-muted-foreground mb-4">
+                The optimized image is larger than the original file. This can happen with certain images and settings.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-amber-800">Original Size:</span>
+                <div className="text-amber-700">{formatBytes(originalFileSize || 0)}</div>
+              </div>
+              <div>
+                <span className="font-medium text-amber-800">Optimized Size:</span>
+                <div className="text-amber-700">{formatBytes(compressedFileSize || 0)}</div>
+              </div>
+              <div className="col-span-2">
+                <span className="font-medium text-amber-800">Size Increase:</span>
+                <div className="text-amber-700">
+                  +{formatBytes((compressedFileSize || 0) - (originalFileSize || 0))} 
+                  ({Math.abs(parseFloat(compressionStats?.compressionRatio || 0))}% larger)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              <strong>Suggestions:</strong>
+            </p>
+            <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+              <li>• Try reducing the quality setting</li>
+              <li>• Use a different output format (WebP usually works best)</li>
+              <li>• Reduce the maximum dimensions</li>
+              <li>• Or proceed with the original optimization if the quality improvement is worth it</li>
+            </ul>
+          </div>
+
+          <div className="flex justify-end space-x-4 pt-4 border-t border-border">
+            <button
+              onClick={handleCancelUpload}
+              className="btn-secondary"
+            >
+              Cancel & Adjust Settings
+            </button>
+            <button
+              onClick={handleConfirmUpload}
+              className="btn-primary"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Proceed with Upload
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
