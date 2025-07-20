@@ -25,14 +25,11 @@ try {
       projectId: process.env.FIREBASE_PROJECT_ID || "erolledph"
     });
     
-    console.log('Firebase Admin SDK initialized successfully');
     isFirebaseAdminInitialized = true;
   } else {
-    console.log('Firebase Admin SDK already initialized');
     isFirebaseAdminInitialized = true;
   }
 } catch (error) {
-  console.error('Failed to initialize Firebase Admin SDK:', error);
   initializationError = error;
   isFirebaseAdminInitialized = false;
 }
@@ -61,13 +58,11 @@ exports.handler = async (event, context) => {
   try {
     // Check if Firebase Admin SDK is properly initialized
     if (!isFirebaseAdminInitialized) {
-      console.error('Firebase Admin SDK not initialized. Error:', initializationError);
       return {
         statusCode: 500,
         headers,
         body: JSON.stringify({ 
-          error: 'Internal server error - Firebase Admin SDK initialization failed',
-          details: initializationError ? initializationError.message : 'Unknown initialization error'
+          error: 'Internal server error'
         })
       };
     }
@@ -127,7 +122,6 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({ 
             id: docRef.id,
-            message: 'Product created successfully' 
           })
         };
       }
@@ -171,7 +165,7 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ message: 'Product updated successfully' })
+          body: JSON.stringify({ success: true })
         };
       }
 
@@ -204,7 +198,7 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ message: 'Product deleted successfully' })
+          body: JSON.stringify({ success: true })
         };
       }
 
@@ -217,14 +211,11 @@ exports.handler = async (event, context) => {
     }
 
   } catch (error) {
-    console.error('Error in admin-product function:', error);
-    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        error: 'Internal server error',
-        message: error.message 
+        error: 'Internal server error'
       })
     };
   }

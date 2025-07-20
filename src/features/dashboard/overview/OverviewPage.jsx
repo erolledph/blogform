@@ -98,6 +98,9 @@ export default function OverviewPage() {
     <div className="section-spacing">
       <div className="page-header">
         <h1 className="page-title">Dashboard Overview</h1>
+        <p className="page-description">
+          Welcome to your content management system
+        </p>
       </div>
 
       {/* Content Statistics */}

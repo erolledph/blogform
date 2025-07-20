@@ -202,6 +202,9 @@ if products:
     <div className="space-y-10">
       <div>
         <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">API Documentation</h1>
+        <p className="text-lg text-muted-foreground">
+          Learn how to fetch and use your content via the public API
+        </p>
       </div>
 
       {/* Content API Endpoint */}

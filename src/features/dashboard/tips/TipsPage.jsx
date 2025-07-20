@@ -161,6 +161,9 @@ export default function TipsPage() {
     <div className="space-y-10">
       <div>
         <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">SEO Blogging Tips</h1>
+        <p className="text-lg text-muted-foreground">
+          Master SEO blogging with proven strategies to rank higher, drive organic traffic, and grow your audience
+        </p>
       </div>
 
       {/* Main SEO Tips */}

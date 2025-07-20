@@ -57,20 +57,16 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log('Fetching products from Firestore...');
-    
     // Query Firestore for published products (without ordering to avoid index requirement)
     const productsRef = db.collection('products');
     const snapshot = await productsRef
       .where('status', '==', 'published')
       .get();
 
-    console.log(`Found ${snapshot.size} published products`);
 
     const products = [];
     snapshot.forEach(doc => {
       const data = doc.data();
-      console.log(`Processing product: ${doc.id}, created: ${data.createdAt ? data.createdAt.toDate().toISOString() : 'N/A'}`);
       
       // Calculate discounted price
       const originalPrice = data.price || 0;
@@ -119,8 +115,6 @@ exports.handler = async (event, context) => {
       return b.id.localeCompare(a.id);
     });
 
-    console.log(`Returning ${products.length} products in consistent order`);
-    console.log(`Latest product names: [${products.slice(0, 3).map(item => `'${item.name}'`).join(', ')}]`);
 
     return {
       statusCode: 200,
@@ -129,15 +123,12 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Error fetching products:', error);
-    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
         error: 'Internal server error',
         message: error.message,
-        details: error.stack
       })
     };
   }

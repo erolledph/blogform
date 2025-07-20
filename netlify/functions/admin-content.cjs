@@ -87,7 +87,6 @@ exports.handler = async (event, context) => {
           headers,
           body: JSON.stringify({ 
             id: docRef.id,
-            message: 'Content created successfully' 
           })
         };
       }
@@ -133,7 +132,7 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ message: 'Content updated successfully' })
+          body: JSON.stringify({ success: true })
         };
       }
 
@@ -166,7 +165,7 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ message: 'Content deleted successfully' })
+          body: JSON.stringify({ success: true })
         };
       }
 
@@ -179,14 +178,11 @@ exports.handler = async (event, context) => {
     }
 
   } catch (error) {
-    console.error('Error in admin-content function:', error);
-    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        error: 'Internal server error',
-        message: error.message 
+        error: 'Internal server error'
       })
     };
   }

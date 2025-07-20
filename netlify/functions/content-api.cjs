@@ -57,20 +57,16 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log('Fetching content from Firestore...');
-    
     // Query Firestore for published content (without ordering to avoid index requirement)
     const contentRef = db.collection('content');
     const snapshot = await contentRef
       .where('status', '==', 'published')
       .get();
 
-    console.log(`Found ${snapshot.size} published documents`);
 
     const content = [];
     snapshot.forEach(doc => {
       const data = doc.data();
-      console.log(`Processing document: ${doc.id}, created: ${data.createdAt ? data.createdAt.toDate().toISOString() : 'N/A'}`);
       
       // Convert Firestore timestamps to ISO strings
       const processedData = {
@@ -101,8 +97,6 @@ exports.handler = async (event, context) => {
       return b.id.localeCompare(a.id);
     });
 
-    console.log(`Returning ${content.length} content items in consistent order`);
-    console.log(`Latest content titles: [${content.slice(0, 3).map(item => `'${item.title}'`).join(', ')}]`);
 
     return {
       statusCode: 200,
@@ -111,15 +105,12 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Error fetching content:', error);
-    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
         error: 'Internal server error',
         message: error.message,
-        details: error.stack
       })
     };
   }
