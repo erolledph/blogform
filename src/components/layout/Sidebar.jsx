@@ -151,7 +151,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
             aria-label="Create New"
           >
             <Plus className="nav-link-icon" />
-            <span className="nav-link-text">Create New</span>
+            <span className="nav-link-text">Create</span>
             <span className="nav-link-text ml-auto">
               <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${createMenuOpen ? 'rotate-90' : ''}`} />
             </span>
