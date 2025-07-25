@@ -6,7 +6,6 @@ import {
   LayoutDashboard, 
   FileText, 
   BookOpen, 
-  Database,
   BarChart3,
   Settings,
   Folder,
@@ -26,7 +25,6 @@ const navigation = [
   { name: 'Manage Products', href: '/dashboard/manage-products', icon: Package },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'File Storage', href: '/dashboard/storage', icon: Folder },
-  { name: 'Firebase Info', href: '/dashboard/firebase-info', icon: Database },
 ];
 
 const createMenuItems = [
@@ -113,13 +111,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="sidebar-header">
-        <button 
-          className="hamburger-toggle"
-          onClick={toggleManualExpansion}
-          aria-label="Toggle sidebar"
-        >
-          {isManuallyExpanded ? <ChevronLeft /> : <Menu />}
-        </button>
         <div className="logo">Admin CMS</div>
         <button className="hamburger" onClick={closeSidebar} aria-label="Close sidebar">
           <ChevronLeft />

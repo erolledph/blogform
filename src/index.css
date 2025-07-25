@@ -100,18 +100,6 @@
   }
 
   .hamburger-toggle {
-    @apply bg-transparent border-none text-lg cursor-pointer p-2 rounded-md transition-colors duration-200 flex items-center justify-center;
-    color: hsl(var(--primary-foreground));
-    width: 2rem;
-    height: 2rem;
-    min-width: 2rem;
-  }
-
-  .hamburger-toggle:hover {
-    background-color: hsla(355, 20%, 98%, 0.1);
-  }
-
-  .logo {
     @apply text-base font-bold transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
     opacity: 1;
     width: auto;
