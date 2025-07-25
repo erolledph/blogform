@@ -111,7 +111,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="sidebar-header">
-        <div className="logo">Admin CMS</div>
+        <div className="logo">
+          <img 
+            src="/fire.svg" 
+            alt="Logo" 
+            className="logo-icon"
+          />
+          <span className="logo-text">Admin CMS</span>
+        </div>
         <button className="hamburger" onClick={closeSidebar} aria-label="Close sidebar">
           <ChevronLeft />
         </button>

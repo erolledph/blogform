@@ -15,42 +15,42 @@ export default {
         
         /* New design colors from HTML */
         primary: {
-          DEFAULT: "hsl(142 76% 36%)", /* Green theme */
-          foreground: "hsl(355 20% 98%)",
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          DEFAULT: "hsl(210 11% 15%)", /* Medium-inspired dark gray */
+          foreground: "hsl(0 0% 98%)",
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
         },
         secondary: {
-          DEFAULT: "hsl(240 4.8% 95.9%)",
-          foreground: "hsl(240 10% 3.9%)",
+          DEFAULT: "hsl(210 40% 98%)",
+          foreground: "hsl(210 11% 15%)",
         },
         accent: {
-          DEFAULT: "hsl(240 4.8% 95.9%)",
-          foreground: "hsl(240 10% 3.9%)",
+          DEFAULT: "hsl(210 40% 96%)",
+          foreground: "hsl(210 11% 15%)",
         },
         destructive: {
           DEFAULT: "hsl(0 84.2% 60.2%)",
           foreground: "hsl(210 40% 98%)",
         },
         muted: {
-          DEFAULT: "hsl(210 40% 96%)",
-          foreground: "hsl(240 3.8% 46.1%)",
+          DEFAULT: "hsl(210 40% 98%)",
+          foreground: "hsl(215 16% 47%)",
         },
         popover: {
           DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(240 10% 3.9%)",
+          foreground: "hsl(210 11% 15%)",
         },
         card: {
           DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(240 10% 3.9%)",
+          foreground: "hsl(210 11% 15%)",
         },
         neutral: {
           50: '#fafafa',

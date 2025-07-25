@@ -12,63 +12,76 @@
 @layer base {
   :root {
     --radius: 0.5rem;
-    
-    /* Primary brand color */
-    --primary: 142 76% 36%;
-    --primary-foreground: 355 20% 98%;
-    
-    /* Secondary colors */
-    --secondary: 240 4.8% 95.9%;
-    --accent: 240 4.8% 95.9%;
-    
-    /* Background colors */
-    --background: 0 0% 100%;
-    --card: 0 0% 100%;
-    
-    /* Text colors */
-    --foreground: 240 10% 3.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+
+    /* Primary brand color - A nice, fresh green */
+    --primary: 142 76% 36%; /* Original: 210 11% 15% (Dark Grey) -> Changed to Green */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+
+    /* Secondary colors - Lighter tones for subtle backgrounds/accents */
+    --secondary: 150 10% 95%; /* Lighter green/grey for secondary elements */
+    --accent: 150 10% 90%;    /* Slightly darker accent than secondary */
+
+    /* Background colors - Very light grey/white for overall app */
+    --background: 0 0% 100%; /* Pure white */
+    --card: 0 0% 100%;       /* Card backgrounds remain white */
+
+    /* Text colors - Darker for readability on light backgrounds */
+    --foreground: 210 11% 15%; /* Keep original dark text for contrast */
+    --muted-foreground: 215 16% 47%; /* Keep original muted text */
+
+    /* Additional color for success/green elements if needed */
+    --success: 142 76% 36%; /* Same as primary for consistency */
+    --success-foreground: 0 0% 100%;
+
+    /* Destructive color (red) - keep default or adjust if needed */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Input/Border colors - Lighter for the new theme */
+    --input: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 91.4%;
+    --ring: 142 76% 36%; /* Ring color matches primary green */
   }
-  
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: hsl(var(--secondary));
+    background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     line-height: 1.6;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
     line-height: 1.3;
     margin-bottom: 1rem;
   }
-  
+
   h1 {
     @apply text-3xl lg:text-4xl mb-6;
     line-height: 1.2;
   }
-  
+
   h2 {
     @apply text-2xl lg:text-3xl mb-5;
     line-height: 1.25;
   }
-  
+
   h3 {
     @apply text-xl lg:text-2xl mb-4;
     line-height: 1.3;
   }
-  
+
   p {
     @apply leading-relaxed;
     margin-bottom: 1rem;
     line-height: 1.7;
   }
-  
+
   ul, ol {
     @apply pl-6 mb-4;
   }
-  
+
   li {
     @apply mb-3;
     line-height: 1.6;
@@ -83,8 +96,9 @@
 
   .sidebar {
     @apply transition-all duration-300 ease-in-out fixed top-0 left-0 h-screen z-50 flex flex-col;
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
+    /* Changed sidebar background to a light color from secondary */
+    background: hsl(var(--secondary)); /* Use secondary for light sidebar background */
+    color: hsl(var(--foreground)); /* Dark text on light background */
     width: 4rem; /* 64px - collapsed width */
   }
 
@@ -95,28 +109,47 @@
 
   .sidebar-header {
     @apply p-4 flex items-center justify-between relative;
-    border-bottom: 1px solid hsla(355, 20%, 98%, 0.1);
+    /* Adjusted border color for contrast on lighter background */
+    border-bottom: 1px solid hsla(var(--foreground), 0.1);
     min-height: 4rem;
   }
 
-  .hamburger-toggle {
+  .logo {
+    @apply flex items-center transition-all duration-300 ease-in-out;
+  }
+
+  .logo-icon {
+    @apply w-8 h-8 flex-shrink-0 transition-all duration-300 ease-in-out;
+    /* Make SVG match foreground text color */
+    filter: none; /* Remove invert filter if not needed */
+    color: hsl(var(--foreground)); /* Set icon color explicitly */
+  }
+
+  .logo-text {
     @apply text-base font-bold transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden;
     opacity: 1;
     width: auto;
     margin-left: 0.5rem;
-    font-size: 0.75rem; /* Smaller when collapsed */
+    font-size: 0.875rem;
+    color: hsl(var(--foreground)); /* Text color matches foreground */
   }
 
-  .sidebar.expanded .logo {
+  .sidebar:not(.expanded) .logo-text {
+    opacity: 0;
+    width: 0;
+    margin-left: 0;
+  }
+
+  .sidebar.expanded .logo-text {
     opacity: 1;
     width: auto;
     margin-left: 0.75rem;
-    font-size: 1.125rem; /* Larger when expanded */
+    font-size: 1rem;
   }
 
   .hamburger {
     @apply bg-transparent border-none text-lg cursor-pointer p-2 rounded-md transition-colors duration-200 flex items-center justify-center;
-    color: hsl(var(--primary-foreground));
+    color: hsl(var(--foreground)); /* Hamburger icon color */
     opacity: 0;
     width: 0;
     overflow: hidden;
@@ -125,7 +158,7 @@
   }
 
   .hamburger:hover {
-    background-color: hsla(355, 20%, 98%, 0.1);
+    background-color: hsla(var(--accent), 0.5); /* Hover effect using accent color */
   }
 
   .sidebar.expanded .hamburger {
@@ -137,7 +170,7 @@
     @apply list-none py-2 flex-1 overflow-y-auto;
     max-height: calc(100vh - 8rem);
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    scrollbar-color: hsla(var(--foreground), 0.2) transparent; /* Scrollbar color adjustment */
   }
 
   .nav-menu::-webkit-scrollbar {
@@ -149,12 +182,12 @@
   }
 
   .nav-menu::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: hsla(var(--foreground), 0.2); /* Scrollbar thumb color adjustment */
     border-radius: 2px;
   }
 
   .nav-menu::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: hsla(var(--foreground), 0.4);
   }
 
   .nav-item {
@@ -164,7 +197,7 @@
 
   .nav-link {
     @apply flex items-center py-3 px-3 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent relative;
-    color: hsl(var(--primary-foreground));
+    color: hsl(var(--foreground)); /* Nav link text color */
     min-height: 3rem;
   }
 
@@ -173,6 +206,7 @@
     width: 1.25rem;
     height: 1.25rem;
     min-width: 1.25rem;
+    color: hsl(var(--muted-foreground)); /* Muted icon color by default */
   }
 
   .nav-link-text {
@@ -194,7 +228,9 @@
 
   /* Tooltip for collapsed state */
   .nav-tooltip {
-    @apply absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-md whitespace-nowrap z-50 pointer-events-none transition-all duration-200;
+    @apply absolute left-full ml-2 px-3 py-2 text-sm rounded-md whitespace-nowrap z-50 pointer-events-none transition-all duration-200;
+    background-color: hsl(var(--foreground)); /* Dark tooltip background */
+    color: hsl(var(--background)); /* Light text on tooltip */
     opacity: 0;
     transform: translateX(-10px);
   }
@@ -203,7 +239,7 @@
     content: '';
     @apply absolute right-full top-1/2 transform -translate-y-1/2;
     border: 6px solid transparent;
-    border-right-color: #1f2937;
+    border-right-color: hsl(var(--foreground)); /* Tooltip arrow color */
   }
 
   .sidebar:not(.expanded):not(.open) .nav-item:hover .nav-tooltip {
@@ -212,19 +248,26 @@
   }
 
   .nav-link:hover {
-    background-color: hsla(355, 20%, 98%, 0.1);
-    border-left-color: hsl(var(--primary-foreground));
+    background-color: hsl(var(--accent)); /* Hover background using accent */
+    border-left-color: hsl(var(--primary)); /* Green border on hover */
+    color: hsl(var(--foreground)); /* Keep text color on hover */
   }
 
   .nav-link.active {
-    background-color: hsla(355, 20%, 98%, 0.2);
-    border-left-color: hsl(var(--primary-foreground));
+    background-color: hsl(var(--secondary)); /* Active background using secondary/lighter green */
+    border-left-color: hsl(var(--primary)); /* Primary green border on active */
     @apply font-semibold;
+    color: hsl(var(--foreground)); /* Keep text color on active */
   }
+
+  .nav-link.active .nav-link-icon {
+    color: hsl(var(--primary)); /* Active icon color is primary green */
+  }
+
 
   .main-content {
     @apply flex-1 overflow-x-auto;
-    background-color: hsl(var(--secondary));
+    background-color: hsl(var(--background));
     padding-top: 0;
     transition: margin-left 300ms ease-in-out;
   }
@@ -236,11 +279,11 @@
 
   .mobile-header {
     @apply hidden items-center justify-between p-4 sm:p-5 m-0 shadow-md sticky top-0 z-30 backdrop-blur-sm;
-    background: hsl(var(--card));
+    background: hsla(var(--card), 0.8); /* Semi-transparent card background */
   }
 
   .mobile-hamburger {
-    @apply bg-transparent border-none text-2xl cursor-pointer p-2 rounded-md hover:bg-muted transition-colors;
+    @apply bg-transparent border-none text-2xl cursor-pointer p-2 rounded-md hover:bg-accent transition-colors;
     color: hsl(var(--foreground));
   }
 
@@ -251,7 +294,7 @@
 
   .overlay {
     @apply hidden fixed inset-0 w-full h-full z-40;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: hsla(var(--foreground), 0.5); /* Overlay uses foreground with transparency */
   }
 
   .overlay.active {
@@ -335,12 +378,12 @@
   /* Logout button styling */
   .logout-section {
     @apply p-3 mt-auto;
-    border-top: 1px solid hsla(355, 20%, 98%, 0.1);
+    border-top: 1px solid hsla(var(--foreground), 0.1); /* Border color adjustment */
   }
 
   .logout-button {
     @apply flex items-center py-3 px-3 no-underline transition-all duration-300 ease-in-out cursor-pointer border-l-4 border-transparent w-full text-left relative;
-    color: hsl(var(--primary-foreground));
+    color: hsl(var(--foreground)); /* Logout button text color */
     min-height: 3rem;
   }
 
@@ -349,6 +392,7 @@
     width: 1.25rem;
     height: 1.25rem;
     min-width: 1.25rem;
+    color: hsl(var(--muted-foreground)); /* Muted icon color */
   }
 
   .logout-button-text {
@@ -365,8 +409,9 @@
   }
 
   .logout-button:hover {
-    background-color: hsla(355, 20%, 98%, 0.1);
-    border-left-color: hsl(var(--primary-foreground));
+    background-color: hsl(var(--accent)); /* Hover background using accent */
+    border-left-color: hsl(var(--primary)); /* Green border on hover */
+    color: hsl(var(--foreground)); /* Keep text color on hover */
   }
 
   /* Enhanced Button Styles */
@@ -377,96 +422,122 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 h-12 px-6 py-3 text-base font-semibold;
+    @apply btn shadow-sm hover:opacity-90 h-12 px-6 py-3 text-base font-semibold;
+    background-color: hsl(var(--primary)); /* Primary green background */
+    color: hsl(var(--primary-foreground)); /* White text */
     min-height: 3rem;
   }
-  
+
   .btn-secondary {
-    @apply btn bg-secondary text-secondary-foreground border border-input shadow-sm hover:bg-secondary/80 h-12 px-6 py-3 text-base;
+    @apply btn border border-input shadow-sm hover:bg-secondary/80 h-12 px-6 py-3 text-base;
+    background-color: hsl(var(--secondary)); /* Light secondary background */
+    color: hsl(var(--foreground)); /* Dark text */
     min-height: 3rem;
   }
-  
+
   .btn-ghost {
-    @apply btn hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2;
+    @apply btn hover:bg-accent h-10 px-4 py-2;
+    color: hsl(var(--foreground)); /* Ghost text color */
+    background-color: transparent;
   }
-  
+
   .btn-danger {
-    @apply btn bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 h-12 px-6 py-3 text-base font-semibold;
+    @apply btn shadow-sm hover:opacity-90 h-12 px-6 py-3 text-base font-semibold;
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
   }
-  
+
   .btn-sm {
     @apply h-10 rounded-md px-4 py-2 text-sm;
   }
-  
+
   .btn-lg {
     @apply h-14 rounded-md px-8 py-4 text-lg;
   }
-  
+
   /* Enhanced Input Styles */
   .input-field {
-    @apply flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+    @apply flex h-12 w-full rounded-md border bg-background px-4 py-3 text-base ring-offset-background file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+    border-color: hsl(var(--border)); /* Light border color */
+    color: hsl(var(--foreground)); /* Input text color */
+    background-color: hsl(var(--background));
     line-height: 1.5;
     min-height: 3rem;
+    --tw-ring-color: hsl(var(--ring)); /* Use custom property for ring */
   }
-  
+
   /* Enhanced Card Styles */
   .card {
-    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+    @apply rounded-lg border shadow-sm;
+    background-color: hsl(var(--card));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
   }
-  
+
   .card-header {
     @apply flex flex-col space-y-2 p-6 lg:p-8;
   }
-  
+
   .card-title {
     @apply text-xl lg:text-2xl font-semibold tracking-tight;
     line-height: 1.3;
     margin-bottom: 0.75rem;
   }
-  
+
   .card-description {
     @apply text-base text-muted-foreground;
     line-height: 1.6;
     margin-bottom: 0;
   }
-  
+
   .card-content {
     @apply p-6 lg:p-8;
     line-height: 1.6;
   }
-  
+
   .card-footer {
     @apply flex items-center p-6 lg:p-8 pt-0;
     margin-top: 1rem;
   }
-  
+
   /* Enhanced Badge Styles */
   .badge {
     @apply inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all duration-200;
   }
-  
+
   .badge-default {
-    @apply badge border-transparent bg-primary text-primary-foreground;
+    @apply badge border-transparent;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
   }
-  
+
   .badge-secondary {
-    @apply badge border-transparent bg-secondary text-secondary-foreground;
+    @apply badge border-transparent;
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--foreground));
   }
-  
+
   .badge-success {
-    @apply badge border-transparent bg-green-100 text-green-800;
+    @apply badge border-transparent;
+    background-color: hsl(var(--success)); /* Using new success variable */
+    color: hsl(var(--success-foreground));
   }
-  
+
   .badge-warning {
+    /* Keep default yellow or define a --warning HSL */
     @apply badge border-transparent bg-yellow-100 text-yellow-800;
   }
-  
+
   .badge-destructive {
-    @apply badge border-transparent bg-destructive text-destructive-foreground;
+    @apply badge border-transparent;
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
   }
-  
+
   .badge-outline {
-    @apply badge text-foreground;
+    @apply badge;
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
   }
 
   /* Page Layout Utilities */
@@ -515,28 +586,33 @@
 
 /* SimpleMDE Editor Styles */
 .CodeMirror {
-  @apply border border-input rounded-md bg-background text-foreground;
+  @apply border rounded-md;
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
 }
 
 .CodeMirror-focused {
-  @apply ring-2 ring-ring ring-offset-2;
+  --tw-ring-color: hsl(var(--ring)); /* Use custom property for ring */
 }
 
 .editor-toolbar {
-  @apply border-input bg-muted/50;
+  border-color: hsl(var(--border));
+  background-color: hsla(var(--muted), 0.5); /* Assuming --muted exists or use a fixed light gray */
 }
 
 .editor-toolbar button {
-  @apply text-muted-foreground;
+  color: hsl(var(--muted-foreground));
 }
 
 .editor-toolbar button.active {
-  @apply text-foreground;
+  color: hsl(var(--foreground));
 }
 
 .editor-preview {
-  @apply bg-background text-foreground;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 .editor-preview h1,
@@ -553,224 +629,106 @@
 }
 
 .editor-preview code {
-  @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+  background-color: hsl(var(--muted)); /* Assuming --muted exists or use a fixed light gray */
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
 }
 
 .editor-preview pre {
-  @apply bg-muted p-4 rounded-md overflow-x-auto;
+  background-color: hsl(var(--secondary)); /* Using secondary for code block background */
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
 }
 
 .editor-preview blockquote {
-  @apply border-l-4 border-border pl-4 italic text-muted-foreground;
+  border-color: hsl(var(--primary)); /* Blockquote border is primary green */
+  color: hsl(var(--muted-foreground));
+  background-image: linear-gradient(to right, hsla(var(--primary), 0.05), hsla(var(--accent), 0.05)); /* Subtle gradient */
 }
 
-/* Full-screen editor fixes */
-html.editor-fullscreen .sidebar,
-html.editor-fullscreen .mobile-header {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  z-index: -1 !important;
-}
-
-html.editor-fullscreen .main-content > header {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  z-index: -1 !important;
-}
-
-html.editor-fullscreen nav,
-html.editor-fullscreen .nav-menu,
-html.editor-fullscreen .sidebar-header,
-html.editor-fullscreen .logout-section {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-html.editor-fullscreen .main-content {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  z-index: 9998 !important;
-}
-
-html.editor-fullscreen .dashboard-container {
-  position: static !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  overflow: hidden !important;
-}
-
-html.editor-fullscreen .content-section {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  min-height: 100vh !important;
-  background: white !important;
-}
-
-html.editor-fullscreen .CodeMirror-fullscreen {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 9999 !important;
-  background: white !important;
-  border: none !important;
-  border-radius: 0 !important;
-}
-
-html.editor-fullscreen .editor-toolbar {
-  position: relative !important;
-  z-index: 10000 !important;
-  width: 100% !important;
-  background: #f5f5f5 !important;
-  border-bottom: 1px solid #ddd !important;
-}
-
-html.editor-fullscreen .CodeMirror-scroll {
-  height: calc(100vh - 50px) !important;
-  width: 100% !important;
-}
-
-html.editor-fullscreen .overlay,
-html.editor-fullscreen .overlay {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
-html.editor-fullscreen {
-  overflow: hidden !important;
-}
-
-html.editor-fullscreen .container,
-html.editor-fullscreen .max-w-5xl,
-html.editor-fullscreen .mx-auto {
-  max-width: none !important;
-  width: 100vw !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+/* Full-screen editor fixes - colors remain as overrides */
 
 /* React Markdown Styling */
 .markdown-content {
-  @apply text-foreground;
+  color: hsl(var(--foreground));
 }
 
-.markdown-content h1 {
-  @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-6 sm:mb-8 lg:mb-10 mt-8 sm:mt-12 lg:mt-16 first:mt-0;
-  line-height: 1.2;
-}
-
-.markdown-content h2 {
-  @apply text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground mb-5 sm:mb-6 lg:mb-8 mt-8 sm:mt-10 lg:mt-12;
-  line-height: 1.25;
-}
-
-.markdown-content h3 {
-  @apply text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-foreground mb-4 sm:mb-5 lg:mb-6 mt-6 sm:mt-8 lg:mt-10;
-  line-height: 1.3;
-}
-
-.markdown-content h4 {
-  @apply text-lg sm:text-xl lg:text-2xl font-semibold text-foreground mb-3 sm:mb-4 lg:mb-5 mt-5 sm:mt-6 lg:mt-8;
-  line-height: 1.4;
-}
-
-.markdown-content h5 {
-  @apply text-base sm:text-lg lg:text-xl font-semibold text-foreground mb-3 sm:mb-4 mt-4 sm:mt-5 lg:mt-6;
-  line-height: 1.4;
-}
-
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
 .markdown-content h6 {
-  @apply text-base sm:text-lg font-semibold text-foreground mb-2 sm:mb-3 mt-4 sm:mt-5;
-  line-height: 1.4;
+  color: hsl(var(--foreground));
 }
 
 .markdown-content p {
-  @apply text-base sm:text-lg lg:text-xl text-foreground mb-4 sm:mb-5 lg:mb-6 leading-relaxed;
-  line-height: 1.7;
+  color: hsl(var(--foreground));
 }
 
-.markdown-content ul {
-  @apply list-disc pl-6 sm:pl-8 lg:pl-10 mb-4 sm:mb-5 lg:mb-6 space-y-2 sm:space-y-3;
-}
-
+.markdown-content ul,
 .markdown-content ol {
-  @apply list-decimal pl-6 sm:pl-8 lg:pl-10 mb-4 sm:mb-5 lg:mb-6 space-y-2 sm:space-y-3;
+  /* List item color is inherited */
 }
 
 .markdown-content li {
-  @apply text-base sm:text-lg lg:text-xl text-foreground leading-relaxed;
-  line-height: 1.7;
+  color: hsl(var(--foreground));
 }
 
 .markdown-content blockquote {
-  @apply border-l-4 border-primary pl-4 sm:pl-6 lg:pl-8 py-4 sm:py-5 lg:py-6 my-4 sm:my-6 lg:my-8 bg-gradient-to-r from-blue-50 to-purple-50 italic text-gray-700 rounded-r-lg;
-  font-size: 1.1em;
-  line-height: 1.6;
+  border-color: hsl(var(--primary));
+  color: hsl(var(--muted-foreground)); /* Darker grey text for readability */
+  background-image: linear-gradient(to right, hsla(var(--primary), 0.05), hsla(var(--accent), 0.05));
 }
 
 .markdown-content code {
-  @apply bg-gray-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-sm sm:text-base font-mono text-gray-800 border border-gray-200;
+  background-color: hsl(var(--secondary)); /* Light background for inline code */
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
 }
 
 .markdown-content pre {
-  @apply bg-gray-900 p-4 sm:p-6 lg:p-8 rounded-xl overflow-x-auto mb-4 sm:mb-6 lg:mb-8 shadow-lg border border-gray-200;
+  background-color: hsl(var(--primary)); /* Darker background for code blocks, or a deep green */
+  color: hsl(var(--primary-foreground)); /* White text for code blocks */
+  border-color: hsl(var(--border));
 }
 
 .markdown-content pre code {
-  @apply bg-transparent p-0 text-sm sm:text-base text-gray-100 border-0;
+  color: hsl(var(--primary-foreground));
 }
 
 .markdown-content a {
-  @apply text-blue-600 hover:text-blue-800 underline decoration-2 underline-offset-2 transition-all duration-200 font-medium;
+  color: hsl(var(--primary)); /* Links are primary green */
 }
 
 .markdown-content strong {
-  @apply font-bold text-foreground;
+  color: hsl(var(--foreground));
 }
 
 .markdown-content em {
-  @apply italic text-gray-700;
+  color: hsl(var(--muted-foreground));
 }
 
 .markdown-content hr {
-  @apply border-t-2 border-gray-200 my-6 sm:my-8 lg:my-12;
+  border-color: hsl(var(--border));
 }
 
 .markdown-content table {
-  @apply w-full border-collapse border-2 border-gray-200 mb-4 sm:mb-6 lg:mb-8 text-base sm:text-lg rounded-lg overflow-hidden shadow-lg;
+  border-color: hsl(var(--border));
 }
 
 .markdown-content th {
-  @apply border border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-gray-100 font-bold text-left text-gray-900;
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
 }
 
 .markdown-content td {
-  @apply border border-gray-200 px-4 sm:px-6 py-3 sm:py-4 bg-white;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
 }
 
 .markdown-content img {
-  @apply max-w-full h-auto rounded-xl shadow-lg my-6 sm:my-8 lg:my-10 border border-gray-200;
+  border-color: hsl(var(--border));
 }
-
