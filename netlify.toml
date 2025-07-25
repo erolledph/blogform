@@ -4,22 +4,24 @@
   functions = "netlify/functions"
 
 [[redirects]]
-  from = "/api/content.json"
-  framework = "#static"
-  targetPort = 5173
-  to = "/.netlify/functions/content-api"
+  from = "/users/:uid/blogs/:blogId/api/content.json"
+  to = "/.netlify/functions/content-api?uid=:uid&blogId=:blogId"
   status = 200
 
 [[redirects]]
-  from = "/api/products.json"
-  to = "/.netlify/functions/product-api"
+  from = "/users/:uid/blogs/:blogId/api/products.json"
+  to = "/.netlify/functions/product-api?uid=:uid&blogId=:blogId"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/content"
+  to = "/.netlify/functions/admin-content"
   status = 200
 
 [[redirects]]
   from = "/api/admin/products"
   to = "/.netlify/functions/admin-product"
   status = 200
-
 
 [[redirects]]
   from = "/*"

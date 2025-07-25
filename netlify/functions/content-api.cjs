@@ -1,4 +1,3 @@
-
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
@@ -24,9 +23,33 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+// Helper function to get custom domain for this user
+async function getCustomDomain(uid) {
+  try {
+    const docRef = db.collection('users').doc(uid).collection('appSettings').doc('public');
+    const docSnap = await docRef.get();
+    
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      return data.customDomain || '';
+    }
+    
+    return '';
+  } catch (error) {
+    console.error('Error fetching custom domain:', error);
+    return '';
+  }
+}
+
 // Helper function to generate content URL
-function getContentUrl(slug) {
-  return `https://your-app-domain.com/post/${slug}`;
+function getContentUrl(slug, customDomain, uid, blogId) {
+  if (customDomain) {
+    // Remove protocol if present and add https://
+    const cleanDomain = customDomain.replace(/^https?:\/\//, '');
+    return `https://${cleanDomain}/post/${slug}`;
+  }
+  // Fallback to default domain structure
+  return `https://your-app-domain.com/preview/content/${uid}/${blogId}/${slug}`;
 }
 
 exports.handler = async (event, context) => {
@@ -57,12 +80,27 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Query Firestore for published content (without ordering to avoid index requirement)
-    const contentRef = db.collection('content');
+    // Extract uid and blogId from query parameters
+    const { uid, blogId } = event.queryStringParameters || {};
+    
+    if (!uid || !blogId) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ 
+          error: 'Missing required parameters: uid and blogId' 
+        })
+      };
+    }
+
+    // Get custom domain for this user
+    const customDomain = await getCustomDomain(uid);
+
+    // Query Firestore for published content in the user's blog
+    const contentRef = db.collection('users').doc(uid).collection('blogs').doc(blogId).collection('content');
     const snapshot = await contentRef
       .where('status', '==', 'published')
       .get();
-
 
     const content = [];
     snapshot.forEach(doc => {
@@ -72,8 +110,8 @@ exports.handler = async (event, context) => {
       const processedData = {
         id: doc.id,
         ...data,
-        // Add content URL using custom domain
-        contentUrl: getContentUrl(data.slug),
+        // Add content URL using custom domain or default structure
+        contentUrl: getContentUrl(data.slug, customDomain, uid, blogId),
         publishDate: data.publishDate ? data.publishDate.toDate().toISOString() : null,
         createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
         updatedAt: data.updatedAt ? data.updatedAt.toDate().toISOString() : null
@@ -83,7 +121,6 @@ exports.handler = async (event, context) => {
     });
 
     // Sort by creation date (newest first) manually to ensure consistent ordering
-    // Use document ID as secondary sort to ensure deterministic results
     content.sort((a, b) => {
       const dateA = new Date(a.createdAt || 0);
       const dateB = new Date(b.createdAt || 0);
@@ -96,7 +133,6 @@ exports.handler = async (event, context) => {
       // Secondary sort: by document ID for deterministic ordering when dates are equal
       return b.id.localeCompare(a.id);
     });
-
 
     return {
       statusCode: 200,

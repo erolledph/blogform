@@ -134,6 +134,16 @@ export default function SettingsPage() {
             </p>
             
             <InputField
+              label="User ID"
+              value={currentUser?.uid || 'Not available'}
+              disabled
+              className="opacity-75 cursor-not-allowed"
+            />
+            <p className="text-sm text-muted-foreground">
+              Your unique identifier used in API endpoints
+            </p>
+            
+            <InputField
               label="Role"
               value="Administrator"
               disabled

@@ -2,10 +2,16 @@ import { collection, getDocs, query, where, doc, getDoc, deleteDoc, addDoc, upda
 import { db } from '@/firebase';
 
 export const contentService = {
-  // Fetch all content
-  async fetchAllContent() {
+  // Get user's content collection reference
+  getUserContentRef(userId, blogId = null) {
+    const actualBlogId = blogId || userId; // Default to userId if blogId not provided
+    return collection(db, 'users', userId, 'blogs', actualBlogId, 'content');
+  },
+
+  // Fetch all content for a user's blog
+  async fetchAllContent(userId, blogId = null) {
     try {
-      const contentRef = collection(db, 'content');
+      const contentRef = this.getUserContentRef(userId, blogId);
       const snapshot = await getDocs(contentRef);
       const contentData = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -26,10 +32,10 @@ export const contentService = {
     }
   },
 
-  // Fetch content by status
-  async fetchContentByStatus(status) {
+  // Fetch content by status for a user's blog
+  async fetchContentByStatus(userId, status, blogId = null) {
     try {
-      const contentRef = collection(db, 'content');
+      const contentRef = this.getUserContentRef(userId, blogId);
       const q = query(contentRef, where('status', '==', status));
       const snapshot = await getDocs(q);
       return snapshot.docs.map(doc => ({
@@ -42,10 +48,11 @@ export const contentService = {
     }
   },
 
-  // Fetch single content by ID
-  async fetchContentById(id) {
+  // Fetch single content by ID for a user's blog
+  async fetchContentById(userId, id, blogId = null) {
     try {
-      const docRef = doc(db, 'content', id);
+      const actualBlogId = blogId || userId;
+      const docRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'content', id);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -62,10 +69,10 @@ export const contentService = {
     }
   },
 
-  // Get content statistics
-  async getContentStats() {
+  // Get content statistics for a user's blog
+  async getContentStats(userId, blogId = null) {
     try {
-      const contentRef = collection(db, 'content');
+      const contentRef = this.getUserContentRef(userId, blogId);
       
       // Get all content
       const allContent = await getDocs(contentRef);
@@ -99,9 +106,10 @@ export const contentService = {
   },
 
   // Initialize content with analytics fields
-  async initializeContentAnalytics(contentId) {
+  async initializeContentAnalytics(userId, contentId, blogId = null) {
     try {
-      const contentRef = doc(db, 'content', contentId);
+      const actualBlogId = blogId || userId;
+      const contentRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'content', contentId);
       await updateDoc(contentRef, {
         viewCount: 0,
         clickCount: 0,

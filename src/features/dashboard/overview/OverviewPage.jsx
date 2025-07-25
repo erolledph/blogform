@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { FileText, Eye, Calendar, TrendingUp, Plus, BarChart3, Package, ShoppingBag } from 'lucide-react';
 import { useContentStats } from '@/hooks/useContent';
 import { useProductStats } from '@/hooks/useProducts';
@@ -8,6 +9,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 export default function OverviewPage() {
   const { stats, loading, error } = useContentStats();
   const { stats: productStats, loading: productLoading, error: productError } = useProductStats();
+  const { currentUser } = useAuth();
 
   const statCards = [
     {
@@ -78,6 +80,7 @@ export default function OverviewPage() {
       borderColor: 'border-pink-200'
     }
   ];
+
   if (loading || productLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -200,7 +203,7 @@ export default function OverviewPage() {
             </Link>
             
             <a
-              href="/api/content.json"
+              href={`/users/${currentUser?.uid}/blogs/${currentUser?.uid}/api/content.json`}
               target="_blank"
               rel="noopener noreferrer"
               className="group p-6 sm:p-8 border border-border rounded-lg hover:border-primary/50 transition-all duration-200 hover:shadow-md"
@@ -211,7 +214,7 @@ export default function OverviewPage() {
             </a>
             
             <a
-              href="/api/products.json"
+              href={`/users/${currentUser?.uid}/blogs/${currentUser?.uid}/api/products.json`}
               target="_blank"
               rel="noopener noreferrer"
               className="group p-6 sm:p-8 border border-border rounded-lg hover:border-primary/50 transition-all duration-200 hover:shadow-md"

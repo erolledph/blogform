@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 
 export default function ManageContentPage() {
   const { content, loading, error, refetch } = useContent();
-  const { getAuthToken } = useAuth();
+  const { getAuthToken, currentUser } = useAuth();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, content: null });
   const [analyticsModal, setAnalyticsModal] = useState({ isOpen: false, content: null });
 
@@ -130,7 +130,7 @@ export default function ManageContentPage() {
       render: (_, row) => (
         <div className="flex items-center space-x-1">
           <a
-            href={`/preview/content/${row.slug}`}
+            href={`/preview/content/${currentUser?.uid}/${currentUser?.uid}/${row.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-600 p-2 rounded-md hover:bg-green-50 transition-colors duration-200"
@@ -260,14 +260,15 @@ function ContentAnalyticsModal({ contentId, contentTitle }) {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState(30);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (!contentId) return;
+    if (!contentId || !currentUser?.uid) return;
 
     const fetchAnalytics = async () => {
       setLoading(true);
       try {
-        const data = await analyticsService.getContentAnalytics(contentId, period);
+        const data = await analyticsService.getContentAnalytics(currentUser.uid, contentId, currentUser.uid, period);
         setAnalytics(data);
       } catch (error) {
         console.error('Error fetching analytics:', error);
@@ -277,7 +278,7 @@ function ContentAnalyticsModal({ contentId, contentTitle }) {
     };
 
     fetchAnalytics();
-  }, [contentId, period]);
+  }, [contentId, period, currentUser?.uid]);
 
   if (loading) {
     return (

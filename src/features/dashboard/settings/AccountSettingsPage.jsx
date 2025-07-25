@@ -89,7 +89,7 @@ export default function AccountSettingsPage() {
       });
       
       // Also save currency to public app settings so it's available in the API
-      await settingsService.setPublicAppSettings({
+      await settingsService.setPublicAppSettings(currentUser.uid, {
         currency
       });
       
@@ -145,6 +145,16 @@ export default function AccountSettingsPage() {
             />
             <p className="text-sm text-muted-foreground">
               Your email address cannot be changed from this interface
+            </p>
+            
+            <InputField
+              label="User ID"
+              value={currentUser?.uid || 'Not available'}
+              disabled
+              className="opacity-75 cursor-not-allowed"
+            />
+            <p className="text-sm text-muted-foreground">
+              Your unique user identifier used in API endpoints
             </p>
             
             <InputField
@@ -248,8 +258,23 @@ export default function AccountSettingsPage() {
                     <p className="text-sm text-muted-foreground">Current application version and build details</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-primary">v1.0.0</div>
-                    <div className="text-sm text-muted-foreground">Admin CMS</div>
+                    <div className="text-lg font-bold text-primary">v2.0.0</div>
+                    <div className="text-sm text-muted-foreground">User-Isolated CMS</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* API Information */}
+              <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-base font-semibold text-blue-800 mb-2">Your API Endpoints</h3>
+                    <p className="text-sm text-blue-600">User-specific API URLs for your content and products</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-mono text-blue-700 break-all">
+                      /users/{currentUser?.uid}/blogs/{currentUser?.uid}/api/
+                    </div>
                   </div>
                 </div>
               </div>

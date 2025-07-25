@@ -2,12 +2,14 @@ import { collection, doc, addDoc, updateDoc, increment, query, where, orderBy, l
 import { db } from '@/firebase';
 
 export const analyticsService = {
-  // Track page views for content
-  async trackPageView(contentId, slug, userAgent = '', referrer = '') {
+  // Track page views for content (includes userId and blogId for filtering)
+  async trackPageView(contentId, slug, userId, blogId, userAgent = '', referrer = '') {
     try {
       const viewData = {
         contentId,
         slug,
+        userId,
+        blogId,
         timestamp: new Date(),
         userAgent: userAgent.substring(0, 500), // Limit length
         referrer: referrer.substring(0, 500),
@@ -17,8 +19,8 @@ export const analyticsService = {
 
       await addDoc(collection(db, 'pageViews'), viewData);
 
-      // Update content view count
-      const contentRef = doc(db, 'content', contentId);
+      // Update content view count in user's nested collection
+      const contentRef = doc(db, 'users', userId, 'blogs', blogId, 'content', contentId);
       await updateDoc(contentRef, {
         viewCount: increment(1),
         lastViewed: new Date()
@@ -29,12 +31,14 @@ export const analyticsService = {
     }
   },
 
-  // Track content interactions (clicks, shares, etc.)
-  async trackInteraction(contentId, interactionType, metadata = {}) {
+  // Track content interactions (includes userId and blogId for filtering)
+  async trackInteraction(contentId, interactionType, userId, blogId, metadata = {}) {
     try {
       const interactionData = {
         contentId,
         type: interactionType, // 'click', 'share', 'like', 'comment'
+        userId,
+        blogId,
         metadata,
         timestamp: new Date(),
         sessionId: this.generateSessionId()
@@ -42,8 +46,8 @@ export const analyticsService = {
 
       await addDoc(collection(db, 'interactions'), interactionData);
 
-      // Update content interaction count
-      const contentRef = doc(db, 'content', contentId);
+      // Update content interaction count in user's nested collection
+      const contentRef = doc(db, 'users', userId, 'blogs', blogId, 'content', contentId);
       const updateField = `${interactionType}Count`;
       await updateDoc(contentRef, {
         [updateField]: increment(1)
@@ -54,16 +58,19 @@ export const analyticsService = {
     }
   },
 
-  // Get analytics for specific content
-  async getContentAnalytics(contentId, days = 30) {
+  // Get analytics for specific content in a user's blog
+  async getContentAnalytics(userId, contentId, blogId = null, days = 30) {
     try {
+      const actualBlogId = blogId || userId;
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
-      // Get page views - use only contentId filter to avoid composite index
+      // Get page views for this user's content
       const viewsQuery = query(
         collection(db, 'pageViews'),
-        where('contentId', '==', contentId)
+        where('contentId', '==', contentId),
+        where('userId', '==', userId),
+        where('blogId', '==', actualBlogId)
       );
       const viewsSnapshot = await getDocs(viewsQuery);
       const allViews = viewsSnapshot.docs.map(doc => doc.data());
@@ -73,10 +80,12 @@ export const analyticsService = {
         .filter(view => view.timestamp && view.timestamp.toDate() >= startDate)
         .sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
-      // Get interactions - use only contentId filter to avoid composite index
+      // Get interactions for this user's content
       const interactionsQuery = query(
         collection(db, 'interactions'),
-        where('contentId', '==', contentId)
+        where('contentId', '==', contentId),
+        where('userId', '==', userId),
+        where('blogId', '==', actualBlogId)
       );
       const interactionsSnapshot = await getDocs(interactionsQuery);
       const allInteractions = interactionsSnapshot.docs.map(doc => doc.data());
@@ -86,8 +95,8 @@ export const analyticsService = {
         .filter(interaction => interaction.timestamp && interaction.timestamp.toDate() >= startDate)
         .sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
 
-      // Get content details
-      const contentDoc = await getDoc(doc(db, 'content', contentId));
+      // Get content details from user's nested collection
+      const contentDoc = await getDoc(doc(db, 'users', userId, 'blogs', actualBlogId, 'content', contentId));
       const contentData = contentDoc.exists() ? contentDoc.data() : {};
 
       return {
@@ -108,34 +117,38 @@ export const analyticsService = {
     }
   },
 
-  // Get overall site analytics
-  async getSiteAnalytics(days = 30) {
+  // Get overall site analytics for a user's blog
+  async getSiteAnalytics(userId, blogId = null, days = 30) {
     try {
+      const actualBlogId = blogId || userId;
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
-      // Get all page views
+      // Get all page views for this user's blog
       const viewsQuery = query(
         collection(db, 'pageViews'),
+        where('userId', '==', userId),
+        where('blogId', '==', actualBlogId),
         where('timestamp', '>=', startDate),
         orderBy('timestamp', 'desc')
       );
       const viewsSnapshot = await getDocs(viewsQuery);
       const views = viewsSnapshot.docs.map(doc => doc.data());
 
-      // Get all interactions
+      // Get all interactions for this user's blog
       const interactionsQuery = query(
         collection(db, 'interactions'),
+        where('userId', '==', userId),
+        where('blogId', '==', actualBlogId),
         where('timestamp', '>=', startDate),
         orderBy('timestamp', 'desc')
       );
       const interactionsSnapshot = await getDocs(interactionsQuery);
       const interactions = interactionsSnapshot.docs.map(doc => doc.data());
 
-      // Get top content
-      // Get top content - split query to avoid composite index requirement
+      // Get top content from user's nested collection
       const contentQuery = query(
-        collection(db, 'content'),
+        collection(db, 'users', userId, 'blogs', actualBlogId, 'content'),
         where('status', '==', 'published')
       );
       const contentSnapshot = await getDocs(contentQuery);
@@ -165,9 +178,11 @@ export const analyticsService = {
     }
   },
 
-  // Get Firebase usage statistics
-  async getFirebaseUsage() {
+  // Get Firebase usage statistics for a user
+  async getFirebaseUsage(userId, blogId = null) {
     try {
+      const actualBlogId = blogId || userId;
+      
       // Get document counts with error handling
       let contentCount = 0;
       let viewsCount = 0;
@@ -175,7 +190,7 @@ export const analyticsService = {
       let errors = [];
 
       try {
-        const contentSnapshot = await getDocs(collection(db, 'content'));
+        const contentSnapshot = await getDocs(collection(db, 'users', userId, 'blogs', actualBlogId, 'content'));
         contentCount = contentSnapshot.size;
       } catch (error) {
         errors.push('content');
@@ -183,7 +198,12 @@ export const analyticsService = {
       }
 
       try {
-        const viewsSnapshot = await getDocs(query(collection(db, 'pageViews'), limit(100)));
+        const viewsSnapshot = await getDocs(query(
+          collection(db, 'pageViews'), 
+          where('userId', '==', userId),
+          where('blogId', '==', actualBlogId),
+          limit(100)
+        ));
         viewsCount = viewsSnapshot.size;
       } catch (error) {
         errors.push('pageViews');
@@ -191,7 +211,12 @@ export const analyticsService = {
       }
 
       try {
-        const interactionsSnapshot = await getDocs(query(collection(db, 'interactions'), limit(100)));
+        const interactionsSnapshot = await getDocs(query(
+          collection(db, 'interactions'), 
+          where('userId', '==', userId),
+          where('blogId', '==', actualBlogId),
+          limit(100)
+        ));
         interactionsCount = interactionsSnapshot.size;
       } catch (error) {
         errors.push('interactions');

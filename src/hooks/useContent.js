@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { contentService } from '@/services/contentService';
 
 export function useContent() {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useAuth();
 
   const fetchContent = async () => {
+    if (!currentUser?.uid) {
+      setContent([]);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
-      const data = await contentService.fetchAllContent();
+      const data = await contentService.fetchAllContent(currentUser.uid);
       setContent(data);
     } catch (err) {
       setError(err.message);
@@ -21,7 +29,7 @@ export function useContent() {
 
   useEffect(() => {
     fetchContent();
-  }, []);
+  }, [currentUser?.uid]);
 
   return {
     content,
@@ -40,13 +48,25 @@ export function useContentStats() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchStats = async () => {
+      if (!currentUser?.uid) {
+        setStats({
+          totalContent: 0,
+          publishedContent: 0,
+          draftContent: 0,
+          recentContent: 0
+        });
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        const data = await contentService.getContentStats();
+        const data = await contentService.getContentStats(currentUser.uid);
         setStats(data);
       } catch (err) {
         setError(err.message);
@@ -56,7 +76,7 @@ export function useContentStats() {
     };
 
     fetchStats();
-  }, []);
+  }, [currentUser?.uid]);
 
   return { stats, loading, error };
 }
@@ -65,15 +85,20 @@ export function useContentById(id) {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (!id) return;
+    if (!id || !currentUser?.uid) {
+      setContent(null);
+      setLoading(false);
+      return;
+    }
 
     const fetchContent = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await contentService.fetchContentById(id);
+        const data = await contentService.fetchContentById(currentUser.uid, id);
         setContent(data);
       } catch (err) {
         setError(err.message);
@@ -83,7 +108,7 @@ export function useContentById(id) {
     };
 
     fetchContent();
-  }, [id]);
+  }, [id, currentUser?.uid]);
 
   return { content, loading, error };
 }

@@ -2,10 +2,10 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 export const settingsService = {
-  // Get public custom domain setting
-  async getPublicCustomDomain() {
+  // Get public custom domain setting for a specific user
+  async getPublicCustomDomain(userId) {
     try {
-      const docRef = doc(db, 'appSettings', 'public');
+      const docRef = doc(db, 'users', userId, 'appSettings', 'public');
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -20,10 +20,10 @@ export const settingsService = {
     }
   },
 
-  // Set public custom domain setting
-  async setPublicCustomDomain(domain) {
+  // Set public custom domain setting for a specific user
+  async setPublicCustomDomain(userId, domain) {
     try {
-      const docRef = doc(db, 'appSettings', 'public');
+      const docRef = doc(db, 'users', userId, 'appSettings', 'public');
       await setDoc(docRef, {
         customDomain: domain || '',
         updatedAt: new Date()
@@ -36,10 +36,10 @@ export const settingsService = {
     }
   },
 
-  // Get public application settings
-  async getPublicAppSettings() {
+  // Get public application settings for a specific user
+  async getPublicAppSettings(userId) {
     try {
-      const docRef = doc(db, 'appSettings', 'public');
+      const docRef = doc(db, 'users', userId, 'appSettings', 'public');
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -60,10 +60,10 @@ export const settingsService = {
     }
   },
 
-  // Set public application settings
-  async setPublicAppSettings(settings) {
+  // Set public application settings for a specific user
+  async setPublicAppSettings(userId, settings) {
     try {
-      const docRef = doc(db, 'appSettings', 'public');
+      const docRef = doc(db, 'users', userId, 'appSettings', 'public');
       await setDoc(docRef, {
         ...settings,
         updatedAt: new Date()
@@ -76,10 +76,10 @@ export const settingsService = {
     }
   },
 
-  // Get user-specific settings (for future use)
+  // Get user-specific settings
   async getUserSettings(userId) {
     try {
-      const docRef = doc(db, 'userSettings', userId);
+      const docRef = doc(db, 'users', userId, 'userSettings', 'preferences');
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -100,10 +100,10 @@ export const settingsService = {
     }
   },
 
-  // Set user-specific settings (for future use)
+  // Set user-specific settings
   async setUserSettings(userId, settings) {
     try {
-      const docRef = doc(db, 'userSettings', userId);
+      const docRef = doc(db, 'users', userId, 'userSettings', 'preferences');
       await setDoc(docRef, {
         ...settings,
         updatedAt: new Date()

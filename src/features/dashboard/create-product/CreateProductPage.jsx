@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { settingsService } from '@/services/settingsService';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/firebase';
+import { productsService } from '@/services/productsService';
 import SimpleMDE from 'react-simplemde-editor';
 import InputField from '@/components/shared/InputField';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -73,34 +72,30 @@ export default function CreateProductPage() {
   };
 
   const fetchProduct = async () => {
+    if (!currentUser?.uid) return;
+
     try {
       setLoading(true);
-      const docRef = doc(db, 'products', id);
-      const docSnap = await getDoc(docRef);
+      const data = await productsService.fetchProductById(currentUser.uid, id);
       
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setFormData({
-          name: data.name || '',
-          slug: data.slug || '',
-          description: data.description || '',
-          price: data.price?.toString() || '',
-          percentOff: data.percentOff?.toString() || '',
-          imageUrls: data.imageUrls || data.imageUrl ? [data.imageUrl] : [], // Handle both old and new format
-          productUrl: data.productUrl || '',
-          category: data.category || '',
-          tags: data.tags || [],
-          status: data.status || 'draft'
-        });
+      setFormData({
+        name: data.name || '',
+        slug: data.slug || '',
+        description: data.description || '',
+        price: data.price?.toString() || '',
+        percentOff: data.percentOff?.toString() || '',
+        imageUrls: data.imageUrls || data.imageUrl ? [data.imageUrl] : [], // Handle both old and new format
+        productUrl: data.productUrl || '',
+        category: data.category || '',
+        tags: data.tags || [],
+        status: data.status || 'draft'
+      });
 
-        setTagsInput((data.tags || []).join(', '));
-      } else {
-        toast.error('Product not found');
-        navigate('/dashboard/manage-products');
-      }
+      setTagsInput((data.tags || []).join(', '));
     } catch (error) {
       console.error('Error fetching product:', error);
       toast.error('Failed to fetch product');
+      navigate('/dashboard/manage-products');
     } finally {
       setLoading(false);
     }

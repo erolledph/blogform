@@ -5,7 +5,7 @@ import { ArrowLeft, Eye, Package, Calendar, Star, ShoppingCart, Truck, Shield, R
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 export default function ProductPreviewPage() {
-  const { slug } = useParams();
+  const { uid, blogId, slug } = useParams();
   const [product, setProduct] = useState(null);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function ProductPreviewPage() {
 
   useEffect(() => {
     fetchProduct();
-  }, [slug]);
+  }, [uid, blogId, slug]);
 
   // Get product images - prioritize imageUrls array, fallback to single imageUrl
   const productImages = useMemo(() => {
@@ -41,7 +41,7 @@ export default function ProductPreviewPage() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${window.location.origin}/api/products.json`);
+      const response = await fetch(`${window.location.origin}/users/${uid}/blogs/${blogId}/api/products.json`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -464,7 +464,7 @@ export default function ProductPreviewPage() {
                 return (
                   <Link
                     key={item.id}
-                    to={`/preview/product/${item.slug}`}
+                    to={`/preview/product/${uid}/${blogId}/${item.slug}`}
                     className="group block bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
                   >
                     {(item.imageUrls && item.imageUrls.length > 0) || item.imageUrl ? (

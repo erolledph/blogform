@@ -23,10 +23,10 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-// Helper function to get public app settings (including currency)
-async function getPublicAppSettings() {
+// Helper function to get public app settings for this user (including currency)
+async function getPublicAppSettings(uid) {
   try {
-    const docRef = db.collection('appSettings').doc('public');
+    const docRef = db.collection('users').doc(uid).collection('appSettings').doc('public');
     const docSnap = await docRef.get();
     
     if (docSnap.exists) {
@@ -81,16 +81,28 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Get public app settings (including currency)
-    const appSettings = await getPublicAppSettings();
+    // Extract uid and blogId from query parameters
+    const { uid, blogId } = event.queryStringParameters || {};
+    
+    if (!uid || !blogId) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ 
+          error: 'Missing required parameters: uid and blogId' 
+        })
+      };
+    }
+
+    // Get public app settings for this user (including currency)
+    const appSettings = await getPublicAppSettings(uid);
     const currency = appSettings.currency || '$';
 
-    // Query Firestore for published products (without ordering to avoid index requirement)
-    const productsRef = db.collection('products');
+    // Query Firestore for published products in the user's blog
+    const productsRef = db.collection('users').doc(uid).collection('blogs').doc(blogId).collection('products');
     const snapshot = await productsRef
       .where('status', '==', 'published')
       .get();
-
 
     const products = [];
     snapshot.forEach(doc => {
@@ -113,7 +125,7 @@ exports.handler = async (event, context) => {
       const processedData = {
         id: doc.id,
         ...data,
-        // Add currency from public app settings
+        // Add currency from user's app settings
         currency,
         // Ensure imageUrls is always present as an array
         imageUrls,
@@ -131,7 +143,6 @@ exports.handler = async (event, context) => {
     });
 
     // Sort by creation date (newest first) manually to ensure consistent ordering
-    // Use document ID as secondary sort to ensure deterministic results
     products.sort((a, b) => {
       const dateA = new Date(a.createdAt || 0);
       const dateB = new Date(b.createdAt || 0);
@@ -144,7 +155,6 @@ exports.handler = async (event, context) => {
       // Secondary sort: by document ID for deterministic ordering when dates are equal
       return b.id.localeCompare(a.id);
     });
-
 
     return {
       statusCode: 200,

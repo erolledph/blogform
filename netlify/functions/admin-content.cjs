@@ -65,7 +65,11 @@ exports.handler = async (event, context) => {
     }
 
     const { httpMethod } = event;
-    const contentRef = db.collection('content');
+    const userId = decodedToken.uid;
+    const blogId = userId; // Using uid as blogId for single-blog-per-user setup
+    
+    // Reference to user's blog content collection
+    const contentRef = db.collection('users').doc(userId).collection('blogs').doc(blogId).collection('content');
 
     switch (httpMethod) {
       case 'POST': {
@@ -75,6 +79,8 @@ exports.handler = async (event, context) => {
         
         const contentData = {
           ...data,
+          userId,
+          blogId,
           createdAt: now,
           updatedAt: now,
           publishDate: data.status === 'published' ? now : null
@@ -120,6 +126,8 @@ exports.handler = async (event, context) => {
         
         const contentData = {
           ...updateData,
+          userId,
+          blogId,
           updatedAt: now,
           // Update publishDate if status changed to published
           publishDate: updateData.status === 'published' && existingData.status !== 'published' 

@@ -5,7 +5,7 @@ import { Calendar, User, Tag, ArrowLeft, Eye, Clock, FileText, Share2, Bookmark 
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
 export default function ContentPreviewPage() {
-  const { slug } = useParams();
+  const { uid, blogId, slug } = useParams();
   const [content, setContent] = useState(null);
   const [allContent, setAllContent] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,14 +13,14 @@ export default function ContentPreviewPage() {
 
   useEffect(() => {
     fetchContent();
-  }, [slug]);
+  }, [uid, blogId, slug]);
 
   const fetchContent = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${window.location.origin}/api/content.json`);
+      const response = await fetch(`${window.location.origin}/users/${uid}/blogs/${blogId}/api/content.json`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -306,7 +306,7 @@ export default function ContentPreviewPage() {
               {relatedContent.map((item) => (
                 <Link
                   key={item.id}
-                  to={`/preview/content/${item.slug}`}
+                  to={`/preview/content/${uid}/${blogId}/${item.slug}`}
                   className="group block bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
                 >
                   {item.featuredImageUrl ? (

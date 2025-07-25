@@ -17,9 +17,9 @@ function App() {
             <div className="min-h-screen bg-neutral-50">
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
-                {/* Public Preview Routes */}
-                <Route path="/preview/content/:slug" element={<ContentPreviewPage />} />
-                <Route path="/preview/product/:slug" element={<ProductPreviewPage />} />
+                {/* Public Preview Routes with user and blog ID */}
+                <Route path="/preview/content/:uid/:blogId/:slug" element={<ContentPreviewPage />} />
+                <Route path="/preview/product/:uid/:blogId/:slug" element={<ProductPreviewPage />} />
                 
                 {/* Protected Dashboard Routes */}
                 <Route path="/dashboard/*" element={

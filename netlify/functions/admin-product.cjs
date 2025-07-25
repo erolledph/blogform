@@ -89,7 +89,11 @@ exports.handler = async (event, context) => {
     }
 
     const { httpMethod } = event;
-    const productsRef = db.collection('products');
+    const userId = decodedToken.uid;
+    const blogId = userId; // Using uid as blogId for single-blog-per-user setup
+    
+    // Reference to user's blog products collection
+    const productsRef = db.collection('users').doc(userId).collection('blogs').doc(blogId).collection('products');
 
     switch (httpMethod) {
       case 'POST': {
@@ -109,6 +113,8 @@ exports.handler = async (event, context) => {
         // Ensure price and percentOff are numbers
         const productData = {
           ...data,
+          userId,
+          blogId,
           price: parseFloat(data.price) || 0,
           percentOff: parseFloat(data.percentOff) || 0,
           createdAt: now,
@@ -155,6 +161,8 @@ exports.handler = async (event, context) => {
         // Ensure price and percentOff are numbers
         const productData = {
           ...updateData,
+          userId,
+          blogId,
           price: parseFloat(updateData.price) || 0,
           percentOff: parseFloat(updateData.percentOff) || 0,
           updatedAt: now

@@ -1,15 +1,22 @@
 import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { Copy, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function DocumentationPage() {
+  const { currentUser } = useAuth();
+  
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
   };
 
-  const apiEndpoint = `${window.location.origin}/api/content.json`;
-  const productsApiEndpoint = `${window.location.origin}/api/products.json`;
+  // Use current user's UID for API endpoints, or placeholder if not available
+  const uid = currentUser?.uid || '{uid}';
+  const blogId = uid; // Using uid as blogId for single-blog-per-user setup
+  
+  const apiEndpoint = `${window.location.origin}/users/${uid}/blogs/${blogId}/api/content.json`;
+  const productsApiEndpoint = `${window.location.origin}/users/${uid}/blogs/${blogId}/api/products.json`;
 
   const codeExamples = {
     javascript: `// Fetch all published content
@@ -207,6 +214,32 @@ if products:
         </p>
       </div>
 
+      {/* User-Specific API Notice */}
+      <div className="card border-blue-200 bg-blue-50">
+        <div className="card-content p-6">
+          <div className="flex items-start space-x-4">
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+              <ExternalLink className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-blue-800 mb-2">User-Specific API Endpoints</h3>
+              <div className="text-base text-blue-700 space-y-2">
+                <p>
+                  Your API endpoints are now user-specific and include your unique user ID in the URL path.
+                  This provides better data isolation and security.
+                </p>
+                <p>
+                  <strong>Your User ID:</strong> <code className="bg-blue-100 px-2 py-1 rounded text-sm">{uid}</code>
+                </p>
+                <p>
+                  Anyone consuming your public API will need to use your specific user ID in the URL to access your content and products.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Content API Endpoint */}
       <div className="card">
         <div className="card-header">
@@ -289,7 +322,9 @@ if products:
     "categories": ["Web Development", "Cloud"],
     "tags": ["nextjs", "firebase", "cloudflare", "blogging", "seo"],
     "status": "published",
-    "contentUrl": "https://your-app-domain.com/post/the-clever-idea-nextjs-firebase-cloudflare",
+    "userId": "${uid}",
+    "blogId": "${blogId}",
+    "contentUrl": "https://your-custom-domain.com/post/the-clever-idea-nextjs-firebase-cloudflare",
     "publishDate": "2025-06-27T10:00:00Z",
     "createdAt": "2025-06-27T09:30:00Z",
     "updatedAt": "2025-06-27T10:15:00Z"
@@ -334,6 +369,8 @@ if products:
     "category": "Electronics",
     "tags": ["audio", "wireless", "premium", "headphones"],
     "status": "published",
+    "userId": "${uid}",
+    "blogId": "${blogId}",
     "createdAt": "2025-06-27T09:30:00Z",
     "updatedAt": "2025-06-27T10:15:00Z"
   }
@@ -558,6 +595,10 @@ if products:
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
+              <p>All responses now include <code>userId</code> and <code>blogId</code> fields for data isolation and identification.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>Content items include a `contentUrl` field with the full URL for your application. Products include a `productUrl` field for external purchase/affiliate links and an `imageUrls` array containing up to 5 product images.</p>
             </div>
             <div className="flex items-start">
@@ -566,7 +607,7 @@ if products:
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <p>Products include a `currency` field that reflects the globally configured currency symbol from the admin settings, ensuring consistent pricing display across all products.</p>
+              <p>Products include a `currency` field that reflects your user-specific currency setting, ensuring consistent pricing display across all your products.</p>
             </div>
           </div>
         </div>

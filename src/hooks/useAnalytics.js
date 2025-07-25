@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { analyticsService } from '@/services/analyticsService';
 
 export function useContentAnalytics(contentId, days = 30) {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (!contentId) return;
+    if (!contentId || !currentUser?.uid) {
+      setAnalytics(null);
+      setLoading(false);
+      return;
+    }
 
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getContentAnalytics(contentId, days);
+        const data = await analyticsService.getContentAnalytics(currentUser.uid, contentId, currentUser.uid, days);
         setAnalytics(data);
       } catch (err) {
         setError(err.message);
@@ -23,7 +29,7 @@ export function useContentAnalytics(contentId, days = 30) {
     };
 
     fetchAnalytics();
-  }, [contentId, days]);
+  }, [contentId, days, currentUser?.uid]);
 
   return { analytics, loading, error };
 }
@@ -32,13 +38,20 @@ export function useSiteAnalytics(days = 30) {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchAnalytics = async () => {
+      if (!currentUser?.uid) {
+        setAnalytics(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getSiteAnalytics(days);
+        const data = await analyticsService.getSiteAnalytics(currentUser.uid, currentUser.uid, days);
         setAnalytics(data);
       } catch (err) {
         setError(err.message);
@@ -48,7 +61,7 @@ export function useSiteAnalytics(days = 30) {
     };
 
     fetchAnalytics();
-  }, [days]);
+  }, [days, currentUser?.uid]);
 
   const refetch = () => {
     fetchAnalytics();
@@ -61,13 +74,20 @@ export function useFirebaseUsage() {
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchUsage = async () => {
+      if (!currentUser?.uid) {
+        setUsage(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getFirebaseUsage();
+        const data = await analyticsService.getFirebaseUsage(currentUser.uid);
         setUsage(data);
       } catch (err) {
         console.error('Firebase usage error:', err);
@@ -83,7 +103,7 @@ export function useFirebaseUsage() {
     };
 
     fetchUsage();
-  }, []);
+  }, [currentUser?.uid]);
 
   const refetch = async () => {
     fetchUsage();

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useProducts } from '@/hooks/useProducts';
 import { settingsService } from '@/services/settingsService';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '@/firebase';
 import DataTable from '@/components/shared/DataTable';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import Modal from '@/components/shared/Modal';
@@ -13,15 +12,13 @@ import { getStatusBadgeClass } from '@/utils/helpers';
 import toast from 'react-hot-toast';
 
 export default function ManageProductsPage() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loading, error, refetch } = useProducts();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, product: null });
   const [userCurrency, setUserCurrency] = useState('$');
   const { getAuthToken, currentUser } = useAuth();
 
   useEffect(() => {
     fetchUserSettings();
-    fetchProducts();
   }, [currentUser]);
 
   const fetchUserSettings = async () => {
@@ -33,32 +30,6 @@ export default function ManageProductsPage() {
     } catch (error) {
       console.error('Error fetching user settings:', error);
       // Keep default currency on error
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const productsRef = collection(db, 'products');
-      const snapshot = await getDocs(productsRef);
-      const productsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      // Sort by creation date (newest first)
-      productsData.sort((a, b) => {
-        const dateA = a.createdAt?.toDate() || new Date(0);
-        const dateB = b.createdAt?.toDate() || new Date(0);
-        return dateB - dateA;
-      });
-      
-      setProducts(productsData);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      toast.error('Failed to fetch products');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -76,7 +47,7 @@ export default function ManageProductsPage() {
 
       if (response.ok) {
         toast.success('Product deleted successfully');
-        fetchProducts(); // Refresh the list
+        refetch(); // Refresh the list
         setDeleteModal({ isOpen: false, product: null });
       } else {
         throw new Error('Failed to delete product');
@@ -201,7 +172,7 @@ export default function ManageProductsPage() {
       render: (_, row) => (
         <div className="flex items-center space-x-1">
           <a
-            href={`/preview/product/${row.slug}`}
+            href={`/preview/product/${currentUser?.uid}/${currentUser?.uid}/${row.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-green-600 p-2 rounded-md hover:bg-green-50 transition-colors duration-200"
@@ -243,6 +214,14 @@ export default function ManageProductsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-destructive">Error loading products: {error}</p>
       </div>
     );
   }
