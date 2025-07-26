@@ -179,20 +179,20 @@ export default function AccountSettingsPage() {
               <h2 className="card-title">Currency Settings</h2>
             </div>
             <p className="card-description">
-              Choose your preferred currency symbol for product pricing
+              Choose your preferred currency symbol for displaying prices and financial data
             </p>
           </div>
           <div className="card-content">
             <form onSubmit={handleSave} className="space-y-6">
               <div>
-                <label className="block text-base font-medium text-foreground mb-4">
-                  Preferred Currency Symbol
+                <label htmlFor="currency" className="block text-sm font-medium text-foreground mb-2">
+                  Currency Symbol
                 </label>
                 <select
+                  id="currency"
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="input-field"
-                  disabled={loading}
+                  className="input-field w-full"
                 >
                   {currencyOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -200,48 +200,38 @@ export default function AccountSettingsPage() {
                     </option>
                   ))}
                 </select>
-                <p className="text-sm text-muted-foreground mt-2">
-                  This currency symbol will be used when creating and editing products
+              </div>
+              
+              <div className="p-4 bg-muted/30 rounded-lg border border-border">
+                <h4 className="text-sm font-medium text-foreground mb-2">Preview</h4>
+                <p className="text-base text-muted-foreground">
+                  Sample price: <span className="font-semibold text-foreground">{currency}99.99</span>
                 </p>
               </div>
-
-              {/* Currency Preview */}
-              <div className="p-6 bg-muted/30 rounded-lg">
-                <h3 className="text-base font-semibold text-foreground mb-3">Preview</h3>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Product pricing will display as:
-                </p>
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-medium text-foreground">{currency}</span>
-                  <span className="text-lg text-muted-foreground">99.99</span>
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-primary"
-                >
-                  {saved ? (
-                    <>
-                      <Check className="h-5 w-5 mr-3" />
-                      Saved
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-5 w-5 mr-3" />
-                      {loading ? 'Saving...' : 'Save Settings'}
-                    </>
-                  )}
-                </button>
-              </div>
+              
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary flex items-center space-x-2"
+              >
+                {saved ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    <span>{loading ? 'Saving...' : 'Save Settings'}</span>
+                  </>
+                )}
+              </button>
             </form>
           </div>
         </div>
 
         {/* Additional Settings Placeholder */}
-        <div className="card xl:col-span-2">
+        <div className="card">
           <div className="card-header">
             <h2 className="card-title">Additional Settings</h2>
             <p className="card-description">
@@ -260,21 +250,6 @@ export default function AccountSettingsPage() {
                   <div className="text-right">
                     <div className="text-lg font-bold text-primary">v2.0.0</div>
                     <div className="text-sm text-muted-foreground">User-Isolated CMS</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* API Information */}
-              <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-semibold text-blue-800 mb-2">Your API Endpoints</h3>
-                    <p className="text-sm text-blue-600">User-specific API URLs for your content and products</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-mono text-blue-700 break-all">
-                      /users/{currentUser?.uid}/blogs/{currentUser?.uid}/api/
-                    </div>
                   </div>
                 </div>
               </div>

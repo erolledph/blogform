@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useSiteAnalytics, useFirebaseUsage } from '@/hooks/useAnalytics';
+import { useSiteAnalytics, useBackendUsage } from '@/hooks/useAnalytics';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  Eye, 
-  MousePointer, 
+import {
+  BarChart3,
+  TrendingUp,
+  Users,
+  Eye,
+  MousePointer,
   Database,
   AlertTriangle,
   Info,
@@ -19,7 +19,7 @@ import {
 export default function AnalyticsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState(30);
   const { analytics, loading: analyticsLoading, error: analyticsError, refetch } = useSiteAnalytics(selectedPeriod);
-  const { usage, loading: usageLoading, error: usageError } = useFirebaseUsage();
+  const { usage, loading: usageLoading, error: usageError } = useBackendUsage();
 
   const periods = [
     { value: 7, label: '7 days' },
@@ -43,7 +43,7 @@ export default function AnalyticsPage() {
     <div className="space-y-10">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Analytics & Usage</h1>
+          <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Analytics & Platform Usage</h1>
         </div>
         <div className="flex items-center space-x-4">
           <select
@@ -72,15 +72,15 @@ export default function AnalyticsPage() {
               <h3 className="text-lg font-semibold text-amber-800 mb-2">Analytics Limitations</h3>
               <div className="text-base text-amber-700 space-y-2">
                 <p>
-                  <strong>Static Site + Cloudflare:</strong> Since your content is statically generated and served through Cloudflare, 
-                  these analytics only track interactions that trigger Firebase functions.
+                  <strong>Static Site + CDN:</strong> Since your content is statically generated and served through a CDN,
+                  these analytics only track interactions that trigger backend functions.
                 </p>
                 <p>
-                  <strong>Accuracy Note:</strong> View counts and interactions are only recorded when users interact with 
-                  Firebase-connected features. For complete analytics, consider integrating Google Analytics or Cloudflare Analytics.
+                  <strong>Accuracy Note:</strong> View counts and interactions are only recorded when users interact with
+                  backend-connected features. For complete analytics, consider integrating Google Analytics or CDN analytics.
                 </p>
                 <p>
-                  <strong>Real-time Data:</strong> Analytics are updated in real-time when Firebase interactions occur, 
+                  <strong>Real-time Data:</strong> Analytics are updated in real-time when backend interactions occur,
                   but may not reflect all actual page views due to static caching.
                 </p>
               </div>
@@ -290,9 +290,9 @@ export default function AnalyticsPage() {
             <div className="p-3 bg-orange-100 rounded-lg">
               <Database className="h-8 w-8 text-orange-600" />
             </div>
-            <h2 className="card-title">Firebase Usage Statistics</h2>
+            <h2 className="card-title">Platform Usage Statistics</h2>
           </div>
-          <p className="card-description">Current Firebase resource usage and estimates</p>
+          <p className="card-description">Current platform resource usage and estimates</p>
         </div>
         <div className="card-content">
           {usage ? (
@@ -305,102 +305,25 @@ export default function AnalyticsPage() {
                     <div>
                       <h3 className="text-lg font-semibold text-amber-800 mb-2">Limited Data Available</h3>
                       <p className="text-base text-amber-700 mb-2">
-                        {usage.error || 'Some Firebase collections could not be accessed due to permissions.'}
+                        {usage.error || 'Some data collections could not be accessed due to security rules or permissions.'}
                       </p>
                       {usage.note && (
                         <p className="text-sm text-amber-600">{usage.note}</p>
                       )}
                     </div>
                   </div>
+                  <p className="text-sm text-amber-600 mt-3">
+                    <strong>Why this happens:</strong> Backend security rules prevent client-side access to exact billing data.
+                    For precise usage statistics, check your admin console directly.
+                  </p>
                 </div>
               )}
-
-              {/* Document Counts */}
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Document Counts</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-900">{usage.documentCounts.content}</div>
-                    <div className="text-sm text-blue-600">Content Documents</div>
-                  </div>
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="text-2xl font-bold text-green-900">{usage.documentCounts.pageViews}</div>
-                    <div className="text-sm text-green-600">Page View Records</div>
-                    {usage.errors?.includes('pageViews') && (
-                      <div className="text-xs text-amber-600 mt-1">Limited access</div>
-                    )}
-                  </div>
-                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-900">{usage.documentCounts.interactions}</div>
-                    <div className="text-sm text-purple-600">Interaction Records</div>
-                    {usage.errors?.includes('interactions') && (
-                      <div className="text-xs text-amber-600 mt-1">Limited access</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Storage Usage */}
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Storage Usage (Estimated)</h3>
-                <div className="p-6 bg-muted/30 rounded-lg">
-                  <div className="flex items-start space-x-3">
-                    <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-1" />
-                    <div>
-                      {usage.storageUsage.error ? (
-                        <p className="text-base text-foreground mb-2">
-                          Storage Usage: {usage.storageUsage.error}
-                        </p>
-                      ) : (
-                        <p className="text-base text-foreground mb-2">
-                          Estimated Content Size: {Math.round((usage.storageUsage.contentSize || 0) / 1024)} KB
-                        </p>
-                      )}
-                      <p className="text-sm text-muted-foreground">
-                        {usage.storageUsage.note}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Operations */}
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-4">Operations</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-6 bg-muted/30 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">Read Operations</h4>
-                    {usage.estimatedReads.error ? (
-                      <p className="text-sm text-muted-foreground">{usage.estimatedReads.error}</p>
-                    ) : (
-                      <div>
-                        <p className="text-base text-foreground mb-1">
-                          ~{usage.estimatedReads.approximateReads || 0} estimated reads
-                        </p>
-                        <p className="text-sm text-muted-foreground">{usage.estimatedReads.note}</p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-6 bg-muted/30 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">Write Operations</h4>
-                    {usage.estimatedWrites.error ? (
-                      <p className="text-sm text-muted-foreground">{usage.estimatedWrites.error}</p>
-                    ) : (
-                      <div>
-                        <p className="text-base text-foreground mb-1">
-                          ~{usage.estimatedWrites.approximateWrites || 0} estimated writes
-                        </p>
-                        <p className="text-sm text-muted-foreground">{usage.estimatedWrites.note}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Unable to load Firebase usage data</p>
+              <Info className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No backend usage data available yet.</p>
+              <p className="text-sm mt-2">Ensure your backend functions are active and accessible.</p>
             </div>
           )}
         </div>
@@ -415,7 +338,7 @@ export default function AnalyticsPage() {
         <div className="card-content">
           <div className="space-y-6">
             <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">For Better Analytics</h3>
+              <h3 className="text-lg font-semibold text-blue-800 mb-3">Analytics Recommendations</h3>
               <ul className="space-y-2 text-base text-blue-700">
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
@@ -423,7 +346,7 @@ export default function AnalyticsPage() {
                 </li>
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  Use Cloudflare Analytics for server-side traffic insights
+                  Use CDN analytics for server-side traffic insights
                 </li>
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
@@ -431,13 +354,13 @@ export default function AnalyticsPage() {
                 </li>
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  Consider using Firebase Analytics SDK in your frontend
+                  Consider using analytics SDKs in your frontend
                 </li>
               </ul>
             </div>
 
             <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-800 mb-3">Firebase Optimization</h3>
+              <h3 className="text-lg font-semibold text-green-800 mb-3">Platform Optimization</h3>
               <ul className="space-y-2 text-base text-green-700">
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-green-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
@@ -445,7 +368,7 @@ export default function AnalyticsPage() {
                 </li>
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-green-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  Use Firebase Functions for server-side analytics processing
+                  Use serverless functions for server-side analytics processing
                 </li>
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-green-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
@@ -453,7 +376,7 @@ export default function AnalyticsPage() {
                 </li>
                 <li className="flex items-start">
                   <div className="w-2 h-2 bg-green-600 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                  Monitor Firebase usage in the console regularly
+                  Monitor platform usage in the admin console regularly
                 </li>
               </ul>
             </div>
@@ -470,18 +393,6 @@ export default function AnalyticsPage() {
         <div className="card-content">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <a
-              href="https://console.firebase.google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group p-6 border border-border rounded-lg hover:border-primary/50 transition-colors"
-            >
-              <Database className="h-8 w-8 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Firebase Console</h3>
-              <p className="text-base text-muted-foreground">Monitor usage and performance</p>
-              <ExternalLink className="h-4 w-4 text-muted-foreground mt-2" />
-            </a>
-            
-            <a
               href="https://analytics.google.com"
               target="_blank"
               rel="noopener noreferrer"
@@ -492,9 +403,27 @@ export default function AnalyticsPage() {
               <p className="text-base text-muted-foreground">Set up comprehensive tracking</p>
               <ExternalLink className="h-4 w-4 text-muted-foreground mt-2" />
             </a>
-            
+
             <a
-              href="https://dash.cloudflare.com"
+              href="/dashboard/storage"
+              className="group p-6 border border-border rounded-lg hover:border-primary/50 transition-colors"
+            >
+              <Database className="h-8 w-8 text-primary mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">File Storage</h3>
+              <p className="text-base text-muted-foreground">Manage uploaded files and images</p>
+            </a>
+
+            <a
+              href="/dashboard/account-settings"
+              className="group p-6 border border-border rounded-lg hover:border-primary/50 transition-colors"
+            >
+              <Globe className="h-8 w-8 text-primary mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">Account Settings</h3>
+              <p className="text-base text-muted-foreground">Configure your account preferences</p>
+            </a>
+
+            <a
+              href="https://dash.cloudflare.com/?account=workers" // Assuming this is the Cloudflare Workers analytics link
               target="_blank"
               rel="noopener noreferrer"
               className="group p-6 border border-border rounded-lg hover:border-primary/50 transition-colors"

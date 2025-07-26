@@ -447,12 +447,12 @@ export default function ImageUploader({
                 {isProcessing ? (
                   <>
                     <LoadingSpinner size="sm" className="mr-3" />
-                    {getUploadButtonText()}
+                   Uploading...
                   </>
                 ) : (
                   <>
                     <Upload className="h-5 w-5 mr-3" />
-                    {getUploadButtonText()}
+                   Upload Optimized Image
                   </>
                 )}
               </button>

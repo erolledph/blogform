@@ -310,11 +310,11 @@ if products:
             <pre className="text-sm text-foreground whitespace-pre-wrap">
 {`[
   {
-    "id": "firestore-generated-id-123",
+    "id": "generated-id-123",
     "title": "The Clever Idea: Next.js, Firebase & Cloudflare",
     "slug": "the-clever-idea-nextjs-firebase-cloudflare",
     "content": "# The Clever Idea\\n\\nThis is the **body** of my post in Markdown...",
-    "featuredImageUrl": "https://firebasestorage.googleapis.com/v0/b/...",
+    "featuredImageUrl": "https://example.com/images/featured-image.jpg",
     "metaDescription": "Explore a clever architecture for your Next.js blog...",
     "seoTitle": "Clever Next.js Blog Architecture | MySite",
     "keywords": ["nextjs", "firebase", "cloudflare", "blog"],
@@ -348,7 +348,7 @@ if products:
             <pre className="text-sm text-foreground whitespace-pre-wrap">
 {`[
   {
-    "id": "firestore-generated-id-456",
+    "id": "generated-id-456",
     "name": "Premium Wireless Headphones",
     "slug": "premium-wireless-headphones",
     "description": "# Premium Audio Experience\\n\\nHigh-quality wireless headphones...",
@@ -358,12 +358,12 @@ if products:
     "discountedPrice": 169.99,
     "savings": 30.00,
     "currency": "$",
-    "imageUrl": "https://firebasestorage.googleapis.com/v0/b/...",
+    "imageUrl": "https://example.com/images/main-image.jpg",
     "imageUrls": [
-      "https://firebasestorage.googleapis.com/v0/b/.../main-image.jpg",
-      "https://firebasestorage.googleapis.com/v0/b/.../side-view.jpg",
-      "https://firebasestorage.googleapis.com/v0/b/.../detail-view.jpg",
-      "https://firebasestorage.googleapis.com/v0/b/.../packaging.jpg"
+      "https://example.com/images/main-image.jpg",
+      "https://example.com/images/side-view.jpg",
+      "https://example.com/images/detail-view.jpg",
+      "https://example.com/images/packaging.jpg"
     ],
     "productUrl": "https://example.com/buy/premium-wireless-headphones",
     "category": "Electronics",
@@ -595,7 +595,7 @@ if products:
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <p>All responses now include <code>userId</code> and <code>blogId</code> fields for data isolation and identification.</p>
+              <p>All responses include <code>userId</code> and <code>blogId</code> fields for data isolation and identification.</p>
             </div>
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
@@ -608,6 +608,10 @@ if products:
             <div className="flex items-start">
               <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
               <p>Products include a `currency` field that reflects your user-specific currency setting, ensuring consistent pricing display across all your products.</p>
+            </div>
+            <div className="flex items-start">
+              <div className="w-3 h-3 bg-primary rounded-full mt-2 mr-4 flex-shrink-0"></div>
+              <p>All images are served from secure cloud storage with global CDN distribution for optimal performance.</p>
             </div>
           </div>
         </div>

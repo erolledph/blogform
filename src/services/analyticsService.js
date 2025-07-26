@@ -179,7 +179,7 @@ export const analyticsService = {
   },
 
   // Get Firebase usage statistics for a user
-  async getFirebaseUsage(userId, blogId = null) {
+  async getBackendUsage(userId, blogId = null) {
     try {
       const actualBlogId = blogId || userId;
       
@@ -237,11 +237,11 @@ export const analyticsService = {
         storageUsage,
         lastUpdated: new Date(),
         errors: errors.length > 0 ? errors : null,
-        note: errors.length > 0 ? 'Some collections could not be accessed due to permissions' : null
+        note: errors.length > 0 ? 'Some data collections could not be accessed due to permissions' : null
       };
 
     } catch (error) {
-      console.error('Error getting Firebase usage:', error);
+      console.error('Error getting backend usage:', error);
       
       // Return fallback data instead of null
       return {
@@ -255,7 +255,7 @@ export const analyticsService = {
         storageUsage: { error: 'Permission denied' },
         lastUpdated: new Date(),
         error: error.message,
-        note: 'Firebase usage data unavailable due to permissions. Check Firebase console for exact usage.'
+        note: 'Backend usage data unavailable due to permissions. Check admin console for exact usage.'
       };
     }
   },
@@ -340,12 +340,12 @@ export const analyticsService = {
         estimated: true,
         contentSize: estimatedSize,
         unit: 'bytes',
-        note: 'This is a rough approximation based on content count. Check Firebase Console for exact usage.'
+        note: 'This is a rough approximation based on content count. Check admin console for exact usage.'
       };
     } catch (error) {
       return { 
         error: 'Unable to estimate storage usage',
-        note: 'Check Firebase Console for exact storage usage'
+        note: 'Check admin console for exact storage usage'
       };
     }
   },
@@ -356,7 +356,7 @@ export const analyticsService = {
     return {
       estimated: true,
       approximateReads: totalDocs * 2, // Rough estimate
-      note: 'Read operations are not tracked client-side. This is a rough estimate. Check Firebase Console for exact usage.'
+      note: 'Read operations are not tracked client-side. This is a rough estimate. Check admin console for exact usage.'
     };
   },
 
@@ -365,7 +365,7 @@ export const analyticsService = {
     return {
       estimated: true,
       approximateWrites: contentCount, // Very rough estimate
-      note: 'Write operations are not tracked client-side. This is a rough estimate. Check Firebase Console for exact usage.'
+      note: 'Write operations are not tracked client-side. This is a rough estimate. Check admin console for exact usage.'
     };
   }
 };

@@ -11,7 +11,7 @@ const CreateContentPage = React.lazy(() => import('@/features/dashboard/create-c
 const ManageProductsPage = React.lazy(() => import('@/features/dashboard/manage-products/ManageProductsPage'));
 const CreateProductPage = React.lazy(() => import('@/features/dashboard/create-product/CreateProductPage'));
 const AnalyticsPage = React.lazy(() => import('@/features/dashboard/analytics/AnalyticsPage'));
-const FirebaseStoragePage = React.lazy(() => import('@/features/dashboard/storage/FirebaseStoragePage'));
+const FileStoragePage = React.lazy(() => import('@/features/dashboard/storage/FileStoragePage'));
 const AccountSettingsPage = React.lazy(() => import('@/features/dashboard/settings/AccountSettingsPage'));
 const TipsPage = React.lazy(() => import('@/features/dashboard/tips/TipsPage'));
 const DocumentationPage = React.lazy(() => import('@/features/dashboard/documentation/DocumentationPage'));
@@ -62,7 +62,7 @@ export default function DashboardPage() {
                 <Route path="/create-product" element={<CreateProductPage />} />
                 <Route path="/edit-product/:id" element={<CreateProductPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
-                <Route path="/storage" element={<FirebaseStoragePage />} />
+                <Route path="/storage" element={<FileStoragePage />} />
                 <Route path="/account-settings" element={<AccountSettingsPage />} />
                 <Route path="/tips" element={<TipsPage />} />
                 <Route path="/documentation" element={<DocumentationPage />} />

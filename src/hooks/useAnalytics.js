@@ -70,7 +70,7 @@ export function useSiteAnalytics(days = 30) {
   return { analytics, loading, error, refetch };
 }
 
-export function useFirebaseUsage() {
+export function useBackendUsage() {
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -87,15 +87,15 @@ export function useFirebaseUsage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getFirebaseUsage(currentUser.uid);
+        const data = await analyticsService.getBackendUsage(currentUser.uid);
         setUsage(data);
       } catch (err) {
-        console.error('Firebase usage error:', err);
+        console.error('Backend usage error:', err);
         // Don't set error state for permission issues, let the service handle it
         setUsage({
           documentCounts: { content: 0, pageViews: 0, interactions: 0 },
           error: 'Permission denied or service unavailable',
-          note: 'Check Firebase console for exact usage statistics'
+          note: 'Check admin console for exact usage statistics'
         });
       } finally {
         setLoading(false);

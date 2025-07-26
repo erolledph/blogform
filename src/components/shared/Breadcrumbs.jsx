@@ -13,7 +13,7 @@ export default function Breadcrumbs() {
     create: 'Create Content',
     edit: 'Edit Content',
     analytics: 'Analytics',
-    'firebase-info': 'Firebase Info',
+    storage: 'File Storage',
     tips: 'Tips',
     documentation: 'Documentation'
   };
