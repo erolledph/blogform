@@ -200,11 +200,15 @@ export default function AnalyticsPage() {
                       <div className="mb-2">{new Date(date).toLocaleDateString('en', { weekday: 'short' })}</div>
                       <div className="bg-primary/10 rounded p-2">
                         <div className="text-sm font-medium text-primary">{stats.views}</div>
-                        <div className="text-xs">views</div>
+                        <div className="flex justify-center">
+                          <Eye className="h-3 w-3 text-primary" />
+                        </div>
                       </div>
                       <div className="bg-green-100 rounded p-2 mt-1">
                         <div className="text-sm font-medium text-green-600">{stats.interactions}</div>
-                        <div className="text-xs">interactions</div>
+                        <div className="flex justify-center">
+                          <MousePointer className="h-3 w-3 text-green-600" />
+                        </div>
                       </div>
                     </div>
                   ))}
