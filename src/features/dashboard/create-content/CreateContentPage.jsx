@@ -307,66 +307,63 @@ export default function CreateContentPage() {
             </div>
 
             {/* Featured Image */}
-<div class="card">
-  <div class="card-header">
-    <h3 class="card-title">Featured Image</h3>
-  </div>
-  <div class="card-content space-y-4">
-    {/* Conditional rendering for image preview or placeholder */}
-    {formData.featuredImageUrl ? (
-      <div class="relative border border-border rounded-lg overflow-hidden bg-muted">
-        <div class="flex justify-center items-center h-48 w-full">
-          <img
-            src={formData.featuredImageUrl}
-            alt="Featured Preview"
-            class="object-contain max-h-full max-w-full"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleRemoveImage}
-          class="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-10"
-          title="Remove image"
-        >
-          <Trash2 class="h-4 w-4" />
-        </button>
-      </div>
-    ) : (
-      <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-lg text-center bg-muted/20">
-        <ImageIcon class="h-10 w-10 text-muted-foreground mb-3" />
-        <p class="text-muted-foreground mb-4 text-sm">No featured image selected</p>
-      </div>
-    )}
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Featured Image</h3>
+              </div>
+              <div className="card-content space-y-6">
+                {/* Image Preview */}
+                {formData.featuredImageUrl ? (
+                  <div className="relative border border-border rounded-lg overflow-hidden bg-muted">
+                    <div className="flex justify-center items-center h-48 w-full">
+                      <img
+                        src={formData.featuredImageUrl}
+                        alt="Featured Preview"
+                        className="object-contain max-h-full max-w-full"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors z-10"
+                      title="Remove image"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-border rounded-lg text-center bg-muted/20">
+                    <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground text-base">No featured image selected</p>
+                  </div>
+                )}
 
-    {/* Button to open the image gallery */}
-    <div class="flex flex-col sm:flex-row gap-3 mt-4">
-      <button
-        type="button"
-        onClick={() => setGalleryModal({ isOpen: true })}
-        class="btn-secondary inline-flex items-center justify-center w-full sm:w-auto"
-      >
-        <ImageIcon class="h-5 w-5 mr-2" />
-        Select from Gallery
-      </button>
-    </div>
-
-    {/* Input field for image URL */}
-    <div class="mt-4">
-      <label htmlFor="featuredImageUrl" class="block text-sm font-medium text-muted-foreground mb-2">
-        Or enter Image URL
-      </label>
-      <input
-        id="featuredImageUrl"
-        name="featuredImageUrl"
-        type="url"
-        placeholder="https://example.com/image.jpg"
-        value={formData.featuredImageUrl}
-        onChange={handleInputChange}
-        class="input-field w-full"
-      />
-    </div>
-  </div>
-</div>
+                {/* Gallery Selection Button */}
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setGalleryModal({ isOpen: true })}
+                    className="btn-secondary inline-flex items-center"
+                  >
+                    <ImageIcon className="h-5 w-5 mr-3" />
+                    Select from Gallery
+                  </button>
+                </div>
+                
+                {/* Alternative URL Input */}
+                <div className="border-t border-border pt-6">
+                  <h4 className="text-base font-medium text-foreground mb-4">Or enter image URL</h4>
+                  <InputField
+                    label=""
+                    name="featuredImageUrl"
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={formData.featuredImageUrl}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right Column - Settings (1/3 width on xl screens) */}
