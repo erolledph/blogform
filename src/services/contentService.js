@@ -3,13 +3,20 @@ import { db } from '@/firebase';
 
 export const contentService = {
   // Get user's content collection reference
-  getUserContentRef(userId, blogId = null) {
-    const actualBlogId = blogId || userId; // Default to userId if blogId not provided
+  getUserContentRef(userId, blogId) {
+    if (!blogId) {
+      throw new Error('blogId is required');
+    }
+    // Validate that blogId is not the same as userId to prevent data sync issues
+    if (blogId === userId) {
+      throw new Error('Invalid blogId: blogId cannot be the same as userId');
+    }
+    const actualBlogId = blogId;
     return collection(db, 'users', userId, 'blogs', actualBlogId, 'content');
   },
 
   // Fetch all content for a user's blog
-  async fetchAllContent(userId, blogId = null) {
+  async fetchAllContent(userId, blogId) {
     try {
       const contentRef = this.getUserContentRef(userId, blogId);
       const snapshot = await getDocs(contentRef);
@@ -33,7 +40,7 @@ export const contentService = {
   },
 
   // Fetch content by status for a user's blog
-  async fetchContentByStatus(userId, status, blogId = null) {
+  async fetchContentByStatus(userId, status, blogId) {
     try {
       const contentRef = this.getUserContentRef(userId, blogId);
       const q = query(contentRef, where('status', '==', status));
@@ -49,9 +56,12 @@ export const contentService = {
   },
 
   // Fetch single content by ID for a user's blog
-  async fetchContentById(userId, id, blogId = null) {
+  async fetchContentById(userId, id, blogId) {
     try {
-      const actualBlogId = blogId || userId;
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      const actualBlogId = blogId;
       const docRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'content', id);
       const docSnap = await getDoc(docRef);
       
@@ -70,7 +80,7 @@ export const contentService = {
   },
 
   // Get content statistics for a user's blog
-  async getContentStats(userId, blogId = null) {
+  async getContentStats(userId, blogId) {
     try {
       const contentRef = this.getUserContentRef(userId, blogId);
       
@@ -106,9 +116,12 @@ export const contentService = {
   },
 
   // Initialize content with analytics fields
-  async initializeContentAnalytics(userId, contentId, blogId = null) {
+  async initializeContentAnalytics(userId, contentId, blogId) {
     try {
-      const actualBlogId = blogId || userId;
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      const actualBlogId = blogId;
       const contentRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'content', contentId);
       await updateDoc(contentRef, {
         viewCount: 0,
@@ -119,6 +132,48 @@ export const contentService = {
       });
     } catch (error) {
       console.error('Error initializing content analytics:', error);
+    }
+  },
+  
+  // Update content with image URL after successful upload
+  async updateContentImage(userId, contentId, blogId, imageUrl, imageMetadata = {}) {
+    try {
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      
+      const actualBlogId = blogId;
+      const contentRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'content', contentId);
+      
+      // Get current content to preserve existing data
+      const contentDoc = await getDoc(contentRef);
+      if (!contentDoc.exists()) {
+        throw new Error('Content not found');
+      }
+      
+      const updateData = {
+        featuredImageUrl: imageUrl,
+        updatedAt: new Date(),
+        imageMetadata: {
+          uploadedAt: new Date().toISOString(),
+          originalName: imageMetadata.originalName || '',
+          fileSize: imageMetadata.fileSize || 0,
+          ...imageMetadata
+        }
+      };
+      
+      await updateDoc(contentRef, updateData);
+      
+      console.log('Content image updated successfully:', {
+        contentId,
+        imageUrl,
+        metadata: imageMetadata
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating content image:', error);
+      throw error;
     }
   }
 };

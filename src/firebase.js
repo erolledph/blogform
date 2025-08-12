@@ -4,16 +4,32 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAVA6ClWm3ZepoeZuyFbBMsKBGsGjKj75Q",
-  authDomain: "erolledph.firebaseapp.com",
-  projectId: "erolledph",
-  storageBucket: "erolledph.firebasestorage.app",
-  messagingSenderId: "1003557516267",
-  appId: "1:1003557516267:web:746a425d5bc15967d1dfae"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
+
+console.log('Firebase config loaded:', {
+  apiKey: firebaseConfig.apiKey ? 'Present' : 'Missing',
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  storageBucket: firebaseConfig.storageBucket,
+  messagingSenderId: firebaseConfig.messagingSenderId ? 'Present' : 'Missing',
+  appId: firebaseConfig.appId ? 'Present' : 'Missing'
+});
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+console.log('Firebase services initialized:', {
+  auth: !!auth,
+  db: !!db,
+  storage: !!storage
+});
+
 export default app;

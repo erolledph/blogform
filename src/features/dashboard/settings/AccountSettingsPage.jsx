@@ -2,15 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { settingsService } from '@/services/settingsService';
 import InputField from '@/components/shared/InputField';
+import LoadingButton from '@/components/shared/LoadingButton';
+import { AccountSettingsSkeleton } from '@/components/shared/SkeletonLoader';
 import { User, DollarSign, Save, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function AccountSettingsPage() {
-  const { currentUser } = useAuth();
+  const { currentUser, invalidateUserSettingsCache } = useAuth();
   const [currency, setCurrency] = useState('$');
+  const [displayName, setDisplayName] = useState('');
+  const [profileData, setProfileData] = useState({
+    displayName: '',
+    bio: '',
+    website: '',
+    location: ''
+  });
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const currencyOptions = [
     { value: '$', label: 'US Dollar ($)' },
@@ -65,6 +76,13 @@ export default function AccountSettingsPage() {
       setInitialLoading(true);
       const settings = await settingsService.getUserSettings(currentUser.uid);
       setCurrency(settings.currency || '$');
+      setDisplayName(settings.displayName || '');
+      setProfileData({
+        displayName: settings.displayName || '',
+        bio: settings.bio || '',
+        website: settings.website || '',
+        location: settings.location || ''
+      });
     } catch (error) {
       console.error('Error fetching user settings:', error);
       toast.error('Failed to load user settings');
@@ -93,6 +111,9 @@ export default function AccountSettingsPage() {
         currency
       });
       
+      // Invalidate user settings cache to ensure fresh data on next fetch
+      invalidateUserSettingsCache(currentUser.uid);
+      
       setSaved(true);
       toast.success('Settings saved successfully!');
       
@@ -106,162 +127,306 @@ export default function AccountSettingsPage() {
     }
   };
 
-  if (initialLoading) {
-    return (
-      <div className="section-spacing">
-        <div className="page-header">
-          <h1 className="page-title">Account Settings</h1>
-        </div>
-        <div className="flex items-center justify-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
-  }
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
+    
+    if (!currentUser?.uid) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    setProfileLoading(true);
+
+    try {
+      await settingsService.setUserSettings(currentUser.uid, {
+        displayName: profileData.displayName.trim(),
+        bio: profileData.bio.trim(),
+        website: profileData.website.trim(),
+        location: profileData.location.trim()
+      });
+      
+      // Invalidate user settings cache
+      invalidateUserSettingsCache(currentUser.uid);
+      
+      setProfileSaved(true);
+      toast.success('Profile updated successfully!');
+      
+      // Reset saved state after 2 seconds
+      setTimeout(() => setProfileSaved(false), 2000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error('Failed to save profile');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const handleProfileInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Reset saved state when user makes changes
+    if (profileSaved) {
+      setProfileSaved(false);
+    }
+  };
+
 
   return (
     <div className="section-spacing">
-      <div className="page-header">
+      <div className="page-header mb-16">
         <h1 className="page-title">Account Settings</h1>
+        <p className="page-description">
+          Manage your account information and preferences
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {/* User Information */}
-        <div className="card">
-          <div className="card-header">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <User className="h-8 w-8 text-primary" />
+      {initialLoading ? (
+        <AccountSettingsSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+          {/* Profile Information */}
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center space-x-4">
+                <div className="p-4 bg-blue-100 rounded-lg">
+                  <User className="h-8 w-8 text-blue-600" />
+                </div>
+                <h2 className="card-title">Profile Information</h2>
               </div>
-              <h2 className="card-title">User Information</h2>
+              <p className="card-description">
+                Update your personal information and bio
+              </p>
             </div>
-          </div>
-          <div className="card-content space-y-6">
-            <InputField
-              label="Email Address"
-              value={currentUser?.email || 'Not available'}
-              disabled
-              className="opacity-75 cursor-not-allowed"
-            />
-            <p className="text-sm text-muted-foreground">
-              Your email address cannot be changed from this interface
-            </p>
-            
-            <InputField
-              label="User ID"
-              value={currentUser?.uid || 'Not available'}
-              disabled
-              className="opacity-75 cursor-not-allowed"
-            />
-            <p className="text-sm text-muted-foreground">
-              Your unique user identifier used in API endpoints
-            </p>
-            
-            <InputField
-              label="Role"
-              value="Administrator"
-              disabled
-              className="opacity-75 cursor-not-allowed"
-            />
-            <p className="text-sm text-muted-foreground">
-              Your current role in the system
-            </p>
-          </div>
-        </div>
-
-        {/* Currency Settings */}
-        <div className="card">
-          <div className="card-header">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <DollarSign className="h-8 w-8 text-green-600" />
-              </div>
-              <h2 className="card-title">Currency Settings</h2>
-            </div>
-            <p className="card-description">
-              Choose your preferred currency symbol for displaying prices and financial data
-            </p>
-          </div>
-          <div className="card-content">
-            <form onSubmit={handleSave} className="space-y-6">
-              <div>
-                <label htmlFor="currency" className="block text-sm font-medium text-foreground mb-2">
-                  Currency Symbol
-                </label>
-                <select
-                  id="currency"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="input-field w-full"
+            <div className="card-content">
+              <form onSubmit={handleProfileSave} className="space-y-8">
+                <InputField
+                  label="Display Name"
+                  name="displayName"
+                  value={profileData.displayName}
+                  onChange={handleProfileInputChange}
+                  placeholder="Your full name"
+                  disabled={profileLoading}
+                />
+                
+                <div>
+                  <label className="block text-base font-medium text-foreground mb-3">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    rows={4}
+                    className="input-field resize-none"
+                    value={profileData.bio}
+                    onChange={handleProfileInputChange}
+                    placeholder="Tell us about yourself..."
+                    disabled={profileLoading}
+                  />
+                </div>
+                
+                <InputField
+                  label="Website"
+                  name="website"
+                  type="url"
+                  value={profileData.website}
+                  onChange={handleProfileInputChange}
+                  placeholder="https://yourwebsite.com"
+                  disabled={profileLoading}
+                />
+                
+                <InputField
+                  label="Location"
+                  name="location"
+                  value={profileData.location}
+                  onChange={handleProfileInputChange}
+                  placeholder="City, Country"
+                  disabled={profileLoading}
+                />
+                
+                <LoadingButton
+                  type="submit"
+                  loading={profileLoading}
+                  loadingText="Saving..."
+                  variant="primary"
+                  className="w-full"
+                  icon={profileSaved ? Check : Save}
                 >
-                  {currencyOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="p-4 bg-muted/30 rounded-lg border border-border">
-                <h4 className="text-sm font-medium text-foreground mb-2">Preview</h4>
-                <p className="text-base text-muted-foreground">
-                  Sample price: <span className="font-semibold text-foreground">{currency}99.99</span>
-                </p>
-              </div>
-              
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary flex items-center space-x-2"
-              >
-                {saved ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    <span>Saved!</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    <span>{loading ? 'Saving...' : 'Save Settings'}</span>
-                  </>
-                )}
-              </button>
-            </form>
+                  {profileSaved ? 'Saved!' : 'Save Profile'}
+                </LoadingButton>
+              </form>
+            </div>
           </div>
-        </div>
 
-        {/* Additional Settings Placeholder */}
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">Additional Settings</h2>
-            <p className="card-description">
-              System information and additional configuration options
-            </p>
+          {/* User Information */}
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center space-x-4">
+                <div className="p-4 bg-primary/10 rounded-lg">
+                  <User className="h-8 w-8 text-primary" />
+                </div>
+                <h2 className="card-title">User Information</h2>
+              </div>
+              <p className="card-description">
+                Your account details and system information
+              </p>
+            </div>
+            <div className="card-content space-y-8">
+              <InputField
+                label="Email Address"
+                value={currentUser?.email || 'Not available'}
+                disabled
+                className="opacity-75 cursor-not-allowed"
+              />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your email address cannot be changed from this interface
+              </p>
+              
+              <InputField
+                label="User ID"
+                value={currentUser?.uid || 'Not available'}
+                disabled
+                className="opacity-75 cursor-not-allowed"
+              />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your unique user identifier used in API endpoints
+              </p>
+              
+              <InputField
+                label="Role"
+                value={currentUser?.role === 'admin' ? 'Administrator' : 'User'}
+                disabled
+                className="opacity-75 cursor-not-allowed"
+              />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your current role in the system
+              </p>
+            </div>
           </div>
-          <div className="card-content">
-            <div className="space-y-6">
-              {/* Version Information */}
-              <div className="p-6 bg-muted/30 rounded-lg border border-border">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-semibold text-foreground mb-2">System Information</h3>
-                    <p className="text-sm text-muted-foreground">Current application version and build details</p>
+
+          {/* Currency Settings */}
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center space-x-4">
+                <div className="p-4 bg-green-100 rounded-lg">
+                  <DollarSign className="h-8 w-8 text-green-600" />
+                </div>
+                <h2 className="card-title">Currency Settings</h2>
+              </div>
+              <p className="card-description">
+                Choose your preferred currency symbol for displaying prices and financial data
+              </p>
+            </div>
+            <div className="card-content">
+              <form onSubmit={handleSave} className="space-y-8">
+                <div>
+                  <label htmlFor="currency" className="block text-base font-medium text-foreground mb-3">
+                    Currency Symbol
+                  </label>
+                  <select
+                    id="currency"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="input-field w-full"
+                  >
+                    {currencyOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="p-6 bg-muted/30 rounded-lg border border-border">
+                  <h4 className="text-sm font-medium text-foreground mb-3">Preview</h4>
+                  <p className="text-lg text-muted-foreground">
+                    Sample price: <span className="font-semibold text-foreground">{currency}99.99</span>
+                  </p>
+                </div>
+                
+                <LoadingButton
+                  type="submit"
+                  loading={loading}
+                  loadingText="Saving..."
+                  variant="primary"
+                  icon={saved ? Check : Save}
+                >
+                  {saved ? 'Saved!' : 'Save Settings'}
+                </LoadingButton>
+              </form>
+            </div>
+          </div>
+
+          {/* Additional Settings */}
+          <div className="card">
+            <div className="card-header">
+              <h2 className="card-title">Additional Settings</h2>
+              <p className="card-description">
+                System information and additional configuration options
+              </p>
+            </div>
+            <div className="card-content">
+              <div className="space-y-8">
+                {/* Account Limits */}
+                <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="text-base font-semibold text-blue-800 mb-6">Account Limits</h3>
+                  <div className="grid grid-cols-2 gap-6 text-sm">
+                    <div>
+                      <span className="font-medium text-blue-700">Max Blogs:</span>
+                      <div className="text-blue-600 text-lg font-semibold">{currentUser?.maxBlogs || 1}</div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-blue-700">Storage Limit:</span>
+                      <div className="text-blue-600 text-lg font-semibold">{currentUser?.totalStorageMB || 100} MB</div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-primary">v2.0.0</div>
-                    <div className="text-sm text-muted-foreground">User-Isolated CMS</div>
+                </div>
+                
+                {/* Version Information */}
+                <div className="p-6 bg-muted/30 rounded-lg border border-border">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-base font-semibold text-foreground mb-3">System Information</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">Current application version and build details</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-bold text-primary">v2.0.0</div>
+                      <div className="text-sm text-muted-foreground">User-Isolated CMS</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Account Statistics */}
+                <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
+                  <h3 className="text-base font-semibold text-green-800 mb-6">Account Statistics</h3>
+                  <div className="grid grid-cols-2 gap-6 text-sm">
+                    <div>
+                      <span className="font-medium text-green-700">Member Since:</span>
+                      <div className="text-green-600 font-medium">
+                        {currentUser?.metadata?.creationTime 
+                          ? new Date(currentUser.metadata.creationTime).toLocaleDateString()
+                          : 'N/A'
+                        }
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-green-700">Last Sign In:</span>
+                      <div className="text-green-600 font-medium">
+                        {currentUser?.metadata?.lastSignInTime 
+                          ? new Date(currentUser.metadata.lastSignInTime).toLocaleDateString()
+                          : 'N/A'
+                        }
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Future Settings Placeholder */}
-              <div className="text-center py-8 text-muted-foreground">
-                <p>Additional configuration options will be added here as the application grows.</p>
-              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

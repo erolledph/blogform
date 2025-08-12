@@ -5,6 +5,10 @@ export const analyticsService = {
   // Track page views for content (includes userId and blogId for filtering)
   async trackPageView(contentId, slug, userId, blogId, userAgent = '', referrer = '') {
     try {
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      
       const viewData = {
         contentId,
         slug,
@@ -34,6 +38,10 @@ export const analyticsService = {
   // Track content interactions (includes userId and blogId for filtering)
   async trackInteraction(contentId, interactionType, userId, blogId, metadata = {}) {
     try {
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      
       const interactionData = {
         contentId,
         type: interactionType, // 'click', 'share', 'like', 'comment'
@@ -59,9 +67,12 @@ export const analyticsService = {
   },
 
   // Get analytics for specific content in a user's blog
-  async getContentAnalytics(userId, contentId, blogId = null, days = 30) {
+  async getContentAnalytics(userId, contentId, blogId, days = 30) {
     try {
-      const actualBlogId = blogId || userId;
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      const actualBlogId = blogId;
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
@@ -118,9 +129,12 @@ export const analyticsService = {
   },
 
   // Get overall site analytics for a user's blog
-  async getSiteAnalytics(userId, blogId = null, days = 30) {
+  async getSiteAnalytics(userId, blogId, days = 30) {
     try {
-      const actualBlogId = blogId || userId;
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      const actualBlogId = blogId;
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
@@ -179,9 +193,12 @@ export const analyticsService = {
   },
 
   // Get Firebase usage statistics for a user
-  async getBackendUsage(userId, blogId = null) {
+  async getBackendUsage(userId, blogId) {
     try {
-      const actualBlogId = blogId || userId;
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      const actualBlogId = blogId;
       
       // Get document counts with error handling
       let contentCount = 0;

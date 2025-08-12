@@ -1,33 +1,39 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import InputField from '@/components/shared/InputField';
 import toast from 'react-hot-toast';
 import { Lock, Mail } from 'lucide-react';
 
 export default function LoginPage() {
+  const { login, currentUser } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors = {};
     
+    // Email validation
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
+    } else if (formData.email.length > 254) {
+      newErrors.email = 'Email is too long';
+    } else if (formData.email.length < 5) {
+      newErrors.email = 'Email is too short';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
     
+    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
     
     setErrors(newErrors);
@@ -60,15 +66,25 @@ export default function LoginPage() {
     try {
       setLoading(true);
       await login(formData.email, formData.password);
+      // Don't navigate immediately - let the auth state change handle it
       toast.success('Login successful!');
-      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Failed to login. Please check your credentials.');
-    } finally {
       setLoading(false);
+    } finally {
+      // Don't set loading to false here if login was successful
+      // The auth state change will handle the redirect
     }
   }
+
+  // Handle redirect when user becomes authenticated
+  React.useEffect(() => {
+    // If user is already authenticated, redirect to dashboard
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 px-4 py-8 sm:px-6 lg:px-8">
@@ -127,10 +143,7 @@ export default function LoginPage() {
                   className="btn-primary w-full h-14 sm:h-16 text-base sm:text-lg font-semibold shadow-lg"
                 >
                   {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground mr-3"></div>
-                      Signing in...
-                    </div>
+                    'Signing in...'
                   ) : (
                     'Sign in to Dashboard'
                   )}
@@ -142,6 +155,23 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="text-center">
+          <div className="space-y-4">
+            <Link 
+              to="/forgot-password" 
+              className="text-primary hover:text-primary/80 font-medium transition-colors text-base"
+            >
+              Forgot your password?
+            </Link>
+            <p className="text-base text-muted-foreground">
+              Don't have an account?{' '}
+              <Link 
+                to="/register" 
+                className="text-primary hover:text-primary/80 font-medium transition-colors"
+              >
+                Create one here
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -3,13 +3,20 @@ import { db } from '@/firebase';
 
 export const productsService = {
   // Get user's products collection reference
-  getUserProductsRef(userId, blogId = null) {
-    const actualBlogId = blogId || userId; // Default to userId if blogId not provided
+  getUserProductsRef(userId, blogId) {
+    if (!blogId) {
+      throw new Error('blogId is required');
+    }
+    // Validate that blogId is not the same as userId to prevent data sync issues
+    if (blogId === userId) {
+      throw new Error('Invalid blogId: blogId cannot be the same as userId');
+    }
+    const actualBlogId = blogId;
     return collection(db, 'users', userId, 'blogs', actualBlogId, 'products');
   },
 
   // Fetch all products for a user's blog
-  async fetchAllProducts(userId, blogId = null) {
+  async fetchAllProducts(userId, blogId) {
     try {
       const productsRef = this.getUserProductsRef(userId, blogId);
       const snapshot = await getDocs(productsRef);
@@ -33,7 +40,7 @@ export const productsService = {
   },
 
   // Fetch products by status for a user's blog
-  async fetchProductsByStatus(userId, status, blogId = null) {
+  async fetchProductsByStatus(userId, status, blogId) {
     try {
       const productsRef = this.getUserProductsRef(userId, blogId);
       const q = query(productsRef, where('status', '==', status));
@@ -49,9 +56,12 @@ export const productsService = {
   },
 
   // Fetch single product by ID for a user's blog
-  async fetchProductById(userId, id, blogId = null) {
+  async fetchProductById(userId, id, blogId) {
     try {
-      const actualBlogId = blogId || userId;
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      const actualBlogId = blogId;
       const docRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'products', id);
       const docSnap = await getDoc(docRef);
       
@@ -70,7 +80,7 @@ export const productsService = {
   },
 
   // Get product statistics for a user's blog
-  async getProductStats(userId, blogId = null) {
+  async getProductStats(userId, blogId) {
     try {
       const productsRef = this.getUserProductsRef(userId, blogId);
       
@@ -101,6 +111,51 @@ export const productsService = {
       };
     } catch (error) {
       console.error('Error fetching product stats:', error);
+      throw error;
+    }
+  },
+  
+  // Update product with new image URLs after successful upload
+  async updateProductImages(userId, productId, blogId, imageUrls, imageMetadata = {}) {
+    try {
+      if (!blogId) {
+        throw new Error('blogId is required');
+      }
+      
+      const actualBlogId = blogId;
+      const productRef = doc(db, 'users', userId, 'blogs', actualBlogId, 'products', productId);
+      
+      // Get current product to preserve existing data
+      const productDoc = await getDoc(productRef);
+      if (!productDoc.exists()) {
+        throw new Error('Product not found');
+      }
+      
+      const currentData = productDoc.data();
+      const updatedImageUrls = Array.isArray(imageUrls) ? imageUrls : [imageUrls];
+      
+      const updateData = {
+        imageUrls: updatedImageUrls,
+        imageUrl: updatedImageUrls[0] || '', // Backward compatibility
+        updatedAt: new Date(),
+        imageMetadata: {
+          uploadedAt: new Date().toISOString(),
+          totalImages: updatedImageUrls.length,
+          ...imageMetadata
+        }
+      };
+      
+      await updateDoc(productRef, updateData);
+      
+      console.log('Product images updated successfully:', {
+        productId,
+        imageUrls: updatedImageUrls,
+        metadata: imageMetadata
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating product images:', error);
       throw error;
     }
   }

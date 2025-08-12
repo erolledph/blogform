@@ -15,7 +15,11 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
-  LogOut
+  LogOut,
+  Users,
+  Edit,
+  Upload,
+  Download
 } from 'lucide-react';
 
 const navigation = [
@@ -32,7 +36,12 @@ const createMenuItems = [
   { name: 'Add Product', href: '/dashboard/create-product', icon: Package },
 ];
 
+const manageMenuItems = [
+  { name: 'Manage Blog', href: '/dashboard/manage-blog', icon: Edit },
+];
+
 const settingsMenuItems = [
+  { name: 'User Management', href: '/dashboard/user-management', icon: Users, adminOnly: true },
   { name: 'Account Settings', href: '/dashboard/account-settings', icon: Settings },
   { name: 'Tips', href: '/dashboard/tips', icon: Lightbulb },
   { name: 'Documentation', href: '/dashboard/documentation', icon: BookOpen },
@@ -41,11 +50,12 @@ const settingsMenuItems = [
 export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, currentUser } = useAuth();
   const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
+  const [manageMenuOpen, setManageMenuOpen] = useState(false);
   const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
 
   // Check if we're on mobile
@@ -75,6 +85,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
 
   const toggleCreateMenu = () => {
     setCreateMenuOpen(!createMenuOpen);
+  };
+
+  const toggleManageMenu = () => {
+    setManageMenuOpen(!manageMenuOpen);
   };
 
   const toggleSettingsMenu = () => {
@@ -179,6 +193,43 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
           )}
         </li>
 
+        {/* Manage Mega Menu */}
+        <li className="nav-item">
+          <button
+            onClick={toggleManageMenu}
+            className={`nav-link w-full text-left ${manageMenuOpen ? 'active' : ''}`}
+            title={!shouldBeExpanded ? 'Manage' : ''}
+            aria-label="Manage"
+          >
+            <Edit className="nav-link-icon" />
+            <span className="nav-link-text">Manage</span>
+            <span className="nav-link-text ml-auto">
+              <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${manageMenuOpen ? 'rotate-90' : ''}`} />
+            </span>
+            {!shouldBeExpanded && (
+              <div className="nav-tooltip">Manage</div>
+            )}
+          </button>
+          
+          {/* Manage Submenu */}
+          {manageMenuOpen && shouldBeExpanded && (
+            <ul className="ml-6 mt-2 space-y-1">
+              {manageMenuItems.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    to={item.href}
+                    onClick={handleLinkClick}
+                    className={`nav-link text-sm py-2 ${location.pathname === item.href ? 'active' : ''}`}
+                  >
+                    <item.icon className="nav-link-icon h-4 w-4" />
+                    <span className="nav-link-text">{item.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+
         {/* Rest of navigation items (excluding Overview since it's already rendered above) */}
         {navigation.slice(1).map((item) => {
           const isActive = location.pathname === item.href;
@@ -222,7 +273,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, closeSidebar }) {
           {/* Settings Submenu */}
           {settingsMenuOpen && shouldBeExpanded && (
             <ul className="ml-6 mt-2 space-y-1">
-              {settingsMenuItems.map((item) => {
+              {settingsMenuItems.filter(item => !item.adminOnly || currentUser?.role === 'admin').map((item) => {
                 const isActive = location.pathname === item.href;
                 return (
                   <li key={item.name}>

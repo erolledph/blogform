@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { analyticsService } from '@/services/analyticsService';
 
-export function useContentAnalytics(contentId, days = 30) {
+export function useContentAnalytics(contentId, blogId, days = 30) {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    if (!contentId || !currentUser?.uid) {
+    if (!contentId || !currentUser?.uid || !blogId) {
       setAnalytics(null);
       setLoading(false);
       return;
@@ -19,7 +19,7 @@ export function useContentAnalytics(contentId, days = 30) {
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getContentAnalytics(currentUser.uid, contentId, currentUser.uid, days);
+        const data = await analyticsService.getContentAnalytics(currentUser.uid, contentId, blogId, days);
         setAnalytics(data);
       } catch (err) {
         setError(err.message);
@@ -29,12 +29,12 @@ export function useContentAnalytics(contentId, days = 30) {
     };
 
     fetchAnalytics();
-  }, [contentId, days, currentUser?.uid]);
+  }, [contentId, blogId, days, currentUser?.uid]);
 
   return { analytics, loading, error };
 }
 
-export function useSiteAnalytics(days = 30) {
+export function useSiteAnalytics(blogId, days = 30) {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,7 +42,7 @@ export function useSiteAnalytics(days = 30) {
 
   useEffect(() => {
     const fetchAnalytics = async () => {
-      if (!currentUser?.uid) {
+      if (!currentUser?.uid || !blogId) {
         setAnalytics(null);
         setLoading(false);
         return;
@@ -51,7 +51,7 @@ export function useSiteAnalytics(days = 30) {
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getSiteAnalytics(currentUser.uid, currentUser.uid, days);
+        const data = await analyticsService.getSiteAnalytics(currentUser.uid, blogId, days);
         setAnalytics(data);
       } catch (err) {
         setError(err.message);
@@ -61,7 +61,7 @@ export function useSiteAnalytics(days = 30) {
     };
 
     fetchAnalytics();
-  }, [days, currentUser?.uid]);
+  }, [blogId, days, currentUser?.uid]);
 
   const refetch = () => {
     fetchAnalytics();
@@ -70,7 +70,7 @@ export function useSiteAnalytics(days = 30) {
   return { analytics, loading, error, refetch };
 }
 
-export function useBackendUsage() {
+export function useBackendUsage(blogId) {
   const [usage, setUsage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -78,7 +78,7 @@ export function useBackendUsage() {
 
   useEffect(() => {
     const fetchUsage = async () => {
-      if (!currentUser?.uid) {
+      if (!currentUser?.uid || !blogId) {
         setUsage(null);
         setLoading(false);
         return;
@@ -87,7 +87,7 @@ export function useBackendUsage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await analyticsService.getBackendUsage(currentUser.uid);
+        const data = await analyticsService.getBackendUsage(currentUser.uid, blogId);
         setUsage(data);
       } catch (err) {
         console.error('Backend usage error:', err);
@@ -103,7 +103,7 @@ export function useBackendUsage() {
     };
 
     fetchUsage();
-  }, [currentUser?.uid]);
+  }, [currentUser?.uid, blogId]);
 
   const refetch = async () => {
     fetchUsage();
